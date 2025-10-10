@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Mood Shifters - Spotify Playlist</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        h1 { color: #1DB954; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #1DB954; color: white; cursor: pointer; }
+        th:hover { background-color: #1aa34a; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #e9e9e9; }
+        .duration { text-align: right; }
+        .url { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+        .download { text-align: center; margin: 20px; }
+        .download a { background-color: #1DB954; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+        .download a:hover { background-color: #1aa34a; }
+    </style>
+</head>
+<body>
+    <h1>Today's Mood Shifters</h1>
+    <div class="download">
+        <a href="4Awm3VdOmrXrc1yI680zOP.txt" download>Download Numbered List</a>
+    </div>
+    <table id="playlist-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artists</th>
+                <th>Album</th>
+                <th>Duration Ms</th>
+                <th class='duration'>Duration Mm Ss</th>
+                <th>Added At</th>
+                <th class='url'>Spotify Url</th>
+                <th>Spotify Uri</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Written in the Stars (feat. Eric Turner)</td>
+                <td>Tinie Tempah, Eric Turner</td>
+                <td>Disc-Overy</td>
+                <td>219560</td>
+                <td class='duration'>3:39</td>
+                <td>2025-09-28T06:03:56Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1HgzRpuTuIHnRdSjxPdSuE' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1HgzRpuTuIHnRdSjxPdSuE</td>
+            </tr>
+            <tr>
+                <td>GOOD DAY</td>
+                <td>Forrest Frank</td>
+                <td>CHILD OF GOD</td>
+                <td>170521</td>
+                <td class='duration'>2:50</td>
+                <td>2025-09-28T06:15:44Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0vC82BouGPXm6X2K60RfQw' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0vC82BouGPXm6X2K60RfQw</td>
+            </tr>
+            <tr>
+                <td>Ash & Glory</td>
+                <td>The Soulful Gentlemen</td>
+                <td>Ash & Glory</td>
+                <td>213879</td>
+                <td class='duration'>3:33</td>
+                <td>2025-09-28T06:28:23Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/40Q9P627rgyNFSNfelVBBa' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:40Q9P627rgyNFSNfelVBBa</td>
+            </tr>
+            <tr>
+                <td>Angel Like You</td>
+                <td>Austin Giorgio</td>
+                <td>Angel Like You</td>
+                <td>178832</td>
+                <td class='duration'>2:58</td>
+                <td>2025-09-28T07:25:13Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1KGiwUnVS9qrfOgR9dnUMl' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1KGiwUnVS9qrfOgR9dnUMl</td>
+            </tr>
+            <tr>
+                <td>Call Me If You Get One</td>
+                <td>Drew Baldridge</td>
+                <td>Call Me If You Get One</td>
+                <td>200826</td>
+                <td class='duration'>3:20</td>
+                <td>2025-09-28T07:29:55Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/6dz5Vj8zZhsuSDNZgwQL6w' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:6dz5Vj8zZhsuSDNZgwQL6w</td>
+            </tr>
+            <tr>
+                <td>Rise Again</td>
+                <td>Alonestar, Kayla Kelley, Eminem</td>
+                <td>Rise Again</td>
+                <td>228670</td>
+                <td class='duration'>3:48</td>
+                <td>2025-09-28T09:00:49Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/3z0zyuRP0ayvV09c3sGC3R' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:3z0zyuRP0ayvV09c3sGC3R</td>
+            </tr>
+            <tr>
+                <td>Lie Together</td>
+                <td>Drew Green</td>
+                <td>What You're Looking For</td>
+                <td>179936</td>
+                <td class='duration'>2:59</td>
+                <td>2025-09-28T09:19:47Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/7Ga9HzT8GCZtXwMQRgBbcJ' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:7Ga9HzT8GCZtXwMQRgBbcJ</td>
+            </tr>
+            <tr>
+                <td>I Choose You</td>
+                <td>Andy Grammer</td>
+                <td>Crazy Beautiful EP</td>
+                <td>194813</td>
+                <td class='duration'>3:14</td>
+                <td>2025-09-28T20:55:36Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/6blF3EMbVZMyHQnk6jJWII' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:6blF3EMbVZMyHQnk6jJWII</td>
+            </tr>
+            <tr>
+                <td>1-800-273-8255</td>
+                <td>Logic, Alessia Cara, Khalid</td>
+                <td>Everybody</td>
+                <td>250173</td>
+                <td class='duration'>4:10</td>
+                <td>2025-09-29T06:16:35Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/5tz69p7tJuGPeMGwNTxYuV' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:5tz69p7tJuGPeMGwNTxYuV</td>
+            </tr>
+            <tr>
+                <td>Believe</td>
+                <td>Mumford & Sons</td>
+                <td>Wilder Mind (Deluxe)</td>
+                <td>221039</td>
+                <td class='duration'>3:41</td>
+                <td>2025-09-29T06:23:57Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/5CN13QjYdc9s4aFg2wxwnE' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:5CN13QjYdc9s4aFg2wxwnE</td>
+            </tr>
+            <tr>
+                <td>White Horse</td>
+                <td>Chris Stapleton</td>
+                <td>Higher</td>
+                <td>267893</td>
+                <td class='duration'>4:27</td>
+                <td>2025-09-29T07:25:42Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1DgtQlVNotingln271ZKCx' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1DgtQlVNotingln271ZKCx</td>
+            </tr>
+            <tr>
+                <td>Just In Case</td>
+                <td>Morgan Wallen</td>
+                <td>I’m The Problem</td>
+                <td>166206</td>
+                <td class='duration'>2:46</td>
+                <td>2025-09-29T12:46:16Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/5z0LSDpPpGwc2ZyJHpsE3J' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:5z0LSDpPpGwc2ZyJHpsE3J</td>
+            </tr>
+            <tr>
+                <td>A BIT OF LIGHTNING - ACOUSTIC VERSION</td>
+                <td>FLAT BLACK</td>
+                <td>A BIT OF LIGHTNING (ACOUSTIC VERSION)</td>
+                <td>253370</td>
+                <td class='duration'>4:13</td>
+                <td>2025-09-29T13:24:37Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/6voFW5jiaD0qDIB1N8HsYT' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:6voFW5jiaD0qDIB1N8HsYT</td>
+            </tr>
+            <tr>
+                <td>All That Matters</td>
+                <td>Skillet</td>
+                <td>Revolution</td>
+                <td>207666</td>
+                <td class='duration'>3:27</td>
+                <td>2025-09-29T13:27:13Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/4TXAA3r1m7CaGoUnDRBAJ2' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:4TXAA3r1m7CaGoUnDRBAJ2</td>
+            </tr>
+            <tr>
+                <td>Die Trying</td>
+                <td>Chase McDaniel</td>
+                <td>Lost Ones</td>
+                <td>196229</td>
+                <td class='duration'>3:16</td>
+                <td>2025-09-29T13:46:57Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/2dlZ2Hp2IPPqGfpJ6Pj5z8' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:2dlZ2Hp2IPPqGfpJ6Pj5z8</td>
+            </tr>
+            <tr>
+                <td>Anchor</td>
+                <td>Skillet</td>
+                <td>Victorious</td>
+                <td>216799</td>
+                <td class='duration'>3:36</td>
+                <td>2025-09-30T13:23:43Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/6EwnYm73XEibpAPOnTc8li' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:6EwnYm73XEibpAPOnTc8li</td>
+            </tr>
+            <tr>
+                <td>Fallin’ For You (feat. Maren Morris)</td>
+                <td>Colbie Caillat, Maren Morris</td>
+                <td>This Time Around</td>
+                <td>216822</td>
+                <td class='duration'>3:36</td>
+                <td>2025-10-01T02:58:15Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0UhyoKv0CabELdmgi2G8Yy' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0UhyoKv0CabELdmgi2G8Yy</td>
+            </tr>
+            <tr>
+                <td>I'll Take You</td>
+                <td>Ben Gallaher</td>
+                <td>Time</td>
+                <td>172560</td>
+                <td class='duration'>2:52</td>
+                <td>2025-10-01T03:05:14Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/4aIsPCDFWUTS7vFgDNcDXt' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:4aIsPCDFWUTS7vFgDNcDXt</td>
+            </tr>
+            <tr>
+                <td>Mine All Mine</td>
+                <td>Chance Emerson</td>
+                <td>Mine All Mine</td>
+                <td>206887</td>
+                <td class='duration'>3:26</td>
+                <td>2025-10-01T03:10:13Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1NMGJFPevd4upOnRqarTeI' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1NMGJFPevd4upOnRqarTeI</td>
+            </tr>
+            <tr>
+                <td>From the Ground Up</td>
+                <td>Dan + Shay</td>
+                <td>Obsessed</td>
+                <td>253933</td>
+                <td class='duration'>4:13</td>
+                <td>2025-10-01T08:13:24Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0lQJBl9YEsoMtE8D4yTE9g' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0lQJBl9YEsoMtE8D4yTE9g</td>
+            </tr>
+            <tr>
+                <td>Wanted</td>
+                <td>Hunter Hayes</td>
+                <td>Hunter Hayes (Encore)</td>
+                <td>228840</td>
+                <td class='duration'>3:48</td>
+                <td>2025-10-01T08:16:45Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0p1BcEcYVO3uk4KDf3gzkY' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0p1BcEcYVO3uk4KDf3gzkY</td>
+            </tr>
+            <tr>
+                <td>One Day Too Late</td>
+                <td>Skillet</td>
+                <td>Awake</td>
+                <td>220080</td>
+                <td class='duration'>3:40</td>
+                <td>2025-10-01T09:53:25Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/6JLnc7pF4WUzQ6BWONpc7j' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:6JLnc7pF4WUzQ6BWONpc7j</td>
+            </tr>
+            <tr>
+                <td>I Like Me Better</td>
+                <td>Lauv</td>
+                <td>I met you when I was 18. (the playlist)</td>
+                <td>197436</td>
+                <td class='duration'>3:17</td>
+                <td>2025-10-02T00:24:14Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/4MagTPnkPiDuIa4P8GtW1b' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:4MagTPnkPiDuIa4P8GtW1b</td>
+            </tr>
+            <tr>
+                <td>Made It This Far</td>
+                <td>Chase McDaniel</td>
+                <td>Lost Ones</td>
+                <td>164313</td>
+                <td class='duration'>2:44</td>
+                <td>2025-10-02T06:18:10Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/77fgeJgbAwrgHhYajskgse' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:77fgeJgbAwrgHhYajskgse</td>
+            </tr>
+            <tr>
+                <td>Risk It All</td>
+                <td>Chase McDaniel</td>
+                <td>Lost Ones</td>
+                <td>170611</td>
+                <td class='duration'>2:50</td>
+                <td>2025-10-02T06:24:07Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/05Iv5koYNPpyKIpCBzvxoG' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:05Iv5koYNPpyKIpCBzvxoG</td>
+            </tr>
+            <tr>
+                <td>The Light</td>
+                <td>Disturbed</td>
+                <td>Immortalized</td>
+                <td>256853</td>
+                <td class='duration'>4:16</td>
+                <td>2025-10-02T07:40:44Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1MTELuKDa4b8VOHF97ffuY' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1MTELuKDa4b8VOHF97ffuY</td>
+            </tr>
+            <tr>
+                <td>Walk This World With Me</td>
+                <td>The Home Team</td>
+                <td>The Crucible Of Life</td>
+                <td>228372</td>
+                <td class='duration'>3:48</td>
+                <td>2025-10-04T03:56:04Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/3YAbKZu8vQYOg8ddPOBV3T' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:3YAbKZu8vQYOg8ddPOBV3T</td>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Pink Floyd</td>
+                <td>The Dark Side of the Moon</td>
+                <td>413947</td>
+                <td class='duration'>6:53</td>
+                <td>2025-10-04T03:58:25Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/3TO7bbrUKrOSPGRTB5MeCz' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:3TO7bbrUKrOSPGRTB5MeCz</td>
+            </tr>
+            <tr>
+                <td>Love The Hell Out Of You</td>
+                <td>Lewis Capaldi</td>
+                <td>Broken By Desire To Be Heavenly Sent</td>
+                <td>205080</td>
+                <td class='duration'>3:25</td>
+                <td>2025-10-05T00:05:14Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/2qyeAiFswWB2PmYhdeObTP' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:2qyeAiFswWB2PmYhdeObTP</td>
+            </tr>
+            <tr>
+                <td>Smile</td>
+                <td>Morgan Wallen</td>
+                <td>I’m The Problem</td>
+                <td>224127</td>
+                <td class='duration'>3:44</td>
+                <td>2025-10-06T02:19:11Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0TaLETmF6CvzLKukgBXERn' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0TaLETmF6CvzLKukgBXERn</td>
+            </tr>
+            <tr>
+                <td>No Good</td>
+                <td>KALEO</td>
+                <td>A/B</td>
+                <td>234240</td>
+                <td class='duration'>3:54</td>
+                <td>2025-10-06T07:52:29Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0Tr5G2mE56eLUGvCaXRM8I' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0Tr5G2mE56eLUGvCaXRM8I</td>
+            </tr>
+            <tr>
+                <td>Courtesy Of The Red, White And Blue (The Angry American)</td>
+                <td>Toby Keith</td>
+                <td>Unleashed</td>
+                <td>195533</td>
+                <td class='duration'>3:15</td>
+                <td>2025-10-06T09:09:54Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0M7mWKqwTIaVjYyxfZmtTa' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0M7mWKqwTIaVjYyxfZmtTa</td>
+            </tr>
+            <tr>
+                <td>Where'd You Go (feat. Holly Brook & Jonah Matranga)</td>
+                <td>Fort Minor, Holly Brook, Jonah Matranga</td>
+                <td>The Rising Tied (Deluxe Edition)</td>
+                <td>231866</td>
+                <td class='duration'>3:51</td>
+                <td>2025-10-06T13:29:52Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1GHqc0e7PQ6aEyGlvfSJzS' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1GHqc0e7PQ6aEyGlvfSJzS</td>
+            </tr>
+            <tr>
+                <td>I'm Still Here</td>
+                <td>Vertical Horizon</td>
+                <td>Go</td>
+                <td>232173</td>
+                <td class='duration'>3:52</td>
+                <td>2025-10-06T13:48:41Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/7kABAeuLo8hIUHmwceSP3x' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:7kABAeuLo8hIUHmwceSP3x</td>
+            </tr>
+            <tr>
+                <td>Heart of Stone</td>
+                <td>Jelly Roll</td>
+                <td>Beautifully Broken</td>
+                <td>181773</td>
+                <td class='duration'>3:01</td>
+                <td>2025-10-08T22:40:19Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/1bXKpjbalq0If54LBffE0i' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:1bXKpjbalq0If54LBffE0i</td>
+            </tr>
+            <tr>
+                <td>Sabotage</td>
+                <td>Beastie Boys</td>
+                <td>Ill Communication</td>
+                <td>178440</td>
+                <td class='duration'>2:58</td>
+                <td>2025-10-08T16:16:27Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0Puj4YlTm6xNzDDADXHMI9' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0Puj4YlTm6xNzDDADXHMI9</td>
+            </tr>
+            <tr>
+                <td>Rise Today</td>
+                <td>Alter Bridge</td>
+                <td>Blackbird</td>
+                <td>261399</td>
+                <td class='duration'>4:21</td>
+                <td>2025-10-08T22:40:37Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/3enGDkTT43WDkJoOP4S8Jl' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:3enGDkTT43WDkJoOP4S8Jl</td>
+            </tr>
+            <tr>
+                <td>Beer Never Broke My Heart</td>
+                <td>Luke Combs</td>
+                <td>What You See Is What You Get</td>
+                <td>186733</td>
+                <td class='duration'>3:06</td>
+                <td>2025-10-08T22:43:29Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/7aEtlGHoiPAfRB084NiDmx' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:7aEtlGHoiPAfRB084NiDmx</td>
+            </tr>
+            <tr>
+                <td>Dicked Down in Dallas</td>
+                <td>Trey Lewis</td>
+                <td>Dicked Down in Dallas</td>
+                <td>201350</td>
+                <td class='duration'>3:21</td>
+                <td>2025-10-08T22:43:47Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/5pCWNqlZlcE6tNlacIWDKw' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:5pCWNqlZlcE6tNlacIWDKw</td>
+            </tr>
+            <tr>
+                <td>Buy Dirt</td>
+                <td>Jordan Davis, Luke Bryan</td>
+                <td>Buy Dirt</td>
+                <td>167480</td>
+                <td class='duration'>2:47</td>
+                <td>2025-10-08T22:45:25Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/69AIpwGNLxr4qS1X5ynx60' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:69AIpwGNLxr4qS1X5ynx60</td>
+            </tr>
+            <tr>
+                <td>At Your Best (You Are Love)</td>
+                <td>Aaliyah</td>
+                <td>Age Ain't Nothing But A Number</td>
+                <td>291400</td>
+                <td class='duration'>4:51</td>
+                <td>2025-10-09T07:04:23Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/4lRrk574qIHpoEEKC1zuam' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:4lRrk574qIHpoEEKC1zuam</td>
+            </tr>
+            <tr>
+                <td>Differences</td>
+                <td>Ginuwine</td>
+                <td>The Life</td>
+                <td>265533</td>
+                <td class='duration'>4:25</td>
+                <td>2025-10-09T07:16:27Z</td>
+                <td class='url'><a href='https://open.spotify.com/track/0Uyh92tLyb9JawG8lmWCzJ' target='_blank'>Open in Spotify</a></td>
+                <td>spotify:track:0Uyh92tLyb9JawG8lmWCzJ</td>
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        // Simple sort functionality
+        document.querySelectorAll('th').forEach(header => {{
+            header.addEventListener('click', () => {{
+                const table = header.closest('table');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const index = Array.from(header.parentNode.children).indexOf(header);
+                const isNumeric = header.classList.contains('duration') || header.textContent.includes('Ms');
+                
+                rows.sort((a, b) => {{
+                    const aVal = a.children[index].textContent.trim();
+                    const bVal = b.children[index].textContent.trim();
+                    if (isNumeric) {{
+                        return parseFloat(aVal.replace(':', '.')) - parseFloat(bVal.replace(':', '.'));
+                    }}
+                    return aVal.localeCompare(bVal);
+                }});
+                
+                rows.forEach(row => tbody.appendChild(row));
+            }});
+        }});
+    </script>
+</body>
+</html>

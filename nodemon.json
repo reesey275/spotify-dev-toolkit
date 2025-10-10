@@ -1,0 +1,12 @@
+{
+  "watch": ["server.js", "public/"],
+  "ext": "js,html,css",
+  "ignore": ["node_modules/", "*.test.js"],
+  "delay": 2000,
+  "restartable": "rs",
+  "verbose": true,
+  "events": {
+    "restart": "echo 'Restarting server...'",
+    "crash": "echo 'Server crashed, waiting for changes to restart...'"
+  }
+}

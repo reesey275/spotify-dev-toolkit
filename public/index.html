@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Spotify Fan Website</title>
+   <link rel="stylesheet" href="styles.css?v=1.1">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+   <div id="app">
+      <!-- Navigation Header -->
+      <header class="header">
+         <div class="header-content">
+            <div class="logo">
+               <h1>🎵 Spotify Fan</h1>
+            </div>
+            <nav class="nav">
+               <button class="nav-btn" data-view="home">Featured</button>
+               <button class="nav-btn active" data-view="my-playlists">My Playlists</button>
+               <button class="nav-btn" data-view="top10">Top 10</button>
+               <button class="nav-btn" data-view="user-search">User Search</button>
+               <button class="nav-btn" data-view="search">Search Playlists</button>
+            </nav>
+         </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+         <!-- Loading State -->
+         <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading your music...</p>
+         </div>
+
+         <!-- Error State -->
+         <div id="error" class="error hidden">
+            <h2>Oops! Something went wrong</h2>
+            <p id="error-message">Failed to load content. Please try again.</p>
+            <button onclick="location.reload()" class="btn btn-primary">Retry</button>
+         </div>
+
+         <!-- Home View (Featured Playlists) -->
+         <div id="home-view" class="view">
+            <div class="hero-section">
+               <h2>Welcome to Your Music Universe</h2>
+               <p>Discover featured playlists and explore music from around the world</p>
+            </div>
+
+            <div class="playlists-section">
+               <div class="section-header">
+                  <h3>Featured Playlists</h3>
+                  <div class="controls">
+                     <select id="sort-select" class="sort-select">
+                        <option value="">Sort by...</option>
+                        <optgroup label="Name">
+                           <option value="name-asc">Name (A-Z)</option>
+                           <option value="name-desc">Name (Z-A)</option>
+                        </optgroup>
+                        <optgroup label="Track Count">
+                           <option value="tracks-asc">Track Count (Fewest First)</option>
+                           <option value="tracks-desc">Track Count (Most First)</option>
+                        </optgroup>
+                     </select>
+                  </div>
+               </div>
+               <div id="playlists-grid" class="playlists-grid">
+                  <!-- Featured playlists will be loaded here -->
+               </div>
+            </div>
+         </div>
+
+         <!-- My Playlists View -->
+         <div id="my-playlists-view" class="view active">
+            <div class="hero-section">
+               <h2>Your Personal Playlists</h2>
+               <p>All your saved and created playlists in one place</p>
+            </div>
+
+            <div class="playlists-section">
+               <div class="section-header">
+                  <h3>My Playlists</h3>
+                  <div class="controls">
+                     <select id="my-sort-select" class="sort-select">
+                        <option value="">Sort by...</option>
+                        <optgroup label="Name">
+                           <option value="name-asc">Name (A-Z)</option>
+                           <option value="name-desc">Name (Z-A)</option>
+                        </optgroup>
+                        <optgroup label="Date Created">
+                           <option value="date-asc">Date Created (Oldest First)</option>
+                           <option value="date-desc">Date Created (Newest First)</option>
+                        </optgroup>
+                        <optgroup label="Track Count">
+                           <option value="tracks-asc">Track Count (Fewest First)</option>
+                           <option value="tracks-desc">Track Count (Most First)</option>
+                        </optgroup>
+                     </select>
+                  </div>
+               </div>
+               <div id="my-playlists-grid" class="playlists-grid">
+                  <!-- Your playlists will be loaded here -->
+               </div>
+            </div>
+         </div>
+
+         <!-- Top 10 View -->
+         <div id="top10-view" class="view">
+            <div class="hero-section">
+               <h2>Top 10 Playlists</h2>
+               <p>The most popular playlists based on track count</p>
+            </div>
+            <div id="top10-grid" class="playlists-grid">
+               <!-- Top 10 playlists will be loaded here -->
+            </div>
+         </div>
+
+         <!-- Recent View -->
+         <div id="recent-view" class="view">
+            <div class="hero-section">
+               <h2>Recently Created</h2>
+               <p>Playlists sorted by creation date</p>
+            </div>
+            <div id="recent-grid" class="playlists-grid">
+               <!-- Recent playlists will be loaded here -->
+            </div>
+         </div>
+
+         <!-- User Search View -->
+         <div id="user-search-view" class="view">
+            <div class="hero-section">
+               <h2>Find User's Playlists</h2>
+               <p>Search for any Spotify user's public playlists</p>
+               <div class="search-container">
+                  <input type="text" id="user-search-input" placeholder="Enter Spotify username..."
+                     class="search-input">
+                  <button id="user-search-btn" class="btn btn-primary">Find Playlists</button>
+               </div>
+            </div>
+            <div id="user-info" class="user-info hidden">
+               <!-- User info will be displayed here -->
+            </div>
+            <div id="user-playlists" class="playlists-grid">
+               <!-- User's playlists will be loaded here -->
+            </div>
+         </div>
+
+         <!-- Search View -->
+         <div id="search-view" class="view">
+            <div class="hero-section">
+               <h2>Search Playlists</h2>
+               <p>Search across all of Spotify's playlists</p>
+               <div class="search-container">
+                  <input type="text" id="search-input" placeholder="Search for playlists..." class="search-input">
+                  <button id="search-btn" class="btn btn-primary">Search</button>
+               </div>
+            </div>
+            <div id="search-results" class="playlists-grid">
+               <!-- Search results will be loaded here -->
+            </div>
+         </div>
+
+         <!-- Playlist Detail View -->
+         <div id="playlist-view" class="view">
+            <button id="back-btn" class="btn btn-secondary back-btn">← Back</button>
+
+            <div id="playlist-header" class="playlist-header">
+               <!-- Playlist details will be loaded here -->
+            </div>
+
+            <div class="tracks-section">
+               <div class="section-header">
+                  <h3>Tracks</h3>
+                  <div class="controls">
+                     <select id="track-sort-select" class="sort-select">
+                        <option value="">Sort tracks by...</option>
+                        <optgroup label="Track Name">
+                           <option value="name-asc">Track Name (A-Z)</option>
+                           <option value="name-desc">Track Name (Z-A)</option>
+                        </optgroup>
+                        <optgroup label="Artist">
+                           <option value="artist-asc">Artist (A-Z)</option>
+                           <option value="artist-desc">Artist (Z-A)</option>
+                        </optgroup>
+                        <optgroup label="Album">
+                           <option value="album-asc">Album (A-Z)</option>
+                           <option value="album-desc">Album (Z-A)</option>
+                        </optgroup>
+                        <optgroup label="Duration">
+                           <option value="duration-asc">Duration (Shortest First)</option>
+                           <option value="duration-desc">Duration (Longest First)</option>
+                        </optgroup>
+                        <optgroup label="Date Added">
+                           <option value="date-asc">Date Added (Oldest First)</option>
+                           <option value="date-desc">Date Added (Newest First)</option>
+                        </optgroup>
+                        <optgroup label="Track Number">
+                           <option value="track-asc">Track Number (1-N)</option>
+                           <option value="track-desc">Track Number (N-1)</option>
+                        </optgroup>
+                        <optgroup label="Popularity">
+                           <option value="popularity-asc">Popularity (Least Popular)</option>
+                           <option value="popularity-desc">Popularity (Most Popular)</option>
+                        </optgroup>
+                     </select>
+                  </div>
+               </div>
+               <div id="tracks-container">
+                  <div id="tracks-list" class="tracks-list">
+                     <!-- Tracks will be loaded here -->
+                  </div>
+                  <div id="pagination" class="pagination hidden">
+                     <!-- Pagination controls -->
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+   </div>
+
+   <script src="script.js?v=1.1"></script>
+</body>
+
+</html>
