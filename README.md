@@ -1,4 +1,57 @@
-# 🎵 Spotify Fan Website
+# 🎵 Spotify Developer Toolkit
+
+A comprehensive development environment and interactive web application for Spotify playlist management, featuring automated toolkit setup, API integration, and demo outputs.
+
+## 🛠 Developer Toolkit Setup
+
+This repository includes a complete developer toolkit for WSL2 Ubuntu environments, optimized for social media, marketing, streaming, and web development projects.
+
+### Quick Setup
+
+1. **Import WSL Instance** (if using backup):
+   ```bash
+   wsl --import Ubuntu-22.04 C:\path\to\ubuntu-dev-toolkit.tar C:\path\to\install\location
+   ```
+
+2. **Run Toolkit Setup Script**:
+   ```bash
+   chmod +x setup-dev-toolkit.sh
+   ./setup-dev-toolkit.sh
+   ```
+
+3. **Verify Installation**:
+   ```bash
+   node --version
+   python3 --version
+   ffmpeg -version
+   ```
+
+### What's Included in the Toolkit
+
+- **Core Development Tools**: Node.js (LTS), Python 3, Git, build-essential
+- **Media & Streaming Tools**: FFmpeg, ImageMagick, yt-dlp, streamlink
+- **Database**: PostgreSQL, SQLite3
+- **MCP Servers**: AI-assisted development with 8 MCP servers (Everything, Fetch, Filesystem, Git, Memory, Sequential Thinking, Time)
+- **Security**: UFW firewall, fail2ban
+- **Utilities**: jq, htop, ncdu, tcpdump, pandoc, exiftool
+
+### Toolkit Domains
+
+- Social Media & Influencers
+- Marketing & Media
+- Streaming & Media
+- Web Development & APIs
+
+### Backup & Distribution
+
+To backup your configured WSL instance:
+```bash
+wsl --export Ubuntu-22.04 ~/ubuntu-dev-toolkit-backup.tar
+```
+
+The toolkit setup script logs all actions to `dev-toolkit-setup.log` for troubleshooting.
+
+## 🎵 Spotify Fan Website
 
 A modern, interactive web application for exploring and managing Spotify playlists with dynamic sorting, filtering, and user-friendly features.
 
@@ -67,20 +120,38 @@ A modern, interactive web application for exploring and managing Spotify playlis
 ## 📁 Project Structure
 
 ```
-spotify-fan-website/
-├── public/                 # Static frontend files
-│   ├── index.html         # Main HTML file
-│   ├── styles.css         # CSS styles
-│   ├── script.js          # Frontend JavaScript
-│   └── sw.js             # Service Worker
-├── server.js              # Express server with API endpoints
+spotify-dev-toolkit/
+├── setup-dev-toolkit.sh     # Automated toolkit setup script
+├── dev-toolkit-setup.log    # Setup log file (generated)
+├── demo outputs/            # Test outputs from playlist exports
+│   ├── test-output-playlist.csv
+│   ├── test-output-playlist.html
+│   ├── test-output-playlist.txt
+│   └── test-output-mood-shifters.txt
+├── public/                  # Static frontend files
+│   ├── index.html          # Main HTML file
+│   ├── styles.css          # CSS styles
+│   ├── script.js           # Frontend JavaScript
+│   └── sw.js              # Service Worker
+├── server.js               # Express server with API endpoints
 ├── export_spotify_playlist.py  # Python export tool
-├── package.json           # Node.js dependencies
-├── requirements.txt       # Python dependencies
-├── .env                   # Environment variables (create from .env.example)
-├── .env.example          # Environment template
+├── package.json            # Node.js dependencies
+├── requirements.txt        # Python dependencies
+├── .env                    # Environment variables (create from .env.example)
+├── .env.example           # Environment template
 └── README.md             # This file
 ```
+
+## 📊 Demo Outputs
+
+The `demo outputs/` folder contains test outputs generated during development and testing of the Spotify playlist export functionality. These files demonstrate the various export formats (CSV, HTML, TXT) and serve as examples of the application's capabilities.
+
+- `test-output-playlist.csv` - CSV format export
+- `test-output-playlist.html` - HTML format export  
+- `test-output-playlist.txt` - Plain text format export
+- `test-output-mood-shifters.txt` - Example playlist export
+
+These are included for demonstration purposes and can be regenerated using the web application or Python export tool.
 
 ## 🔧 API Endpoints
 
