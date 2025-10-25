@@ -19,6 +19,54 @@ body {
    font-size: 0.9em;
 }
 
+/* Player Initialization Progress */
+.initialization-progress {
+   margin-top: 1rem;
+   text-align: center;
+}
+
+.progress-dots {
+   display: flex;
+   justify-content: center;
+   gap: 0.5rem;
+   margin-bottom: 0.5rem;
+}
+
+.dot {
+   width: 8px;
+   height: 8px;
+   border-radius: 50%;
+   background-color: #b3b3b3;
+   animation: pulse 1.5s infinite;
+}
+
+.dot.active {
+   background-color: #1db954;
+   animation: pulse 1.5s infinite;
+}
+
+.dot:nth-child(2) {
+   animation-delay: 0.5s;
+}
+
+.dot:nth-child(3) {
+   animation-delay: 1s;
+}
+
+@keyframes pulse {
+
+   0%,
+   100% {
+      opacity: 0.4;
+      transform: scale(1);
+   }
+
+   50% {
+      opacity: 1;
+      transform: scale(1.2);
+   }
+}
+
 /* Header */
 .header {
    background: rgba(0, 0, 0, 0.8);

@@ -662,6 +662,14 @@ class SpotifyFanApp {
                     ` : `
                         <p>🎵 Web player initializing... Controls will be available once connected.</p>
                         <p class="muted">Make sure Spotify Premium is active and the app is authorized.</p>
+                        <div class="initialization-progress">
+                            <div class="progress-dots">
+                                <span class="dot active"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                            <p class="muted" style="font-size: 0.8em; margin-top: 0.5rem;">This usually takes 5-15 seconds...</p>
+                        </div>
                     `}
                 </div>
         `;
@@ -1354,6 +1362,9 @@ class SpotifyFanApp {
             return;
         }
 
+        // Show initialization progress
+        this.updateInitializationProgress(1);
+
         try {
             // Get access token (handle 401/403 explicitly so we can prompt re-login)
             fetch('/api/access-token')
@@ -1377,6 +1388,9 @@ class SpotifyFanApp {
                         return;
                     }
 
+                    // Update progress - token received
+                    this.updateInitializationProgress(2);
+
                     // Create player
                     this.player = new Spotify.Player({
                         name: 'Spotify Fan Web Player',
@@ -1388,6 +1402,8 @@ class SpotifyFanApp {
                     this.player.addListener('ready', ({ device_id }) => {
                         console.log('Ready with Device ID', device_id);
                         this.deviceId = device_id;
+                        // Update progress - player ready
+                        this.updateInitializationProgress(3);
                         // Removed automatic transfer - player will show but not take control
                         // this.transferPlaybackToWebPlayer();
                     });
@@ -1396,6 +1412,7 @@ class SpotifyFanApp {
                         console.log('Device ID has gone offline', device_id);
                         this.playerState = null;
                         this.updatePlayerUI(null);
+                        this.updateInitializationProgress(0); // Reset on disconnect
                     });
 
                     this.player.addListener('player_state_changed', (state) => {
@@ -1412,11 +1429,13 @@ class SpotifyFanApp {
                     this.player.addListener('initialization_error', ({ message }) => {
                         console.error('Failed to initialize:', message);
                         this.showError('Failed to initialize Spotify player. Please check your connection.');
+                        this.updateInitializationProgress(0);
                     });
 
                     this.player.addListener('authentication_error', ({ message }) => {
                         console.error('Failed to authenticate:', message);
                         this.showError('Authentication failed. Please log in again.');
+                        this.updateInitializationProgress(0);
                         // Don't auto-redirect to avoid login loop
                         // setTimeout(() => { window.location.href = '/login'; }, 1200);
                     });
@@ -1424,6 +1443,7 @@ class SpotifyFanApp {
                     this.player.addListener('account_error', ({ message }) => {
                         console.error('Failed to validate Spotify account:', message);
                         this.showError('Spotify Premium required for Web Playback SDK.');
+                        this.updateInitializationProgress(0);
                     });
 
                     this.player.connect();
@@ -1431,11 +1451,13 @@ class SpotifyFanApp {
                 .catch(error => {
                     console.error('Error getting access token:', error);
                     this.showError('Failed to get access token for player');
+                    this.updateInitializationProgress(0);
                 });
 
         } catch (error) {
             console.error('Error creating Spotify player:', error);
             this.showError('Failed to create Spotify player');
+            this.updateInitializationProgress(0);
         }
     }
 
@@ -1546,35 +1568,23 @@ class SpotifyFanApp {
         }
     }
 
-    updatePlayerUI(state) {
-        if (!state) return;
+    updateInitializationProgress(step) {
+        const dots = document.querySelectorAll('.progress-dots .dot');
+        if (!dots.length) return;
 
-        // Update play/pause button
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        if (playPauseBtn) {
-            playPauseBtn.innerHTML = state.paused ? '▶️' : '⏸️';
+        // Reset all dots
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        // Activate dots based on step
+        for (let i = 0; i < step && i < dots.length; i++) {
+            dots[i].classList.add('active');
         }
 
-        // Update progress bar if currently playing view is active
-        if (this.currentView === 'currently-playing') {
-            const progressFill = document.querySelector('.progress-fill');
-            const progressTime = document.querySelector('.progress-time');
-            
-            if (progressFill && progressTime && state.track_window.current_track) {
-                const currentTrack = state.track_window.current_track;
-                const progressPercent = (state.position / currentTrack.duration_ms) * 100;
-                progressFill.style.width = `${progressPercent}%`;
-                
-                const formatTime = (ms) => {
-                    const minutes = Math.floor(ms / 60000);
-                    const seconds = Math.floor((ms % 60000) / 1000);
-                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                };
-                
-                progressTime.innerHTML = `
-                    <span>${formatTime(state.position)}</span>
-                    <span>${formatTime(currentTrack.duration_ms)}</span>
-                `;
+        // If step is 0, hide progress entirely (error state)
+        if (step === 0) {
+            const progressContainer = document.querySelector('.initialization-progress');
+            if (progressContainer) {
+                progressContainer.style.display = 'none';
             }
         }
     }
