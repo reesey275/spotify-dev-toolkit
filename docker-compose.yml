@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: spotify-fan-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DOCKER_CONTAINER=true
+    env_file:
+      - .env
+    ports:
+      - "5500:5500"
+    volumes:
+      # Bind mount for database files with proper ownership
+      - ./sessions.db:/app/sessions.db:rw
+      - ./spotify_cache.db:/app/spotify_cache.db:rw
+      - ./spotify_cache.db-shm:/app/spotify_cache.db-shm:rw
+      - ./spotify_cache.db-wal:/app/spotify_cache.db-wal:rw
+      # Logs directory
+      - ./logs:/app/logs:rw
+    # Security hardening
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5500/healthz" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - cloudflared
+    networks:
+      - app-network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: spotify-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    # Security hardening for tunnel service
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  sessions_db:
+  spotify_cache_db:
+  logs:

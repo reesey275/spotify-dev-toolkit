@@ -14,6 +14,9 @@ require("dotenv").config();
 // Database for caching
 const { cachePlaylists, getCachedPlaylists, fromApi } = require('./db');
 
+// Health check module
+const healthCheck = require('./healthcheck');
+
 // Config validation - ensure required environment variables are set
 const requiredEnvVars = [
   "SPOTIFY_CLIENT_ID",
@@ -363,14 +366,7 @@ async function getUserAccessToken(req) {
 }
 
 // Health check endpoint
-app.get("/healthz", (req, res) => {
-  res.json({
-    ok: true,
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || "1.0.0"
-  });
-});
+app.use('/healthz', healthCheck);
 
 // Routes
 

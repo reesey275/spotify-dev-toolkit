@@ -364,7 +364,166 @@ pip install -r requirements.txt
 
 ## 🚀 Deployment
 
-For production deployment:
+### Production Deployment (Docker)
+
+This project includes a complete Docker setup for production deployment with WSL2 optimization, security hardening, and Cloudflare Tunnel for HTTPS support (required for Web Playback SDK).
+
+#### Prerequisites
+
+- Docker Desktop with WSL2 integration enabled
+- Cloudflare account with tunnel token
+- Spotify Developer App credentials
+
+#### Quick Docker Setup
+
+1. **WSL2 Environment Setup**:
+   ```bash
+   # Run the WSL2 setup script
+   ./setup-wsl.sh
+   ```
+
+2. **Configure Environment**:
+   ```bash
+   # Copy and edit environment file
+   cp .env.example .env
+   # Edit .env with your credentials (see Environment Variables section below)
+   ```
+
+3. **Start Services**:
+   ```bash
+   # Start all services
+   make up
+
+   # Or manually with docker compose
+   docker compose up -d --build
+   ```
+
+4. **Check Health**:
+   ```bash
+   # Check service status
+   make health
+   ```
+
+#### Docker Environment Variables
+
+Add these to your `.env` file:
+
+```env
+# Existing Spotify variables...
+SPOTIFY_CLIENT_ID=your_client_id_here
+SPOTIFY_CLIENT_SECRET=your_client_secret_here
+SPOTIFY_REDIRECT_URI=https://your-domain.com/callback  # HTTPS for Web Playback SDK
+
+# Docker Configuration
+DOCKER_CONTAINER=true
+NODE_ENV=production
+SESSION_SECRET=your_secure_random_string_here
+
+# WSL2 User Permissions (auto-detected by setup-wsl.sh)
+APP_UID=1000
+APP_GID=1000
+
+# Cloudflare Tunnel (get from https://dash.cloudflare.com/profile/api-tokens)
+CLOUDFLARED_TOKEN=your_cloudflare_tunnel_token_here
+```
+
+#### Docker Commands
+
+```bash
+# Start services
+make up
+
+# View logs
+make logs
+
+# Check health
+make health
+
+# Restart services
+make restart
+
+# Stop services
+make down
+
+# Clean up (removes containers, volumes, images)
+make clean
+
+# Open shell in app container
+make shell
+```
+
+#### Cloudflare Tunnel Setup
+
+1. **Create Tunnel**:
+   ```bash
+   # Install cloudflared CLI
+   # Follow: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/
+   ```
+
+2. **Get Token**:
+   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
+   - Create a new token with Tunnel permissions
+   - Add token to `.env` as `CLOUDFLARED_TOKEN`
+
+3. **Configure DNS**:
+   - Point your domain to the tunnel
+   - Update `SPOTIFY_REDIRECT_URI` to use HTTPS
+
+#### Security Features
+
+- **Non-root containers**: App runs as nodejs user (uid 1001)
+- **Read-only filesystem**: Prevents unauthorized modifications
+- **Dropped capabilities**: Removes unnecessary Linux capabilities
+- **Secure secrets**: Environment variables for sensitive data
+- **Isolated networks**: App and tunnel communicate via Docker network
+
+#### WSL2 Optimization
+
+- **File ownership**: Proper UID/GID mapping prevents permission issues
+- **Volume mounts**: Database files persist with correct permissions
+- **Hot reload**: Development mode with volume mounting
+- **Resource sharing**: Seamless integration with Windows Docker Desktop
+
+#### Troubleshooting Docker
+
+**Services won't start**:
+```bash
+# Check logs
+make logs
+
+# Validate configuration
+make config
+
+# Check Docker daemon
+docker ps
+```
+
+**Permission issues**:
+```bash
+# Re-run WSL2 setup
+./setup-wsl.sh
+
+# Check file ownership
+ls -la *.db
+```
+
+**Tunnel connection fails**:
+```bash
+# Verify token
+echo $CLOUDFLARED_TOKEN
+
+# Check tunnel logs
+docker compose logs cloudflared
+```
+
+**Web Playback SDK issues**:
+- Ensure HTTPS redirect URI in Spotify app settings
+- Verify Cloudflare tunnel is providing HTTPS
+- Check browser console for DRM/EME errors
+
+### Traditional Production Deployment
+
+For non-Docker deployment:
 1. Set environment variables on your server
 2. Use a process manager like PM2
 3. Consider using a reverse proxy like nginx
