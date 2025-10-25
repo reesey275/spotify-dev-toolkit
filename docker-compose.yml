@@ -44,7 +44,7 @@ services:
 
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: spotify-cloudflared
+    container_name: spotify-cloudflared-${CLOUDFLARED_ENV:-dev}
     restart: unless-stopped
     command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
     # Security hardening for tunnel service
@@ -57,6 +57,8 @@ services:
       - ALL
     networks:
       - app-network
+    profiles:
+      - tunnel
 
 networks:
   app-network:

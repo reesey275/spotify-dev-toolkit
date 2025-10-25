@@ -1,4 +1,4 @@
-.PHONY: help up down logs build clean health restart shell
+.PHONY: help up down logs build clean health restart shell dev test prod tunnel-on tunnel-off
 
 # Default target
 help: ## Show this help message
@@ -38,3 +38,21 @@ status: ## Show status of all services
 
 config: ## Show docker compose configuration
 	docker compose config
+
+dev: ## Switch to development environment
+	./switch-env.sh dev
+	@echo "🔧 Switched to development environment"
+
+test: ## Switch to testing environment
+	./switch-env.sh test
+	@echo "🧪 Switched to testing environment"
+
+prod: ## Switch to production environment
+	./switch-env.sh prod
+	@echo "🚀 Switched to production environment"
+
+tunnel-on: ## Start Cloudflare tunnel
+	docker compose --profile tunnel up -d cloudflared
+
+tunnel-off: ## Stop Cloudflare tunnel
+	docker compose --profile tunnel down cloudflared

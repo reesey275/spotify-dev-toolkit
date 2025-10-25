@@ -419,12 +419,15 @@ DOCKER_CONTAINER=true
 NODE_ENV=production
 SESSION_SECRET=your_secure_random_string_here
 
-# WSL2 User Permissions (auto-detected by setup-wsl.sh)
+# WSL2 User Permissions (auto-detected by setup-docker.sh)
 APP_UID=1000
 APP_GID=1000
 
-# Cloudflare Tunnel (get from https://dash.cloudflare.com/profile/api-tokens)
-CLOUDFLARED_TOKEN=your_cloudflare_tunnel_token_here
+# Cloudflare Tunnel Configuration (Environment-Specific)
+CLOUDFLARED_TOKEN_DEV=your_dev_tunnel_token_here
+CLOUDFLARED_TOKEN_TEST=your_test_tunnel_token_here
+CLOUDFLARED_TOKEN_PROD=your_prod_tunnel_token_here
+CLOUDFLARED_ENV=dev  # Active environment: dev/test/prod
 ```
 
 #### Docker Commands
@@ -450,6 +453,39 @@ make clean
 
 # Open shell in app container
 make shell
+```
+
+#### Environment Switching
+
+Switch between development, testing, and production environments:
+
+```bash
+# Switch to development environment
+make dev
+
+# Switch to testing environment
+make test
+
+# Switch to production environment
+make prod
+
+# Manual environment switching
+./switch-env.sh dev   # or test/prod
+```
+
+#### Tunnel Control
+
+Control Cloudflare tunnel traffic for demos and testing:
+
+```bash
+# Start tunnel (enable external access)
+make tunnel-on
+
+# Stop tunnel (disable external access)
+make tunnel-off
+
+# Check tunnel status
+make health
 ```
 
 #### Cloudflare Tunnel Setup
