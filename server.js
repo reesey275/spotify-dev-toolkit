@@ -616,6 +616,32 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
       const cachedPlaylists = getCachedPlaylists('my', SPOTIFY_USERNAME);
       if (cachedPlaylists.length > 0) {
         console.log('✅ Returning cached my playlists');
+        
+        // Sort cached playlists based on query parameter (format: field-direction)
+        if (sort) {
+          const [field, direction = 'asc'] = sort.split('-');
+          const isDesc = direction === 'desc';
+          
+          if (field === 'date') {
+            cachedPlaylists.sort((a, b) => {
+              const dateA = new Date(a.created_date || 0);
+              const dateB = new Date(b.created_date || 0);
+              const result = dateA - dateB;
+              return isDesc ? -result : result;
+            });
+          } else if (field === 'tracks') {
+            cachedPlaylists.sort((a, b) => {
+              const result = a.tracks.total - b.tracks.total;
+              return isDesc ? -result : result;
+            });
+          } else if (field === 'name') {
+            cachedPlaylists.sort((a, b) => {
+              const result = a.name.localeCompare(b.name);
+              return isDesc ? -result : result;
+            });
+          }
+        }
+        
         return res.json({
           playlists: cachedPlaylists,
           total: cachedPlaylists.length,
@@ -1080,32 +1106,30 @@ app.get("/api/user/:userId/playlists", apiLimiter, async (req, res) => {
       await new Promise(r => setTimeout(r, 200));
     }
 
-    // Sort playlists based on query parameter (format: field-direction)
-    if (sort) {
-      const [field, direction = 'asc'] = sort.split('-');
-      const isDesc = direction === 'desc';
-      
-      if (field === 'date') {
-        enhancedPlaylists.sort((a, b) => {
-          const dateA = new Date(a.created_date || 0);
-          const dateB = new Date(b.created_date || 0);
-          const result = dateA - dateB;
-          return isDesc ? -result : result;
-        });
-      } else if (field === 'tracks') {
-        enhancedPlaylists.sort((a, b) => {
-          const result = a.track_count - b.track_count;
-          return isDesc ? -result : result;
-        });
-      } else if (field === 'name') {
-        enhancedPlaylists.sort((a, b) => {
-          const result = a.name.localeCompare(b.name);
-          return isDesc ? -result : result;
-        });
-      }
-    }
-
-    res.json({
+        // Sort playlists based on query parameter (format: field-direction)
+        if (sort) {
+          const [field, direction = 'asc'] = sort.split('-');
+          const isDesc = direction === 'desc';
+          
+          if (field === 'date') {
+            enhancedPlaylists.sort((a, b) => {
+              const dateA = new Date(a.created_date || 0);
+              const dateB = new Date(b.created_date || 0);
+              const result = dateA - dateB;
+              return isDesc ? -result : result;
+            });
+          } else if (field === 'tracks') {
+            enhancedPlaylists.sort((a, b) => {
+              const result = a.tracks.total - b.tracks.total;
+              return isDesc ? -result : result;
+            });
+          } else if (field === 'name') {
+            enhancedPlaylists.sort((a, b) => {
+              const result = a.name.localeCompare(b.name);
+              return isDesc ? -result : result;
+            });
+          }
+        }    res.json({
       playlists: enhancedPlaylists,
       total: enhancedPlaylists.length,
       source: 'featured',
