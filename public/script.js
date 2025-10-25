@@ -255,7 +255,7 @@ class SpotifyFanApp {
     updateAuthUI() {
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
-        const userInfo = document.getElementById('user-info');
+        const userInfo = document.getElementById('auth-user-info');
         const userDisplayName = document.getElementById('user-display-name');
 
         if (this.isAuthenticated && this.currentUser) {
@@ -540,7 +540,11 @@ class SpotifyFanApp {
         
         // Update navigation
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.view === viewName);
+            if (btn.dataset.view === viewName) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         });
 
         // Hide all views

@@ -272,7 +272,7 @@ async function spotifyRequest(endpoint, req = null, method = 'GET', data = null,
     let token;
 
     // Use user token from session if available, otherwise client credentials
-    if (req && req.session && req.session.accessToken) {
+    if (req && req.session && req.session.tokens) {
       token = await getUserAccessToken(req);
     } else {
       token = await getSpotifyToken();
@@ -321,14 +321,12 @@ async function spotifyRequest(endpoint, req = null, method = 'GET', data = null,
       if (status === 401 && req && req.session) {
         try {
           console.log('🔄 Token expired, attempting refresh...');
-          await refreshUserToken(req);
+          await refreshAccessToken(req);
           return await spotifyRequest(endpoint, req, method, data, attempts + 1);
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError.message);
           // Clear invalid session data
-          delete req.session.accessToken;
-          delete req.session.refreshToken;
-          delete req.session.tokenExpiry;
+          delete req.session.tokens;
           const e = new Error('Authentication expired - please re-authenticate');
           e.status = 401;
           throw e;
@@ -347,46 +345,18 @@ async function spotifyRequest(endpoint, req = null, method = 'GET', data = null,
   }
 }
 
-// Simple token refresh function
-async function refreshUserToken(req) {
-  if (!req.session.refreshToken) {
-    throw new Error('No refresh token available');
-  }
 
-  const response = await axios.post('https://accounts.spotify.com/api/token',
-    querystring.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: req.session.refreshToken
-    }), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64')}`
-      }
-    }
-  );
-
-  // Update session with new tokens
-  req.session.accessToken = response.data.access_token;
-  req.session.tokenExpiry = Date.now() + (response.data.expires_in * 1000) - 60000;
-
-  // Spotify may issue a new refresh token
-  if (response.data.refresh_token) {
-    req.session.refreshToken = response.data.refresh_token;
-  }
-
-  return req.session.accessToken;
-}
 
 // Helper function to get user access token from session
 async function getUserAccessToken(req) {
   // Check if we have a valid access token in session
-  if (req.session.accessToken && req.session.tokenExpiry && Date.now() < req.session.tokenExpiry) {
-    return req.session.accessToken;
+  if (req.session.tokens && req.session.tokens.access_token && isFresh(req)) {
+    return req.session.tokens.access_token;
   }
 
   // If we have a refresh token, try to refresh
-  if (req.session.refreshToken) {
-    return await refreshUserToken(req);
+  if (req.session.tokens && req.session.tokens.refresh_token) {
+    return await refreshAccessToken(req);
   }
 
   throw new Error('User authentication required');
@@ -535,7 +505,7 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
     }).parse(req.query);
     
     // Check if user is authenticated via OAuth first
-    if (req.session?.accessToken) {
+    if (req.session?.tokens?.access_token) {
       try {
         console.log('🔍 Fetching playlists for authenticated OAuth user');
         
@@ -629,9 +599,7 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
         console.error("Error fetching authenticated user playlists:", error.message);
         // If authentication failed, clear session and return 401
         if (error.status === 401) {
-          delete req.session.accessToken;
-          delete req.session.refreshToken;
-          delete req.session.tokenExpiry;
+          delete req.session.tokens;
           return res.status(401).json({ 
             error: "Authentication expired", 
             message: "Please log in again to continue.",
@@ -742,7 +710,7 @@ app.get("/api/currently-playing", apiLimiter, async (req, res) => {
     console.log('🎵 Fetching currently playing track...');
     
     // Check if user is authenticated
-    if (!req.session?.accessToken) {
+    if (!req.session?.tokens?.access_token) {
       return res.status(401).json({ 
         error: "Authentication required", 
         message: "Please log in to view currently playing track" 
