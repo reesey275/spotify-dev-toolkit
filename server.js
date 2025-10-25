@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const session = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(session);
+const Database = require('better-sqlite3');
 const crypto = require("crypto");
 const { z } = require("zod");
 require("dotenv").config();
@@ -32,7 +33,144 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-// PKCE utilities
+// Custom SQLite Session Store
+class CustomSQLiteStore extends session.Store {
+  constructor(options = {}) {
+    super(options);
+    // Handle both dir+db options and direct db path
+    if (options.dir && options.db) {
+      this.dbPath = path.join(options.dir, options.db);
+    } else {
+      this.dbPath = options.db || (process.env.DOCKER_CONTAINER ? '/app/sessions_data/sessions.db' : './sessions.db');
+    }
+    this.tableName = options.table || 'sessions';
+    this.db = null;
+    this.init();
+  }
+
+  init() {
+    try {
+      this.db = new Database(this.dbPath);
+      // Drop and recreate table to ensure correct schema
+      this.db.exec(`DROP TABLE IF EXISTS ${this.tableName}`);
+      this.db.exec(`
+        CREATE TABLE ${this.tableName} (
+          sid TEXT PRIMARY KEY,
+          sess TEXT,
+          expire INTEGER
+        )
+      `);
+      console.log('✅ Custom SQLite session store initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize custom SQLite session store:', error.message);
+      this.db = null;
+    }
+  }
+
+  get(sid, callback) {
+    if (!this.db) return callback(null, null);
+
+    try {
+      const stmt = this.db.prepare(`SELECT sess FROM ${this.tableName} WHERE sid = ? AND expire > ?`);
+      const row = stmt.get(sid, Date.now());
+      if (row) {
+        callback(null, JSON.parse(row.sess));
+      } else {
+        callback(null, null);
+      }
+    } catch (error) {
+      console.error('Error getting session:', error.message);
+      callback(error);
+    }
+  }
+
+  set(sid, session, callback) {
+    if (!this.db) return callback && callback();
+
+    try {
+      const expire = Date.now() + (session.cookie.maxAge || 86400000); // 24 hours default
+      const stmt = this.db.prepare(`
+        INSERT OR REPLACE INTO ${this.tableName} (sid, sess, expire)
+        VALUES (?, ?, ?)
+      `);
+      stmt.run(sid, JSON.stringify(session), expire);
+      callback && callback();
+    } catch (error) {
+      console.error('Error setting session:', error.message);
+      callback && callback(error);
+    }
+  }
+
+  destroy(sid, callback) {
+    if (!this.db) return callback && callback();
+
+    try {
+      const stmt = this.db.prepare(`DELETE FROM ${this.tableName} WHERE sid = ?`);
+      stmt.run(sid);
+      callback && callback();
+    } catch (error) {
+      console.error('Error destroying session:', error.message);
+      callback && callback(error);
+    }
+  }
+
+  touch(sid, session, callback) {
+    if (!this.db) return callback && callback();
+
+    try {
+      const expire = Date.now() + (session.cookie.maxAge || 86400000);
+      const stmt = this.db.prepare(`UPDATE ${this.tableName} SET expire = ? WHERE sid = ?`);
+      stmt.run(expire, sid);
+      callback && callback();
+    } catch (error) {
+      console.error('Error touching session:', error.message);
+      callback && callback(error);
+    }
+  }
+
+  all(callback) {
+    if (!this.db) return callback && callback(null, []);
+
+    try {
+      const stmt = this.db.prepare(`SELECT sid, sess FROM ${this.tableName} WHERE expire > ?`);
+      const rows = stmt.all(Date.now());
+      const sessions = rows.map(row => ({
+        sid: row.sid,
+        sess: JSON.parse(row.sess)
+      }));
+      callback && callback(null, sessions);
+    } catch (error) {
+      console.error('Error getting all sessions:', error.message);
+      callback && callback(error);
+    }
+  }
+
+  length(callback) {
+    if (!this.db) return callback && callback(null, 0);
+
+    try {
+      const stmt = this.db.prepare(`SELECT COUNT(*) as count FROM ${this.tableName} WHERE expire > ?`);
+      const row = stmt.get(Date.now());
+      callback && callback(null, row.count);
+    } catch (error) {
+      console.error('Error getting session length:', error.message);
+      callback && callback(error);
+    }
+  }
+
+  clear(callback) {
+    if (!this.db) return callback && callback();
+
+    try {
+      const stmt = this.db.prepare(`DELETE FROM ${this.tableName}`);
+      stmt.run();
+      callback && callback();
+    } catch (error) {
+      console.error('Error clearing sessions:', error.message);
+      callback && callback(error);
+    }
+  }
+}
 function generateCodeVerifier() {
   return crypto.randomBytes(32).toString('base64url');
 }
@@ -96,7 +234,10 @@ async function refreshAccessToken(req) {
 
 // Logging setup
 const pino = require("pino");
-const logger = pino(pino.destination("server.log"));
+// Configure Pino logger based on environment
+const logger = process.env.DOCKER_CONTAINER === 'true'
+  ? pino() // Log to stdout in Docker
+  : pino(pino.destination("./logs/server.log")); // Log to file in development
 
 function logToken(evt, req) {
   const t = req.session?.tokens;
@@ -128,35 +269,43 @@ const searchSchema = z.object({
 const app = express();
 const port = process.env.PORT || 5500;
 
+// Trust proxy for proper session handling behind Cloudflare
+app.set('trust proxy', 1);
+
 // Session configuration
 app.use(session({
-  store: new SQLiteStore({ db: 'sessions.db', dir: __dirname }),
+  store: new CustomSQLiteStore({
+    dir: path.join(__dirname, 'sessions_data'),
+    db: 'sessions.db'
+  }),
   secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none', // Allow cross-site requests for OAuth
+    secure: true, // Always require HTTPS for sameSite: 'none'
+    domain: process.env.NODE_ENV === 'production' ? 'sc.theangrygamershow.com' : undefined,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
 // Security and performance middlewares
 app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? false : {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts for now
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.spotify.com", "https://accounts.spotify.com"],
-      fontSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://sdk.scdn.co", "https://static.cloudflareinsights.com"],
+      scriptSrcAttr: ["'unsafe-hashes'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      connectSrc: ["'self'", "https://api.spotify.com", "https://accounts.spotify.com", "https://*.spotify.com"],
+      frameSrc: ["https://sdk.scdn.co"],
       objectSrc: ["'none'"],
       mediaSrc: ["'none'"],
-      frameSrc: ["'none'"],
     },
-  } : false, // Disable CSP for development
+  },
   crossOriginOpenerPolicy: process.env.NODE_ENV === 'production' ? { policy: "same-origin" } : false, // Disable COOP for development
   crossOriginResourcePolicy: process.env.NODE_ENV === 'production' ? { policy: "same-origin" } : false, // Disable CORP for development
   referrerPolicy: { policy: "strict-origin-when-cross-origin" },
@@ -175,7 +324,22 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: [`http://127.0.0.1:${port}`, "http://127.0.0.1:5173"], // Allow current port and common dev ports
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      `http://127.0.0.1:${port}`,
+      "http://127.0.0.1:5173",
+      "https://sc.theangrygamershow.com"
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -385,66 +549,123 @@ app.get("/login", authLimiter, (req, res) => {
   req.session.codeVerifier = codeVerifier;
   req.session.oauthState = state;
   
-  // Include playback-related scopes required by the Web Playback SDK
-  const scope = 'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private streaming user-read-playback-state user-read-currently-playing user-modify-playback-state user-read-private user-read-email';
-  const authURL = 'https://accounts.spotify.com/authorize?' +
-    querystring.stringify({
-      response_type: 'code',
-      client_id: SPOTIFY_CLIENT_ID,
-      scope: scope,
-      redirect_uri: SPOTIFY_REDIRECT_URI,
-      code_challenge: codeChallenge,
-      code_challenge_method: 'S256',
-      state: state
-    });
+  // Also store in httpOnly cookie as fallback
+  res.cookie('oauth_tmp', JSON.stringify({ 
+    state, 
+    codeVerifier, 
+    ts: Date.now() 
+  }), {
+    httpOnly: true, 
+    sameSite: 'lax', 
+    secure: true, 
+    maxAge: 5 * 60 * 1000 // 5 minutes
+  });
   
-  res.redirect(authURL);
+  // Force session save before redirect
+  req.session.save((err) => {
+    if (err) {
+      console.error('Session save error:', err);
+      return res.status(500).send('Session error');
+    }
+    
+    console.log('OAuth login: state saved to session:', { state, sessionID: req.session.id });
+    
+    // Include playback-related scopes required by the Web Playback SDK
+    const scope = 'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private streaming user-read-playback-state user-read-currently-playing user-modify-playback-state user-read-private user-read-email';
+    const authURL = 'https://accounts.spotify.com/authorize?' +
+      querystring.stringify({
+        response_type: 'code',
+        client_id: SPOTIFY_CLIENT_ID,
+        scope: scope,
+        redirect_uri: SPOTIFY_REDIRECT_URI,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        state: state
+      });
+    
+    res.redirect(authURL);
+  });
 });
 
 // OAuth callback route with state validation and PKCE
 app.get("/callback", authLimiter, async (req, res) => {
   const { code, state, error } = req.query;
-  
-  console.log('OAuth callback received:', { code: !!code, state, error });
-  console.log('Session state:', req.session.oauthState);
-  console.log('Session ID:', req.session.id);
-  console.log('Session before token exchange:', {
-    hasAccessToken: !!req.session.accessToken,
-    hasRefreshToken: !!req.session.refreshToken,
-    hasTokenExpiry: !!req.session.tokenExpiry
+
+  console.log('OAuth callback received:', {
+    hasCode: !!code,
+    hasState: !!state,
+    state: state,
+    sessionState: req.session.oauthState,
+    stateMatch: req.session.oauthState === state,
+    sessionID: req.session.id
   });
-  
+
   // Check for OAuth errors
   if (error) {
     console.error('OAuth error:', error);
-    return res.status(400).send(`Authentication failed: ${error}`);
+    return res.redirect('/?error=' + encodeURIComponent(error));
+  }
+
+  if (!code || !state) {
+    console.error('Missing code or state parameter');
+    return res.status(400).json({ error: 'Missing authorization code or state' });
+  }
+
+  // Check both session and cookie for oauth data
+  let oauthData = null;
+  let dataSource = '';
+  
+  if (req.session.oauthState && req.session.codeVerifier) {
+    oauthData = {
+      state: req.session.oauthState,
+      codeVerifier: req.session.codeVerifier
+    };
+    dataSource = 'session';
+  } else {
+    // Try cookie fallback
+    const cookieData = req.cookies.oauth_tmp;
+    if (cookieData) {
+      try {
+        const parsed = JSON.parse(cookieData);
+        // Check if cookie is not expired (5 minutes)
+        if (Date.now() - parsed.ts < 5 * 60 * 1000) {
+          oauthData = {
+            state: parsed.state,
+            codeVerifier: parsed.codeVerifier
+          };
+          dataSource = 'cookie';
+        } else {
+          console.log('OAuth callback: cookie expired');
+        }
+      } catch (e) {
+        console.error('OAuth callback: invalid cookie data:', e);
+      }
+    }
   }
   
-  // Validate state parameter
-  if (!state || state !== req.session.oauthState) {
-    console.error('OAuth state mismatch - possible CSRF attack');
-    console.error('Expected state:', req.session.oauthState);
-    console.error('Received state:', state);
-    return res.status(400).send('Invalid state parameter');
+  if (!oauthData) {
+    console.error('OAuth callback: no oauth data found in session or cookie');
+    return res.status(400).json({ error: 'Authentication failed - no session data' });
   }
   
-  // Validate code presence
-  if (!code) {
-    return res.status(400).send('Authorization code missing');
+  if (oauthData.state !== state) {
+    console.error('OAuth callback: state mismatch', { 
+      expected: oauthData.state, 
+      received: state, 
+      source: dataSource 
+    });
+    return res.status(400).json({ error: 'Invalid state parameter' });
   }
   
-  // Validate PKCE verifier
-  if (!req.session.codeVerifier) {
-    return res.status(400).send('PKCE verifier missing from session');
-  }
-  
+  console.log('OAuth callback: state validated from', dataSource);
+
   try {
-    const response = await axios.post('https://accounts.spotify.com/api/token', 
+    const response = await axios.post('https://accounts.spotify.com/api/token',
       querystring.stringify({
         grant_type: 'authorization_code',
         code: code,
         redirect_uri: SPOTIFY_REDIRECT_URI,
-        code_verifier: req.session.codeVerifier
+        code_verifier: oauthData.codeVerifier
       }), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -452,14 +673,14 @@ app.get("/callback", authLimiter, async (req, res) => {
         }
       }
     );
-    
+
     // Store tokens securely in session (not in memory)
     saveTokens(req, {
       access_token: response.data.access_token,
       refresh_token: response.data.refresh_token,
       expires_in: response.data.expires_in
     });
-    
+
     console.log('Token exchange successful, session after:', {
       hasTokens: !!req.session.tokens,
       hasAccessToken: !!req.session.tokens?.access_token,
@@ -468,15 +689,16 @@ app.get("/callback", authLimiter, async (req, res) => {
       expiresAt: req.session.tokens?.expires_at ? new Date(req.session.tokens.expires_at).toISOString() : null,
       sessionID: req.session.id
     });
-    
-    // Clear OAuth session data
+
+    // Clear OAuth session data and cookie
     delete req.session.codeVerifier;
     delete req.session.oauthState;
+    res.clearCookie('oauth_tmp');
     
     res.redirect('/?authenticated=true');
   } catch (error) {
     console.error('OAuth callback error:', error.message);
-    res.status(500).send('Authentication failed');
+    res.status(500).json({ error: 'Authentication failed' });
   }
 });
 
@@ -510,17 +732,17 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
         const userId = user.id;
         
         // Check cache first for this user's playlists
-        const cachedPlaylists = getCachedPlaylists('user', userId);
-        if (cachedPlaylists.length > 0) {
-          console.log(`✅ Returning cached playlists for user ${userId}`);
-          return res.json({
-            playlists: cachedPlaylists,
-            total: cachedPlaylists.length,
-            username: user.display_name || userId,
-            authenticated: true,
-            source: 'cache'
-          });
-        }
+        // const cachedPlaylists = getCachedPlaylists('user', userId);
+        // if (cachedPlaylists.length > 0) {
+        //   console.log(`✅ Returning cached playlists for user ${userId}`);
+        //   return res.json({
+        //     playlists: cachedPlaylists,
+        //     total: cachedPlaylists.length,
+        //     username: user.display_name || userId,
+        //     authenticated: true,
+        //     source: 'cache'
+        //   });
+        // }
         
         // Cache miss - fetch from Spotify API
         let playlists = await spotifyRequest('/me/playlists?limit=' + limit, req);
@@ -553,8 +775,8 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
         }
 
         // Cache the user's playlists
-        cachePlaylists(enhancedPlaylists, 'user', userId);
-        console.log(`💾 Cached ${enhancedPlaylists.length} playlists for user ${userId}`);
+        // cachePlaylists(enhancedPlaylists, 'user', userId);
+        // console.log(`💾 Cached ${enhancedPlaylists.length} playlists for user ${userId}`);
 
         // Sort playlists based on query parameter (format: field-direction)
         if (sort) {
@@ -609,43 +831,43 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
     // Fallback: Use configured username if no OAuth authentication
     if (SPOTIFY_USERNAME) {
       // Check cache first
-      const cachedPlaylists = getCachedPlaylists('my', SPOTIFY_USERNAME);
-      if (cachedPlaylists.length > 0) {
-        console.log('✅ Returning cached my playlists');
+      // const cachedPlaylists = getCachedPlaylists('my', SPOTIFY_USERNAME);
+      // if (cachedPlaylists.length > 0) {
+      //   console.log('✅ Returning cached my playlists');
         
-        // Sort cached playlists based on query parameter (format: field-direction)
-        if (sort) {
-          const [field, direction = 'asc'] = sort.split('-');
-          const isDesc = direction === 'desc';
+      //   // Sort cached playlists based on query parameter (format: field-direction)
+      //   if (sort) {
+      //     const [field, direction = 'asc'] = sort.split('-');
+      //     const isDesc = direction === 'desc';
           
-          if (field === 'date') {
-            cachedPlaylists.sort((a, b) => {
-              const dateA = new Date(a.created_date || 0);
-              const dateB = new Date(b.created_date || 0);
-              const result = dateA - dateB;
-              return isDesc ? -result : result;
-            });
-          } else if (field === 'tracks') {
-            cachedPlaylists.sort((a, b) => {
-              const result = a.tracks.total - b.tracks.total;
-              return isDesc ? -result : result;
-            });
-          } else if (field === 'name') {
-            cachedPlaylists.sort((a, b) => {
-              const result = a.name.localeCompare(b.name);
-              return isDesc ? -result : result;
-            });
-          }
-        }
+      //     if (field === 'date') {
+      //       cachedPlaylists.sort((a, b) => {
+      //         const dateA = new Date(a.created_date || 0);
+      //         const dateB = new Date(b.created_date || 0);
+      //         const result = dateA - dateB;
+      //         return isDesc ? -result : result;
+      //       });
+      //     } else if (field === 'tracks') {
+      //       cachedPlaylists.sort((a, b) => {
+      //         const result = a.tracks.total - b.tracks.total;
+      //         return isDesc ? -result : result;
+      //       });
+      //     } else if (field === 'name') {
+      //       cachedPlaylists.sort((a, b) => {
+      //         const result = a.name.localeCompare(b.name);
+      //         return isDesc ? -result : result;
+      //       });
+      //     }
+      //   }
         
-        return res.json({
-          playlists: cachedPlaylists,
-          total: cachedPlaylists.length,
-          username: SPOTIFY_USERNAME,
-          authenticated: false,
-          source: 'cache'
-        });
-      }
+      //   return res.json({
+      //     playlists: cachedPlaylists,
+      //     total: cachedPlaylists.length,
+      //     username: SPOTIFY_USERNAME,
+      //     authenticated: false,
+      //     source: 'cache'
+      //   });
+      // }
 
       try {
         console.log(`� Fetching playlists for configured user: ${SPOTIFY_USERNAME}`);
@@ -702,7 +924,7 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
         }
 
         // Cache the playlists
-        cachePlaylists(enhancedPlaylists, 'my', SPOTIFY_USERNAME);
+        // cachePlaylists(enhancedPlaylists, 'my', SPOTIFY_USERNAME);
 
         res.json({
           playlists: enhancedPlaylists,
@@ -948,36 +1170,36 @@ app.get("/api/playlists", apiLimiter, async (req, res) => {
     const { sort, limit = 20 } = req.query;
     
     // Check cache first
-    const cachedPlaylists = getCachedPlaylists('featured');
-    if (cachedPlaylists.length > 0) {
-      console.log('✅ Returning cached featured playlists');
+    // const cachedPlaylists = getCachedPlaylists('featured');
+    // if (cachedPlaylists.length > 0) {
+    //   console.log('✅ Returning cached featured playlists');
       
-      // Apply sorting to cached playlists if requested
-      let sortedPlaylists = [...cachedPlaylists];
-      if (sort) {
-        const [field, direction = 'asc'] = sort.split('-');
-        const isDesc = direction === 'desc';
+    //   // Apply sorting to cached playlists if requested
+    //   let sortedPlaylists = [...cachedPlaylists];
+    //   if (sort) {
+    //     const [field, direction = 'asc'] = sort.split('-');
+    //     const isDesc = direction === 'desc';
         
-        if (field === 'tracks') {
-          sortedPlaylists.sort((a, b) => {
-            const result = a.tracks.total - b.tracks.total;
-            return isDesc ? -result : result;
-          });
-        } else if (field === 'name') {
-          sortedPlaylists.sort((a, b) => {
-            const result = a.name.localeCompare(b.name);
-            return isDesc ? -result : result;
-          });
-        }
-      }
+    //     if (field === 'tracks') {
+    //       sortedPlaylists.sort((a, b) => {
+    //         const result = a.tracks.total - b.tracks.total;
+    //         return isDesc ? -result : result;
+    //       });
+    //     } else if (field === 'name') {
+    //       sortedPlaylists.sort((a, b) => {
+    //         const result = a.name.localeCompare(b.name);
+    //         return isDesc ? -result : result;
+    //       });
+    //     }
+    //   }
       
-      return res.json({
-        playlists: sortedPlaylists,
-        total: sortedPlaylists.length,
-        source: 'cache',
-        message: 'Cached featured playlists'
-      });
-    }
+    //   return res.json({
+    //     playlists: sortedPlaylists,
+    //     total: sortedPlaylists.length,
+    //     source: 'cache',
+    //     message: 'Cached featured playlists'
+    //   });
+    // }
     
     let enhancedPlaylists = [];
     
@@ -996,7 +1218,7 @@ app.get("/api/playlists", apiLimiter, async (req, res) => {
         enhancedPlaylists = fallbackPlaylists.items.map(fromApi);
         
         // Cache the fallback playlists
-        cachePlaylists(enhancedPlaylists, 'featured');
+        // cachePlaylists(enhancedPlaylists, 'featured');
         
         res.json({
           playlists: enhancedPlaylists,
@@ -1065,7 +1287,7 @@ app.get("/api/playlists", apiLimiter, async (req, res) => {
     }
 
     // Cache the playlists
-    cachePlaylists(enhancedPlaylists, 'featured');
+    // cachePlaylists(enhancedPlaylists, 'featured');
 
     // Determine data source for frontend
     let dataSource = 'featured';
@@ -1593,7 +1815,7 @@ app.use((req, res) => {
 });
 
 // Start the server with better error handling
-const server = app.listen(port, '127.0.0.1', () => {
+const server = app.listen(port, '0.0.0.0', () => {
   console.log(`🎵 Spotify Fan Website running at http://127.0.0.1:${port}`);
   console.log(`🔧 API endpoints available at http://127.0.0.1:${port}/api/`);
   console.log(`👀 Nodemon is watching for changes - edit any file and see instant updates!`);

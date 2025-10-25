@@ -3,7 +3,7 @@
 // Simple test script for playlist management endpoints
 const axios = require('axios');
 
-const BASE_URL = 'http://127.0.0.1:5500';
+const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:8080';
 
 async function testPlaylistEndpoints() {
   console.log('🧪 Testing Playlist Management Endpoints\n');

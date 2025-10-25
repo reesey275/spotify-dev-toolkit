@@ -22,6 +22,7 @@ class SpotifyFanApp {
         this.isAuthenticated = false;
         this.currentUser = null;
         this.currentlyPlayingInterval = null; // For updating currently playing progress
+        this.lastCurrentlyPlayingData = null; // Track last polling result to avoid unnecessary updates
         
         // Spotify Web Playback SDK
         this.player = null;
@@ -329,6 +330,22 @@ class SpotifyFanApp {
         }
     }
 
+    async getAccessToken() {
+        try {
+            console.log('🔑 Fetching access token...');
+            const response = await fetch('/api/access-token', { credentials: 'include' });
+            if (!response.ok) {
+                throw new Error(`Failed to get access token: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('✅ Access token obtained successfully');
+            return data.access_token;
+        } catch (error) {
+            console.error('❌ Error getting access token:', error);
+            throw error;
+        }
+    }
+
     async loadInitialData() {
         this.showLoading(true);
         try {
@@ -603,9 +620,13 @@ class SpotifyFanApp {
         
         // Start new interval if currently playing view is active
         if (viewName === 'currently-playing') {
+            // Increase interval to 15 seconds to be more API-friendly
+            // Only poll when page is visible to avoid wasting API calls
             this.currentlyPlayingInterval = setInterval(() => {
-                this.loadCurrentlyPlayingView();
-            }, 5000); // Update every 5 seconds
+                if (!document.hidden) { // Only poll when page is visible
+                    this.loadCurrentlyPlayingView();
+                }
+            }, 15000); // Update every 15 seconds instead of 5
         }
     }
 
@@ -657,10 +678,21 @@ class SpotifyFanApp {
                 return;
             }
             
+            // Check if the data has actually changed to avoid unnecessary re-renders
+            const hasDataChanged = this.hasCurrentlyPlayingDataChanged(data);
+            
             if (data.is_playing && data.item) {
-                this.renderCurrentlyPlaying(data);
+                // Only re-render if data has changed or we don't have previous data
+                if (hasDataChanged || !this.lastCurrentlyPlayingData) {
+                    this.renderCurrentlyPlaying(data);
+                }
+                this.lastCurrentlyPlayingData = data; // Update cached data
             } else {
-                this.showNoTrackPlaying();
+                // Only show "no track" if we previously had a track playing
+                if (this.lastCurrentlyPlayingData?.is_playing) {
+                    this.showNoTrackPlaying();
+                }
+                this.lastCurrentlyPlayingData = data; // Update cached data
             }
             
         } catch (error) {
@@ -792,6 +824,28 @@ class SpotifyFanApp {
         }
     }
 
+    hasCurrentlyPlayingDataChanged(newData) {
+        const oldData = this.lastCurrentlyPlayingData;
+        if (!oldData) return true; // First time loading
+        
+        // Check if playing state changed
+        if (oldData.is_playing !== newData.is_playing) return true;
+        
+        // If not playing, no need to check further
+        if (!newData.is_playing) return false;
+        
+        // Check if track changed
+        if (!oldData.item || !newData.item) return true;
+        if (oldData.item.id !== newData.item.id) return true;
+        
+        // Check if progress changed significantly (more than 2 seconds difference)
+        const progressDiff = Math.abs((oldData.progress_ms || 0) - (newData.progress_ms || 0));
+        if (progressDiff > 2000) return true;
+        
+        // No significant changes
+        return false;
+    }
+
     showNoTrackPlaying(needsAuth = false) {
         const container = document.getElementById('currently-playing-content');
         const noTrackDiv = document.getElementById('no-track-playing');
@@ -812,17 +866,6 @@ class SpotifyFanApp {
                 <h3>No Track Playing</h3>
                 <p>Start playing music in Spotify to see what's currently playing here.</p>
             `;
-        }
-    }
-
-    async getAccessToken() {
-        try {
-            const response = await fetch('/api/access-token');
-            const data = await response.json();
-            return data.access_token;
-        } catch (error) {
-            console.error('Failed to get access token:', error);
-            throw error;
         }
     }
 

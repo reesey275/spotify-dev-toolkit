@@ -1,8 +1,16 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
 // Initialize database
-const dbPath = path.join(__dirname, 'spotify_cache.db');
+const dbDir = process.env.DOCKER_CONTAINER ? '/app/data' : path.join(__dirname, 'data');
+const dbPath = path.join(dbDir, 'spotify_cache.db');
+
+// Ensure directory exists
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
 const db = new Database(dbPath);
 
 // Enable WAL mode for better concurrency

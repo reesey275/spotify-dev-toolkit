@@ -22,10 +22,10 @@ clean: ## Remove all containers, volumes, and images
 
 health: ## Check health of all services
 	@echo "Checking app health..."
-	@curl -f http://localhost:5500/healthz || echo "App health check failed"
+	@docker compose exec -T app curl -f http://localhost:8080/healthz || echo "App health check failed"
 	@echo ""
 	@echo "Checking Cloudflare tunnel..."
-	@docker compose ps cloudflared | grep -q "Up" && echo "Cloudflared is running" || echo "Cloudflared is not running"
+	@docker compose --profile tunnel ps cloudflared | grep -q "Up" && echo "Cloudflared is running" || echo "Cloudflared is not running"
 
 restart: ## Restart all services
 	docker compose restart

@@ -1,0 +1,8 @@
+tunnel: 8eeac8c6-9a65-40e7-9c43-149be5b65722
+credentials-file: /etc/cloudflared/cert.pem
+
+ingress:
+  - hostname: sc.theangrygamershow.com
+    service: http://app:8080
+  - service: http_status:404
+  - service: http_status:404
