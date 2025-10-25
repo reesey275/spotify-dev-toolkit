@@ -574,7 +574,7 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
             });
           } else if (field === 'tracks') {
             enhancedPlaylists.sort((a, b) => {
-              const result = a.track_count - b.track_count;
+              const result = a.tracks.total - b.tracks.total;
               return isDesc ? -result : result;
             });
           } else if (field === 'name') {
@@ -667,7 +667,7 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
             });
           } else if (field === 'tracks') {
             enhancedPlaylists.sort((a, b) => {
-              const result = a.track_count - b.track_count;
+              const result = a.tracks.total - b.tracks.total;
               return isDesc ? -result : result;
             });
           } else if (field === 'name') {
