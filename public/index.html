@@ -9,6 +9,7 @@
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+   <script src="https://sdk.scdn.co/spotify-player.js"></script>
 </head>
 
 <body>
@@ -17,7 +18,7 @@
       <header class="header">
          <div class="header-content">
             <div class="logo">
-               <h1>🎵 Spotify Fan</h1>
+               <h1 id="home-logo" style="cursor: pointer;">🎵 Spotify Fan</h1>
             </div>
             <nav class="nav">
                <button class="nav-btn" data-view="home">Featured</button>
@@ -26,6 +27,13 @@
                <button class="nav-btn" data-view="user-search">User Search</button>
                <button class="nav-btn" data-view="search">Search Playlists</button>
             </nav>
+            <div class="auth-section">
+               <button id="login-btn" class="btn btn-primary login-btn">🔐 Login with Spotify</button>
+               <button id="logout-btn" class="btn btn-secondary logout-btn hidden">🚪 Logout</button>
+               <div id="user-info" class="user-info-display hidden">
+                  <span id="user-display-name"></span>
+               </div>
+            </div>
          </div>
       </header>
 
@@ -70,6 +78,28 @@
                </div>
                <div id="playlists-grid" class="playlists-grid">
                   <!-- Featured playlists will be loaded here -->
+               </div>
+            </div>
+         </div>
+
+         <!-- Currently Playing View -->
+         <div id="currently-playing-view" class="view">
+            <div class="hero-section">
+               <h2>🎵 Now Playing</h2>
+               <p>See what you're listening to right now on Spotify</p>
+            </div>
+
+            <div class="currently-playing-section">
+               <div id="currently-playing-content" class="currently-playing-content">
+                  <!-- Currently playing track will be loaded here -->
+               </div>
+               <div id="no-track-playing" class="no-track-message hidden">
+                  <div class="no-track-icon">🎧</div>
+                  <h3>No track currently playing</h3>
+                  <p>Start playing music on Spotify to see it here!</p>
+                  <button onclick="window.open('https://open.spotify.com', '_blank')" class="btn btn-primary">
+                     Open Spotify Web
+                  </button>
                </div>
             </div>
          </div>

@@ -75,12 +75,36 @@ A modern, interactive web application for exploring and managing Spotify playlis
 - npm (v6 or higher)
 - Spotify Developer Account
 
+### ⚠️ CRITICAL: Development Workflow
+
+**IMPORTANT**: This project uses screen-based process isolation to prevent terminal blocking. **Never use `npm run dev`** - it will block your terminal and prevent concurrent operations.
+
+**✅ CORRECT - Always use screen commands:**
+```bash
+# Start development server (runs in background)
+npm run dev:screen
+
+# Check if server is running
+npm run dev:screen:status
+
+# View server logs (detach with Ctrl+A, D)
+npm run dev:screen:attach
+
+# Stop server
+npm run dev:screen:stop
+```
+
+**❌ NEVER USE:**
+```bash
+npm run dev  # This blocks terminal - DON'T DO THIS!
+```
+
 ### 1. Spotify App Setup
 
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
 2. Create a new app
 3. Note your `Client ID` and `Client Secret`
-4. Add `http://localhost:5500/callback` to your app's redirect URIs
+4. Add `http://127.0.0.1:5500/callback` to your app's redirect URIs
 
 ### 2. Environment Configuration
 
@@ -93,7 +117,7 @@ A modern, interactive web application for exploring and managing Spotify playlis
    ```env
    SPOTIFY_CLIENT_ID=your_client_id_here
    SPOTIFY_CLIENT_SECRET=your_client_secret_here
-   SPOTIFY_REDIRECT_URI=http://localhost:5500/callback
+   SPOTIFY_REDIRECT_URI=http://127.0.0.1:5500/callback
    SPOTIFY_USER_ID=your_spotify_username
    PORT=5500
    ```
@@ -105,9 +129,9 @@ A modern, interactive web application for exploring and managing Spotify playlis
    npm install
    ```
 
-2. Start the development server:
+2. **Start the development server using screen:**
    ```bash
-   npm run dev
+   npm run dev:screen
    ```
    
    Or start the production server:
@@ -115,7 +139,7 @@ A modern, interactive web application for exploring and managing Spotify playlis
    npm start
    ```
 
-3. Open your browser and navigate to `http://localhost:5500`
+3. Open your browser and navigate to `http://127.0.0.1:5500`
 
 ## 📁 Project Structure
 
@@ -185,13 +209,72 @@ These are included for demonstration purposes and can be regenerated using the w
 
 ## 🛠 Development
 
-### Running in Development Mode
+### ⚠️ CRITICAL: Screen-Based Process Isolation
 
+**This project requires screen-based process isolation for development.** The standard `npm run dev` command will block your terminal and prevent concurrent operations like testing, health checks, or running additional commands.
+
+**Problem**: Running `npm run dev` in foreground blocks terminal, preventing concurrent operations.
+
+**Solution**: Use screen sessions for process isolation:
 ```bash
-npm run dev
+# Start server in background
+npm run dev:screen
+
+# Check status
+npm run dev:screen:status
+
+# View server logs
+npm run dev:screen:attach  # Detach with Ctrl+A, D
+
+# Stop server
+npm run dev:screen:stop
+
+# Manual screen commands
+screen -dmS spotify-dev bash -c 'npm run dev'  # Start detached
+screen -r spotify-dev                         # Attach to session
+screen -S spotify-dev -X quit                 # Kill session
 ```
 
-This uses nodemon for auto-reloading when files change.
+**Benefits**:
+- Server runs continuously during development
+- Multiple terminals can operate concurrently
+- Auto-reload functionality preserved
+- No accidental process termination
+
+### Running in Development Mode
+
+**⚠️ IMPORTANT**: This project uses screen-based process isolation to prevent terminal session conflicts. Always use the screen commands below.
+
+```bash
+# Start development server (runs in background)
+npm run dev:screen
+
+# Check server status
+npm run dev:screen:status
+
+# View server logs (detach with Ctrl+A, D)
+npm run dev:screen:attach
+
+# Stop server
+npm run dev:screen:stop
+```
+
+**❌ NEVER use**: `npm run dev` (blocks terminal, prevents concurrent operations)
+
+### Testing While Server Runs
+
+```bash
+# Health check
+curl -s http://127.0.0.1:5500/healthz
+
+# Run endpoint tests
+node test-playlist-endpoints.js
+
+# Access web interface
+open http://127.0.0.1:5500
+```
+
+This uses nodemon for auto-reloading when files change, while running in an isolated screen session.
 
 ### Environment Variables
 
@@ -205,7 +288,33 @@ This uses nodemon for auto-reloading when files change.
 
 ## 🚧 Troubleshooting
 
-### Common Issues
+### ⚠️ Most Common Issue: Terminal Blocking
+
+**"Server keeps stopping when I run commands"**
+- **Cause**: Using `npm run dev` blocks the terminal
+- **Solution**: Always use `npm run dev:screen` instead
+- **Why**: Screen isolates the server process, allowing concurrent operations
+
+**✅ CORRECT Workflow**:
+```bash
+# Start server in background
+npm run dev:screen
+
+# Run concurrent operations
+curl -s http://127.0.0.1:5500/healthz
+node test-playlist-endpoints.js
+
+# Stop when done
+npm run dev:screen:stop
+```
+
+**❌ NEVER DO**:
+```bash
+npm run dev  # Server gets killed by subsequent commands
+curl -s http://127.0.0.1:5500/healthz  # Won't work if server was killed
+```
+
+### Other Common Issues
 
 1. **"Failed to authenticate with Spotify"**
    - Check your client ID and secret in `.env`

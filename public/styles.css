@@ -64,6 +64,57 @@ body {
    background: rgba(29, 185, 84, 0.1);
 }
 
+/* Auth Section */
+.auth-section {
+   display: flex;
+   align-items: center;
+   gap: 1rem;
+}
+
+.login-btn,
+.logout-btn {
+   font-size: 0.9rem;
+   padding: 0.5rem 1rem;
+   border-radius: 20px;
+   font-weight: 500;
+   transition: all 0.3s ease;
+}
+
+.login-btn {
+   background: #1db954;
+   color: #ffffff;
+   border: none;
+}
+
+.login-btn:hover {
+   background: #1ed760;
+   transform: translateY(-1px);
+}
+
+.logout-btn {
+   background: rgba(255, 255, 255, 0.1);
+   color: #ffffff;
+   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn:hover {
+   background: rgba(255, 255, 255, 0.2);
+}
+
+.user-info-display {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   color: #1db954;
+   font-weight: 500;
+   font-size: 0.9rem;
+}
+
+.user-info-display::before {
+   content: '👤';
+   font-size: 1rem;
+}
+
 /* Main Content */
 .main-content {
    max-width: 1200px;
@@ -508,16 +559,27 @@ body {
    margin-bottom: 1rem;
 }
 
-/* User Info */
-.user-info {
-   background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(29, 185, 84, 0.05) 100%);
-   border: 1px solid rgba(29, 185, 84, 0.2);
+/* Auth Message */
+.auth-message {
+   grid-column: 1 / -1;
+   text-align: center;
+   padding: 3rem 2rem;
+   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+   border: 1px solid rgba(255, 255, 255, 0.1);
    border-radius: 12px;
-   padding: 2rem;
-   margin-bottom: 3rem;
-   display: flex;
-   align-items: center;
-   gap: 2rem;
+   backdrop-filter: blur(10px);
+}
+
+.auth-message h3 {
+   color: #1db954;
+   margin-bottom: 1rem;
+   font-size: 1.5rem;
+}
+
+.auth-message p {
+   color: #b3b3b3;
+   margin-bottom: 2rem;
+   font-size: 1.1rem;
 }
 
 .user-avatar {
@@ -647,4 +709,223 @@ body {
    .playlist-title {
       font-size: 1.5rem;
    }
+}
+
+/* Currently Playing Styles */
+.currently-playing-section {
+   max-width: 800px;
+   margin: 0 auto;
+   padding: 2rem 0;
+}
+
+.currently-playing-content {
+   background: rgba(255, 255, 255, 0.05);
+   border-radius: 16px;
+   padding: 2rem;
+   backdrop-filter: blur(10px);
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   display: flex;
+   align-items: center;
+   gap: 2rem;
+   min-height: 200px;
+}
+
+.currently-playing-content .album-art {
+   width: 200px;
+   height: 200px;
+   border-radius: 12px;
+   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+   flex-shrink: 0;
+}
+
+.currently-playing-content .track-info {
+   flex: 1;
+   color: white;
+}
+
+.currently-playing-content .track-name {
+   font-size: 2rem;
+   font-weight: 700;
+   margin: 0 0 0.5rem 0;
+   background: linear-gradient(135deg, #1db954, #1ed760);
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   background-clip: text;
+}
+
+.currently-playing-content .artist-name {
+   font-size: 1.2rem;
+   color: #b3b3b3;
+   margin: 0 0 1rem 0;
+   font-weight: 500;
+}
+
+.currently-playing-content .album-name {
+   font-size: 1rem;
+   color: #b3b3b3;
+   margin: 0 0 1.5rem 0;
+}
+
+.progress-container {
+   margin-top: 1rem;
+}
+
+.progress-bar {
+   width: 100%;
+   height: 4px;
+   background: rgba(255, 255, 255, 0.2);
+   border-radius: 2px;
+   overflow: hidden;
+   margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+   height: 100%;
+   background: linear-gradient(90deg, #1db954, #1ed760);
+   border-radius: 2px;
+   transition: width 0.3s ease;
+}
+
+.progress-time {
+   display: flex;
+   justify-content: space-between;
+   font-size: 0.8rem;
+   color: #b3b3b3;
+}
+
+.no-track-message {
+   text-align: center;
+   padding: 4rem 2rem;
+   color: white;
+}
+
+.no-track-icon {
+   font-size: 4rem;
+   margin-bottom: 1rem;
+   opacity: 0.7;
+}
+
+.no-track-message h3 {
+   font-size: 1.5rem;
+   margin: 0 0 1rem 0;
+   color: #b3b3b3;
+}
+
+.no-track-message p {
+   font-size: 1.1rem;
+   margin: 0 0 2rem 0;
+   color: #888;
+}
+
+@media (max-width: 768px) {
+   .currently-playing-content {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+   }
+
+   .currently-playing-content .album-art {
+      width: 150px;
+      height: 150px;
+   }
+
+   .currently-playing-content .track-name {
+      font-size: 1.5rem;
+   }
+}
+
+/* Player Controls */
+.player-controls {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 1rem;
+   margin: 1.5rem 0;
+}
+
+.control-btn {
+   background: rgba(255, 255, 255, 0.1);
+   border: 1px solid rgba(255, 255, 255, 0.2);
+   color: #ffffff;
+   width: 50px;
+   height: 50px;
+   border-radius: 50%;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 1.2rem;
+   transition: all 0.3s ease;
+   backdrop-filter: blur(10px);
+}
+
+.control-btn:hover {
+   background: rgba(255, 255, 255, 0.2);
+   transform: scale(1.05);
+   border-color: #1db954;
+}
+
+.control-btn:active {
+   transform: scale(0.95);
+}
+
+.play-btn {
+   width: 60px;
+   height: 60px;
+   font-size: 1.5rem;
+   background: #1db954;
+   border: none;
+}
+
+.play-btn:hover {
+   background: #1ed760;
+}
+
+/* Volume Control */
+.volume-control {
+   display: flex;
+   align-items: center;
+   gap: 0.75rem;
+   margin: 1rem 0;
+   padding: 0.75rem 1rem;
+   background: rgba(255, 255, 255, 0.05);
+   border-radius: 25px;
+   backdrop-filter: blur(10px);
+}
+
+.volume-icon {
+   font-size: 1.2rem;
+   color: #b3b3b3;
+}
+
+#volume-slider {
+   flex: 1;
+   height: 4px;
+   background: rgba(255, 255, 255, 0.2);
+   border-radius: 2px;
+   outline: none;
+   -webkit-appearance: none;
+   appearance: none;
+   cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+   -webkit-appearance: none;
+   appearance: none;
+   width: 16px;
+   height: 16px;
+   border-radius: 50%;
+   background: #1db954;
+   cursor: pointer;
+   box-shadow: 0 2px 6px rgba(29, 185, 84, 0.3);
+}
+
+#volume-slider::-moz-range-thumb {
+   width: 16px;
+   height: 16px;
+   border-radius: 50%;
+   background: #1db954;
+   cursor: pointer;
+   border: none;
+   box-shadow: 0 2px 6px rgba(29, 185, 84, 0.3);
 }

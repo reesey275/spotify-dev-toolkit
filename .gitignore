@@ -24,6 +24,14 @@ coverage/
 logs
 *.log
 
+# Database files
+*.db
+*.db-*
+sessions.db
+spotify_cache.db
+spotify_cache.db-shm
+spotify_cache.db-wal
+
 # Optional npm cache directory
 .npm
 
@@ -49,7 +57,10 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
+*~
 
 # Temporary files
 *.tmp
 *.temp
+*.bak
+*.backup

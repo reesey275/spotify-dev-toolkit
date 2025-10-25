@@ -28,7 +28,7 @@ read -p "Press Enter to start the demo server..."
 
 echo ""
 echo "🚀 Starting demo server..."
-echo "   Visit: http://localhost:5500"
+echo "   Visit: http://127.0.0.1:5500"
 echo "   Try the 'User Search' feature with usernames like: spotify, taylorswift13, etc."
 echo ""
 

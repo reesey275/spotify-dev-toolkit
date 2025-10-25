@@ -1,4 +1,14 @@
 // Spotify Fan Website - Main JavaScript
+
+// Define Spotify Web Playback SDK callback immediately to prevent "not defined" errors
+window.onSpotifyWebPlaybackSDKReady = () => {
+    console.log('🎵 Spotify Web Playback SDK ready');
+    // The actual player initialization will happen in the SpotifyFanApp class
+    if (window.app && typeof window.app.createSpotifyPlayer === 'function') {
+        window.app.createSpotifyPlayer();
+    }
+};
+
 class SpotifyFanApp {
     constructor() {
         this.currentView = this.getViewFromUrl() || 'my-playlists'; // Get view from URL hash or default
@@ -9,24 +19,99 @@ class SpotifyFanApp {
         this.currentSort = '';
         this.currentOffset = 0;
         this.tracksPerPage = 50;
+        this.isAuthenticated = false;
+        this.currentUser = null;
+        this.currentlyPlayingInterval = null; // For updating currently playing progress
+        
+        // Spotify Web Playback SDK
+        this.player = null;
+        this.deviceId = null;
+        this.playerState = null;
         
         this.init();
     }
 
     init() {
+        console.log('🚀 Initializing SpotifyFanApp...');
         this.setupEventListeners();
         this.setupHashRouting();
+        this.checkForAuthSuccess(); // Check for authentication success parameter
+        this.checkAuthStatus();
         this.loadInitialData();
+        // Removed initializeSpotifyPlayer() from here - will be called after auth check
     }
 
-    getViewFromUrl() {
-        const hash = window.location.hash.slice(1); // Remove the # symbol
-        const validViews = ['my-playlists', 'home', 'search', 'user-search', 'top10'];
-        return validViews.includes(hash) ? hash : null;
+    checkForAuthSuccess() {
+        // Check if we just completed authentication
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('authenticated') === 'true') {
+            // Clear the parameter from URL
+            const newUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, document.title, newUrl);
+            
+            // Mark as authenticated
+            this.isAuthenticated = true;
+            
+            // Show success message
+            this.showAuthSuccess();
+            
+            // Initialize player after successful auth
+            this.initializeSpotifyPlayer();
+            
+            // Switch to my-playlists view since user just authenticated
+            this.switchView('my-playlists');
+        }
+    }
+
+    showAuthSuccess() {
+        // Create and show a success message
+        const successDiv = document.createElement('div');
+        successDiv.id = 'auth-success';
+        successDiv.style.cssText = `
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            font-weight: 500;
+            animation: slideDown 0.3s ease-out;
+        `;
+        successDiv.innerHTML = '✅ Successfully logged in with Spotify!';
+        
+        // Add animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(successDiv);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            if (successDiv.parentNode) {
+                successDiv.style.animation = 'slideDown 0.3s ease-in reverse';
+                setTimeout(() => successDiv.remove(), 300);
+            }
+        }, 3000);
     }
 
     updateUrl(viewName) {
         window.location.hash = viewName;
+    }
+
+    getViewFromUrl() {
+        // Extract view name from URL hash (remove the # prefix)
+        const hash = window.location.hash.substring(1);
+        return hash || null;
     }
 
     setupHashRouting() {
@@ -53,6 +138,29 @@ class SpotifyFanApp {
                 console.log(`🖱️ Frontend: Nav button clicked for view "${view}"`);
                 this.switchView(view);
             });
+        });
+
+        // Home logo click listener
+        document.getElementById('home-logo').addEventListener('click', () => {
+            console.log('🏠 Home logo clicked - switching to currently playing view');
+            this.switchView('currently-playing');
+        });
+
+        // Auth event listeners
+        const loginBtn = document.getElementById('login-btn');
+        console.log('🔍 Login button element:', loginBtn);
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                console.log('🎯 Login button clicked!');
+                this.login();
+            });
+            console.log('✅ Login button event listener attached');
+        } else {
+            console.error('❌ Login button not found!');
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            this.logout();
         });
 
         // Sort controls
@@ -103,20 +211,130 @@ class SpotifyFanApp {
         });
     }
 
+    async checkAuthStatus() {
+        try {
+            // Try to access a protected endpoint to check if we're authenticated
+            const response = await fetch('/api/my-playlists?limit=1');
+            if (response.ok) {
+                const data = await response.json();
+                this.isAuthenticated = true;
+                this.currentUser = data.username;
+                this.updateAuthUI();
+                console.log('✅ User is authenticated:', this.currentUser);
+            } else {
+                this.isAuthenticated = false;
+                this.currentUser = null;
+                this.updateAuthUI();
+                console.log('❌ User is not authenticated');
+            }
+        } catch (error) {
+            this.isAuthenticated = false;
+            this.currentUser = null;
+            this.updateAuthUI();
+            console.log('❌ Auth check failed:', error.message);
+        }
+    }
+
+    updateAuthUI() {
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userInfo = document.getElementById('user-info');
+        const userDisplayName = document.getElementById('user-display-name');
+
+        if (this.isAuthenticated && this.currentUser) {
+            loginBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            userInfo.classList.remove('hidden');
+            userDisplayName.textContent = this.currentUser;
+        } else {
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            userInfo.classList.add('hidden');
+            userDisplayName.textContent = '';
+        }
+    }
+
+    login() {
+        console.log('🔐 Initiating Spotify OAuth login...');
+        console.log('📍 Current location:', window.location.href);
+        console.log('🎯 Redirecting to: /login');
+        window.location.href = '/login';
+    }
+
+    async logout() {
+        try {
+            console.log('🚪 Logging out...');
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                // Clear ALL cached user data
+                this.isAuthenticated = false;
+                this.currentUser = null;
+                this.myPlaylists = [];
+                this.playlists = [];
+                this.currentPlaylist = null;
+                this.currentTracks = [];
+                this.currentSort = '';
+                this.currentOffset = 0;
+
+                // Clear player state
+                if (this.player) {
+                    this.player.disconnect();
+                    this.player = null;
+                }
+                this.deviceId = null;
+                this.playerState = null;
+
+                // Clear any intervals
+                if (this.currentlyPlayingInterval) {
+                    clearInterval(this.currentlyPlayingInterval);
+                    this.currentlyPlayingInterval = null;
+                }
+
+                this.updateAuthUI();
+                this.switchView('home'); // Go to featured playlists
+                console.log('✅ Successfully logged out and cleared all cached data');
+            } else {
+                console.error('❌ Logout failed');
+                this.showError('Failed to logout. Please try again.');
+            }
+        } catch (error) {
+            console.error('❌ Logout error:', error);
+            this.showError('Failed to logout. Please try again.');
+        }
+    }
+
     async loadInitialData() {
         this.showLoading(true);
         try {
             console.log(`🚀 Frontend: loadInitialData called for view "${this.currentView}"`);
             
             // Load data based on the current view
+            // Prefer to show featured content first so anonymous users can browse
+            // without being forced to authenticate. Load user playlists in the
+            // background and surface them when available.
             if (this.currentView === 'my-playlists' || !this.currentView) {
-                // Always load user playlists as they're most commonly used
-                await this.loadMyPlaylists();
-                this.renderMyPlaylists();
+                // Render featured playlists into the my-playlists area first
+                await this.loadFeaturedPlaylists();
+                this.renderPlaylists();
+
+                // Load user playlists in background (don't block the UI)
+                this.loadMyPlaylists().then(() => {
+                    // If user is authenticated, render their playlists
+                    if (this.isAuthenticated) this.renderMyPlaylists();
+                }).catch(err => {
+                    console.debug('Background my-playlists load failed:', err?.message || err);
+                });
             } else {
-                // For other views, let switchView handle the data loading
-                // but still load user playlists in background for navigation
-                await this.loadMyPlaylists();
+                // For other views, let switchView handle the data loading but
+                // still fetch user playlists in background for navigation
+                await this.loadFeaturedPlaylists();
+                this.loadMyPlaylists().catch(() => {});
             }
             
             this.showLoading(false);
@@ -168,6 +386,17 @@ class SpotifyFanApp {
             console.log('🔍 Frontend: Loading my playlists...');
             const response = await fetch(`/api/my-playlists?sort=${sort}&limit=50`);
             console.log('📡 Frontend: API response status:', response.status, response.ok);
+            
+            if (response.status === 401) {
+                // User not authenticated
+                console.log('❌ User not authenticated for my-playlists');
+                this.isAuthenticated = false;
+                this.currentUser = null;
+                this.updateAuthUI();
+                this.myPlaylists = [];
+                return this.myPlaylists;
+            }
+            
             if (!response.ok) throw new Error('Failed to fetch your playlists');
             
             const data = await response.json();
@@ -175,9 +404,28 @@ class SpotifyFanApp {
             console.log('📋 Frontend: Number of playlists:', data.playlists?.length);
             this.myPlaylists = data.playlists;
             this.currentUser = data.username;
+            
+            // Only set authenticated if this is actually OAuth data, not fallback
+            if (data.authenticated) {
+                this.isAuthenticated = true;
+                console.log('✅ User is authenticated with OAuth');
+            } else {
+                this.isAuthenticated = false;
+                console.log('ℹ️ Showing fallback playlists (not authenticated)');
+            }
+            
+            this.updateAuthUI();
             return this.myPlaylists;
         } catch (error) {
             console.error('❌ Frontend: Error loading your playlists:', error);
+            // Don't show error for auth issues, just return empty array
+            if (error.message.includes('401') || error.message.includes('auth')) {
+                this.isAuthenticated = false;
+                this.currentUser = null;
+                this.updateAuthUI();
+                this.myPlaylists = [];
+                return this.myPlaylists;
+            }
             throw error;
         }
     }
@@ -289,10 +537,31 @@ class SpotifyFanApp {
 
         // Load data for specific views
         this.handleViewSpecificData(viewName);
+        
+        // Handle currently playing interval
+        this.handleCurrentlyPlayingInterval(viewName);
+    }
+
+    handleCurrentlyPlayingInterval(viewName) {
+        // Clear existing interval
+        if (this.currentlyPlayingInterval) {
+            clearInterval(this.currentlyPlayingInterval);
+            this.currentlyPlayingInterval = null;
+        }
+        
+        // Start new interval if currently playing view is active
+        if (viewName === 'currently-playing') {
+            this.currentlyPlayingInterval = setInterval(() => {
+                this.loadCurrentlyPlayingView();
+            }, 5000); // Update every 5 seconds
+        }
     }
 
     async handleViewSpecificData(viewName) {
         switch (viewName) {
+            case 'currently-playing':
+                await this.loadCurrentlyPlayingView();
+                break;
             case 'my-playlists':
                 await this.loadMyPlaylistsView();
                 break;
@@ -319,11 +588,281 @@ class SpotifyFanApp {
         }
     }
 
+    async loadCurrentlyPlayingView() {
+        console.log('🎵 Loading currently playing view...');
+        
+        try {
+            this.showLoading();
+            
+            const response = await fetch('/api/currently-playing');
+            const data = await response.json();
+            
+            this.showLoading(false);
+            
+            if (response.status === 401) {
+                // User not authenticated
+                this.showNoTrackPlaying(true); // Pass true to show auth message
+                return;
+            }
+            
+            if (data.is_playing && data.item) {
+                this.renderCurrentlyPlaying(data);
+            } else {
+                this.showNoTrackPlaying();
+            }
+            
+        } catch (error) {
+            console.error('Error loading currently playing:', error);
+            this.showLoading(false);
+            this.showNoTrackPlaying();
+        }
+    }
+
+    renderCurrentlyPlaying(trackData) {
+        const container = document.getElementById('currently-playing-content');
+        const noTrackDiv = document.getElementById('no-track-playing');
+
+        // Hide no track message
+        noTrackDiv.classList.add('hidden');
+
+        // Show track content
+        container.classList.remove('hidden');
+
+        const track = trackData.item;
+        const progressPercent = trackData.progress_ms ? (trackData.progress_ms / track.duration_ms) * 100 : 0;
+
+        // Format time
+        const formatTime = (ms) => {
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        };
+
+        // Check if player is initialized before showing controls
+        const playerControls = this.player ? `
+                <!-- Player Controls -->
+                <div class="player-controls">
+                    <button id="prev-btn" class="control-btn">⏮️</button>
+                    <button id="play-pause-btn" class="control-btn play-btn">
+                        ${trackData.is_playing ? '⏸️' : '▶️'}
+                    </button>
+                    <button id="next-btn" class="control-btn">⏭️</button>
+                </div>
+
+                <div class="volume-control">
+                    <span class="volume-icon">🔊</span>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+                </div>
+        ` : `
+                <!-- Player Not Initialized Message -->
+                <div class="player-inactive-message">
+                    <p>🎵 Web player initializing... Start playing music in Spotify to enable controls.</p>
+                </div>
+        `;
+
+        container.innerHTML = `
+            <img src="${track.album.images[0]?.url || '/placeholder-album.png'}"
+                 alt="${track.album.name}" class="album-art">
+            <div class="track-info">
+                <h2 class="track-name">${track.name}</h2>
+                <p class="artist-name">${track.artists.map(a => a.name).join(', ')}</p>
+                <p class="album-name">${track.album.name}</p>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <div class="progress-time">
+                        <span>${formatTime(trackData.progress_ms || 0)}</span>
+                        <span>${formatTime(track.duration_ms)}</span>
+                    </div>
+                </div>
+
+                ${playerControls}
+
+                <div style="margin-top: 1rem;">
+                    <a href="${track.external_urls.spotify}" target="_blank" class="btn btn-secondary">
+                        🔗 Open in Spotify Web Player
+                    </a>
+                </div>
+            </div>
+        `;
+
+        // Add event listeners for player controls only if player is initialized
+        if (this.player) {
+            this.setupPlayerControls();
+        }
+    }
+
+    setupPlayerControls() {
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        
+        if (playPauseBtn) {
+            playPauseBtn.addEventListener('click', () => {
+                this.togglePlayPause();
+            });
+        }
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                this.previousTrack();
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                this.nextTrack();
+            });
+        }
+        
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                this.setVolume(parseFloat(e.target.value));
+            });
+        }
+    }
+
+    showNoTrackPlaying(needsAuth = false) {
+        const container = document.getElementById('currently-playing-content');
+        const noTrackDiv = document.getElementById('no-track-playing');
+        
+        container.classList.add('hidden');
+        noTrackDiv.classList.remove('hidden');
+        
+        if (needsAuth) {
+            noTrackDiv.innerHTML = `
+                <div class="no-track-icon">🔐</div>
+                <h3>Authentication Required</h3>
+                <p>Please log in with Spotify to view your currently playing track.</p>
+                <button class="btn btn-primary" onclick="app.login()">Login with Spotify</button>
+            `;
+        } else {
+            noTrackDiv.innerHTML = `
+                <div class="no-track-icon">🎵</div>
+                <h3>No Track Playing</h3>
+                <p>Start playing music in Spotify to see what's currently playing here.</p>
+            `;
+        }
+    }
+
+    async getAccessToken() {
+        try {
+            const response = await fetch('/api/access-token');
+            const data = await response.json();
+            return data.access_token;
+        } catch (error) {
+            console.error('Failed to get access token:', error);
+            throw error;
+        }
+    }
+
+    async transferPlaybackToWebPlayer() {
+        if (!this.deviceId) return;
+        
+        try {
+            await fetch('/api/transfer-playback', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    device_id: this.deviceId
+                })
+            });
+            console.log('🎵 Playback transferred to web player');
+        } catch (error) {
+            console.error('Failed to transfer playback:', error);
+        }
+    }
+
+    updatePlayerUI() {
+        if (!this.playerState) return;
+        
+        const track = this.playerState.track_window.current_track;
+        const isPlaying = !this.playerState.paused;
+        
+        // Update currently playing display if on that view
+        if (this.currentView === 'currently-playing') {
+            this.renderCurrentlyPlaying({
+                is_playing: isPlaying,
+                progress_ms: this.playerState.position,
+                item: {
+                    id: track.id,
+                    name: track.name,
+                    artists: track.artists.map(artist => ({ name: artist.name })),
+                    album: {
+                        name: track.album.name,
+                        images: track.album.images
+                    },
+                    duration_ms: track.duration_ms,
+                    external_urls: { spotify: track.uri.replace('spotify:track:', 'https://open.spotify.com/track/') }
+                }
+            });
+        }
+    }
+
+    showPlayerError(message) {
+        // Show error in currently playing view
+        const container = document.getElementById('currently-playing-content');
+        const noTrackDiv = document.getElementById('no-track-playing');
+        
+        container.classList.add('hidden');
+        noTrackDiv.classList.remove('hidden');
+        noTrackDiv.innerHTML = `
+            <div class="no-track-icon">⚠️</div>
+            <h3>Player Error</h3>
+            <p>${message}</p>
+            <button onclick="location.reload()" class="btn btn-primary">
+                Reload Page
+            </button>
+        `;
+    }
+
+    // Player control methods
+    async play() {
+        if (this.player) {
+            await this.player.resume();
+        }
+    }
+
+    async pause() {
+        if (this.player) {
+            await this.player.pause();
+        }
+    }
+
+    async nextTrack() {
+        if (this.player) {
+            await this.player.nextTrack();
+        }
+    }
+
+    async previousTrack() {
+        if (this.player) {
+            await this.player.previousTrack();
+        }
+    }
+
+    async seek(position) {
+        if (this.player) {
+            await this.player.seek(position);
+        }
+    }
+
+    async setVolume(volume) {
+        if (this.player) {
+            await this.player.setVolume(volume);
+        }
+    }
+
     async loadMyPlaylistsView() {
         this.showLoading(true);
         try {
             await this.loadMyPlaylists();
-            this.renderMyPlaylists();
+            await this.renderMyPlaylists();
             this.showLoading(false);
         } catch (error) {
             this.showError('Failed to load your playlists.');
@@ -461,9 +1000,47 @@ class SpotifyFanApp {
         this.renderPlaylistsInContainer(playlists, 'user-playlists');
     }
 
-    renderMyPlaylists() {
+    async renderMyPlaylists() {
         console.log('🎨 Frontend: Rendering my playlists, count:', (this.myPlaylists || []).length);
-        this.renderPlaylistsInContainer(this.myPlaylists || [], 'my-playlists-grid');
+        const container = document.getElementById('my-playlists-grid');
+        // If not authenticated and there are no user playlists, show a subtle
+        // prompt and fall back to featured playlists so anonymous users can
+        // still browse content without being forced to log in.
+        if (!this.isAuthenticated && (!this.myPlaylists || this.myPlaylists.length === 0)) {
+            container.innerHTML = `
+                <div class="auth-fallback">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                        <div>
+                            <h3>🔐 Your playlists</h3>
+                            <p class="muted">Log in to see your personal playlists and enable the web player.</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary" onclick="app.login()">Login with Spotify</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div id="my-playlists-fallback" class="fallback-playlists-container"></div>
+                </div>
+            `;
+
+            // Load featured playlists into the fallback container
+            try {
+                const featured = await this.loadFeaturedPlaylists();
+                this.renderPlaylistsInContainer(featured, 'my-playlists-fallback');
+            } catch (err) {
+                console.debug('Failed to load fallback playlists:', err?.message || err);
+                container.querySelector('#my-playlists-fallback').innerHTML = '<p class="no-results">No playlists available.</p>';
+            }
+            return;
+        }
+        
+        // Show playlists (either authenticated or fallback)
+    this.renderPlaylistsInContainer(this.myPlaylists || [], 'my-playlists-grid');
+        
+        // Show a message if these are fallback playlists
+        if (!this.isAuthenticated && this.myPlaylists && this.myPlaylists.length > 0) {
+            this.showDataSourceMessage('fallback', `Showing playlists for ${this.currentUser} (demo mode - login for your playlists)`);
+        }
     }
 
     createPlaylistCard(playlist) {
@@ -753,6 +1330,246 @@ class SpotifyFanApp {
         } catch (error) {
             console.error('❌ Error exporting playlist:', error);
             this.showError('Failed to export playlist. Please try again.');
+        }
+    }
+
+    // Spotify Web Playback SDK Methods
+    async initializeSpotifyPlayer() {
+        // SDK callback is already defined globally, just create player if SDK is loaded
+        if (window.Spotify) {
+            this.createSpotifyPlayer();
+        }
+    }
+
+    createSpotifyPlayer() {
+        // Only initialize player if user is authenticated
+        if (!this.isAuthenticated) {
+            console.log('Player not initialized - user not authenticated');
+            return;
+        }
+
+        try {
+            // Get access token (handle 401/403 explicitly so we can prompt re-login)
+            fetch('/api/access-token')
+                .then(async (response) => {
+                    if (!response.ok) {
+                        console.warn('No access token available for player, status=', response.status);
+                        // If token missing or invalid scopes, show error instead of redirecting
+                        if (response.status === 401 || response.status === 403) {
+                            console.log('Access token not available - authentication may have failed');
+                            this.showError('Access token not available. Please try logging in again.');
+                            // Don't redirect to avoid login loop
+                            // window.location.href = '/login';
+                        }
+                        throw new Error('No access token available');
+                    }
+                    return await response.json();
+                })
+                .then(data => {
+                    if (!data.access_token) {
+                        console.warn('No access token available, player will not initialize');
+                        return;
+                    }
+
+                    // Create player
+                    this.player = new Spotify.Player({
+                        name: 'Spotify Fan Web Player',
+                        getOAuthToken: cb => { cb(data.access_token); },
+                        volume: 0.5
+                    });
+
+                    // Set up player event listeners
+                    this.player.addListener('ready', ({ device_id }) => {
+                        console.log('Ready with Device ID', device_id);
+                        this.deviceId = device_id;
+                        // Removed automatic transfer - player will show but not take control
+                        // this.transferPlaybackToWebPlayer();
+                    });
+
+                    this.player.addListener('not_ready', ({ device_id }) => {
+                        console.log('Device ID has gone offline', device_id);
+                        this.playerState = null;
+                        this.updatePlayerUI(null);
+                    });
+
+                    this.player.addListener('player_state_changed', (state) => {
+                        if (state) {
+                            console.log('Player state changed:', state);
+                            this.playerState = state;
+                            this.updatePlayerUI(state);
+                        } else {
+                            this.playerState = null;
+                            this.updatePlayerUI(null);
+                        }
+                    });
+
+                    this.player.addListener('initialization_error', ({ message }) => {
+                        console.error('Failed to initialize:', message);
+                        this.showError('Failed to initialize Spotify player. Please check your connection.');
+                    });
+
+                    this.player.addListener('authentication_error', ({ message }) => {
+                        console.error('Failed to authenticate:', message);
+                        this.showError('Authentication failed. Please log in again.');
+                        // Don't auto-redirect to avoid login loop
+                        // setTimeout(() => { window.location.href = '/login'; }, 1200);
+                    });
+
+                    this.player.addListener('account_error', ({ message }) => {
+                        console.error('Failed to validate Spotify account:', message);
+                        this.showError('Spotify Premium required for Web Playback SDK.');
+                    });
+
+                    this.player.connect();
+                })
+                .catch(error => {
+                    console.error('Error getting access token:', error);
+                    this.showError('Failed to get access token for player');
+                });
+
+        } catch (error) {
+            console.error('Error creating Spotify player:', error);
+            this.showError('Failed to create Spotify player');
+        }
+    }
+
+    async transferPlaybackToWebPlayer() {
+        if (!this.deviceId) {
+            console.warn('No device ID available for playback transfer');
+            return;
+        }
+        const maxAttempts = 4;
+        const baseDelay = 800; // ms
+
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                const response = await fetch('/api/transfer-playback', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        device_id: this.deviceId,
+                        play: false // Don't auto-play, just transfer
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('✅ Playback transferred to web player');
+                    return;
+                }
+
+                // Handle specific server responses
+                if (response.status === 404) {
+                    // Device not found - this can happen if the SDK hasn't fully activated on Spotify's side yet
+                    console.warn(`Transfer attempt ${attempt} failed: device not found (${this.deviceId})`);
+                    if (attempt < maxAttempts) {
+                        const wait = baseDelay * attempt;
+                        console.log(`Waiting ${wait}ms before retrying transfer...`);
+                        await new Promise(r => setTimeout(r, wait));
+                        continue;
+                    }
+
+                    // Final failure
+                    const body = await response.json().catch(() => ({}));
+                    console.error('❌ Final transfer error (device not found):', body);
+                    this.showError('Playback device not found — make sure Spotify is open and the web player is connected (Premium required).');
+                    return;
+                }
+
+                // Other non-OK responses
+                const errBody = await response.json().catch(() => ({}));
+                throw new Error(`Transfer failed: ${response.status} ${JSON.stringify(errBody)}`);
+            } catch (error) {
+                console.error(`❌ Error transferring playback (attempt ${attempt}):`, error);
+                if (attempt < maxAttempts) {
+                    const wait = baseDelay * attempt;
+                    await new Promise(r => setTimeout(r, wait));
+                    continue;
+                }
+                this.showError('Failed to transfer playback to web player. Please ensure Spotify is open and try again.');
+            }
+        }
+    }
+
+    async togglePlayPause() {
+        if (!this.player) return;
+        
+        try {
+            const state = await this.player.getCurrentState();
+            if (state && !state.paused) {
+                await this.player.pause();
+            } else {
+                await this.player.resume();
+            }
+        } catch (error) {
+            console.error('Error toggling play/pause:', error);
+            this.showError('Failed to toggle playback');
+        }
+    }
+
+    async nextTrack() {
+        if (!this.player) return;
+        
+        try {
+            await this.player.nextTrack();
+        } catch (error) {
+            console.error('Error skipping to next track:', error);
+            this.showError('Failed to skip to next track');
+        }
+    }
+
+    async previousTrack() {
+        if (!this.player) return;
+        
+        try {
+            await this.player.previousTrack();
+        } catch (error) {
+            console.error('Error going to previous track:', error);
+            this.showError('Failed to go to previous track');
+        }
+    }
+
+    async setVolume(volume) {
+        if (!this.player) return;
+        
+        try {
+            await this.player.setVolume(volume);
+        } catch (error) {
+            console.error('Error setting volume:', error);
+        }
+    }
+
+    updatePlayerUI(state) {
+        if (!state) return;
+
+        // Update play/pause button
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        if (playPauseBtn) {
+            playPauseBtn.innerHTML = state.paused ? '▶️' : '⏸️';
+        }
+
+        // Update progress bar if currently playing view is active
+        if (this.currentView === 'currently-playing') {
+            const progressFill = document.querySelector('.progress-fill');
+            const progressTime = document.querySelector('.progress-time');
+            
+            if (progressFill && progressTime && state.track_window.current_track) {
+                const currentTrack = state.track_window.current_track;
+                const progressPercent = (state.position / currentTrack.duration_ms) * 100;
+                progressFill.style.width = `${progressPercent}%`;
+                
+                const formatTime = (ms) => {
+                    const minutes = Math.floor(ms / 60000);
+                    const seconds = Math.floor((ms % 60000) / 1000);
+                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                };
+                
+                progressTime.innerHTML = `
+                    <span>${formatTime(state.position)}</span>
+                    <span>${formatTime(currentTrack.duration_ms)}</span>
+                `;
+            }
         }
     }
 }
