@@ -646,7 +646,8 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
           playlists: cachedPlaylists,
           total: cachedPlaylists.length,
           username: SPOTIFY_USERNAME,
-          authenticated: false
+          authenticated: false,
+          source: 'cache'
         });
       }
 
@@ -711,7 +712,8 @@ app.get("/api/my-playlists", apiLimiter, async (req, res) => {
           playlists: enhancedPlaylists,
           total: enhancedPlaylists.length,
           username: SPOTIFY_USERNAME,
-          authenticated: false
+          authenticated: false,
+          source: 'api'
         });
       } catch (error) {
         console.error("Error fetching configured user playlists:", error.message);
@@ -953,9 +955,29 @@ app.get("/api/playlists", apiLimiter, async (req, res) => {
     const cachedPlaylists = getCachedPlaylists('featured');
     if (cachedPlaylists.length > 0) {
       console.log('✅ Returning cached featured playlists');
+      
+      // Apply sorting to cached playlists if requested
+      let sortedPlaylists = [...cachedPlaylists];
+      if (sort) {
+        const [field, direction = 'asc'] = sort.split('-');
+        const isDesc = direction === 'desc';
+        
+        if (field === 'tracks') {
+          sortedPlaylists.sort((a, b) => {
+            const result = a.tracks.total - b.tracks.total;
+            return isDesc ? -result : result;
+          });
+        } else if (field === 'name') {
+          sortedPlaylists.sort((a, b) => {
+            const result = a.name.localeCompare(b.name);
+            return isDesc ? -result : result;
+          });
+        }
+      }
+      
       return res.json({
-        playlists: cachedPlaylists,
-        total: cachedPlaylists.length,
+        playlists: sortedPlaylists,
+        total: sortedPlaylists.length,
         source: 'cache',
         message: 'Cached featured playlists'
       });

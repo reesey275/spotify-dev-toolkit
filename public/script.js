@@ -231,13 +231,16 @@ class SpotifyFanApp {
             const response = await fetch('/api/my-playlists?limit=1');
             if (response.ok) {
                 const data = await response.json();
-                this.isAuthenticated = true;
+                // Check the authenticated field in the response, not just response.ok
+                this.isAuthenticated = data.authenticated === true;
                 this.currentUser = data.username;
                 this.updateAuthUI();
-                console.log('✅ User is authenticated:', this.currentUser);
+                console.log('✅ User authentication status checked:', this.isAuthenticated ? `authenticated as ${this.currentUser}` : 'not authenticated');
                 
                 // Initialize Web Playback SDK if authenticated
-                this.initializeSpotifyPlayer();
+                if (this.isAuthenticated) {
+                    this.initializeSpotifyPlayer();
+                }
             } else {
                 this.isAuthenticated = false;
                 this.currentUser = null;
@@ -467,7 +470,18 @@ class SpotifyFanApp {
         try {
             this.showLoading(true);
             const response = await fetch(`/api/playlist/${playlistId}?sort=${sort}&offset=${offset}&limit=${this.tracksPerPage}`);
-            if (!response.ok) throw new Error('Failed to fetch playlist details');
+            if (!response.ok) {
+                // If playlist loading fails, check if it's a featured playlist that requires authentication
+                if (response.status === 500) {
+                    const errorData = await response.json().catch(() => ({ error: 'Failed to fetch playlist details' }));
+                    if (errorData.error === 'Failed to fetch playlist details') {
+                        // This is likely a featured playlist that can't be accessed with client credentials
+                        this.showPlaylistAccessError(playlistId);
+                        return;
+                    }
+                }
+                throw new Error('Failed to fetch playlist details');
+            }
             
             const data = await response.json();
             this.currentPlaylist = data.playlist;
@@ -975,8 +989,16 @@ class SpotifyFanApp {
         
         this.showLoading(true);
         try {
-            await this.loadMyPlaylists(sortBy);
-            this.renderMyPlaylists();
+            // If user is not authenticated, sort the featured playlists instead
+            if (!this.isAuthenticated) {
+                console.log('🔄 Sorting featured playlists for unauthenticated user');
+                await this.loadFeaturedPlaylists(sortBy);
+                this.renderMyPlaylists(); // This will show the sorted featured playlists in fallback mode
+            } else {
+                // For authenticated users, sort their actual playlists
+                await this.loadMyPlaylists(sortBy);
+                this.renderMyPlaylists();
+            }
             this.showLoading(false);
         } catch (error) {
             this.showError('Failed to sort your playlists.');
@@ -1076,9 +1098,9 @@ class SpotifyFanApp {
                 </div>
             `;
 
-            // Load featured playlists into the fallback container
+            // Use already loaded featured playlists if available (for sorting), otherwise load new ones
             try {
-                const featured = await this.loadFeaturedPlaylists();
+                const featured = this.playlists && this.playlists.length > 0 ? this.playlists : await this.loadFeaturedPlaylists();
                 this.renderPlaylistsInContainer(featured, 'my-playlists-fallback');
             } catch (err) {
                 console.debug('Failed to load fallback playlists:', err?.message || err);
@@ -1727,6 +1749,49 @@ class SpotifyFanApp {
         } else if (progressContainer) {
             progressContainer.style.display = 'block';
         }
+    }
+
+    showPlaylistAccessError(playlistId) {
+        this.showLoading(false);
+        
+        // Switch to playlist view and show access error
+        this.switchView('playlist');
+        
+        const playlistHeader = document.getElementById('playlist-header');
+        const tracksList = document.getElementById('tracks-list');
+        const pagination = document.getElementById('pagination');
+        
+        // Hide pagination
+        pagination.classList.add('hidden');
+        
+        // Show error message in playlist header
+        playlistHeader.innerHTML = `
+            <div class="playlist-access-error">
+                <div class="error-icon">🔒</div>
+                <h1>Playlist Access Limited</h1>
+                <p>This playlist is not individually accessible with the current authentication level.</p>
+                <p>This often happens with Spotify's featured or curated playlists.</p>
+                <div class="playlist-actions">
+                    <a href="https://open.spotify.com/playlist/${playlistId}" 
+                       target="_blank" 
+                       class="btn btn-primary">
+                        🔗 Open in Spotify Web Player
+                    </a>
+                    <button class="btn btn-secondary" onclick="app.switchView('home')">
+                        ← Back to Featured Playlists
+                    </button>
+                </div>
+                <div class="auth-suggestion">
+                    <p><strong>Want to access all playlist details?</strong></p>
+                    <button class="btn btn-outline" onclick="app.login()">
+                        Login with Spotify
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Clear tracks list
+        tracksList.innerHTML = '';
     }
 }
 

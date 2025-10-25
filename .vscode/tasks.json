@@ -72,23 +72,22 @@
             }
         },
         {
-            "label": "Clean Start Dev",
+            "label": "Monitor Logs with Verbose",
             "type": "shell",
             "command": "npm",
             "args": [
                 "run",
-                "clean-start"
+                "dev:screen:attach"
             ],
             "group": "build",
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
-                "focus": false,
+                "reveal": "always",
+                "focus": true,
                 "panel": "shared",
                 "showReuseMessage": true,
                 "clear": false
             },
-            "isBackground": false,
             "problemMatcher": [],
             "options": {
                 "cwd": "${workspaceFolder}"
