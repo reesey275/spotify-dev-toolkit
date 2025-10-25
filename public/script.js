@@ -656,7 +656,13 @@ class SpotifyFanApp {
         ` : `
                 <!-- Player Not Initialized Message -->
                 <div class="player-inactive-message">
-                    <p>🎵 Web player initializing... Start playing music in Spotify to enable controls.</p>
+                    ${!this.isAuthenticated ? `
+                        <p>🔐 Login required for web player controls.</p>
+                        <button class="btn btn-primary" onclick="app.login()">Login with Spotify</button>
+                    ` : `
+                        <p>🎵 Web player initializing... Controls will be available once connected.</p>
+                        <p class="muted">Make sure Spotify Premium is active and the app is authorized.</p>
+                    `}
                 </div>
         `;
 

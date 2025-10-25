@@ -13,6 +13,12 @@ body {
    min-height: 100vh;
 }
 
+/* Utility Classes */
+.muted {
+   color: #b3b3b3;
+   font-size: 0.9em;
+}
+
 /* Header */
 .header {
    background: rgba(0, 0, 0, 0.8);
