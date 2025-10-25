@@ -10,6 +10,30 @@
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+   <script>
+      // Test script to check SDK loading
+      console.log('HTML: Spotify SDK script tag loaded');
+      console.log('HTML: window.Spotify at script load time:', window.Spotify);
+      
+      // Set up a check for when SDK loads
+      let sdkCheckInterval = setInterval(() => {
+         if (window.Spotify) {
+            console.log('HTML: Spotify SDK loaded successfully');
+            console.log('HTML: window.Spotify.Player available:', !!window.Spotify.Player);
+            clearInterval(sdkCheckInterval);
+         }
+      }, 100);
+      
+      // Clear interval after 10 seconds
+      setTimeout(() => {
+         if (sdkCheckInterval) {
+            clearInterval(sdkCheckInterval);
+            if (!window.Spotify) {
+               console.error('HTML: Spotify SDK failed to load within 10 seconds');
+            }
+         }
+      }, 10000);
+   </script>
 </head>
 
 <body>

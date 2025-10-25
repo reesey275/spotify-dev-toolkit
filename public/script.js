@@ -120,7 +120,21 @@ class SpotifyFanApp {
             const newView = this.getViewFromUrl();
             if (newView && newView !== this.currentView) {
                 console.log(`🔄 Hash changed to: ${newView}`);
-                this.switchView(newView);
+                
+                // Check authentication for protected views on hash change
+                const protectedViews = ['my-playlists', 'currently-playing'];
+                if (protectedViews.includes(newView)) {
+                    console.log(`🔐 Checking authentication for protected view via hash change: ${newView}`);
+                    this.checkAuthStatus().then(() => {
+                        this.switchView(newView);
+                    }).catch(error => {
+                        console.error('Auth check failed for protected view via hash change:', error);
+                        // If auth check fails, redirect to home view
+                        this.switchView('home');
+                    });
+                } else {
+                    this.switchView(newView);
+                }
             }
         });
 
@@ -221,6 +235,9 @@ class SpotifyFanApp {
                 this.currentUser = data.username;
                 this.updateAuthUI();
                 console.log('✅ User is authenticated:', this.currentUser);
+                
+                // Initialize Web Playback SDK if authenticated
+                this.initializeSpotifyPlayer();
             } else {
                 this.isAuthenticated = false;
                 this.currentUser = null;
@@ -409,6 +426,9 @@ class SpotifyFanApp {
             if (data.authenticated) {
                 this.isAuthenticated = true;
                 console.log('✅ User is authenticated with OAuth');
+                
+                // Initialize Web Playback SDK if authenticated
+                this.initializeSpotifyPlayer();
             } else {
                 this.isAuthenticated = false;
                 console.log('ℹ️ Showing fallback playlists (not authenticated)');
@@ -535,8 +555,22 @@ class SpotifyFanApp {
             this.currentView = viewName;
         }
 
-        // Load data for specific views
-        this.handleViewSpecificData(viewName);
+        // Check authentication for protected views
+        const protectedViews = ['my-playlists', 'currently-playing'];
+        if (protectedViews.includes(viewName)) {
+            console.log(`🔐 Checking authentication for protected view: ${viewName}`);
+            this.checkAuthStatus().then(() => {
+                // Load data for specific views after auth check
+                this.handleViewSpecificData(viewName);
+            }).catch(error => {
+                console.error('Auth check failed for protected view:', error);
+                // If auth check fails, redirect to home view
+                this.switchView('home');
+            });
+        } else {
+            // Load data for specific views
+            this.handleViewSpecificData(viewName);
+        }
         
         // Handle currently playing interval
         this.handleCurrentlyPlayingInterval(viewName);
@@ -665,6 +699,7 @@ class SpotifyFanApp {
                         <div class="initialization-progress">
                             <div class="progress-dots">
                                 <span class="dot active"></span>
+                                <span class="dot"></span>
                                 <span class="dot"></span>
                                 <span class="dot"></span>
                             </div>
@@ -1362,97 +1397,177 @@ class SpotifyFanApp {
             return;
         }
 
-        // Show initialization progress
-        this.updateInitializationProgress(1);
+        console.log('🎵 Starting Web Playback SDK initialization...');
+        console.log('Web Playback SDK: Checking SDK availability at method start...');
+        console.log('window.Spotify exists:', !!window.Spotify);
+        console.log('window.Spotify.Player exists:', !!window.Spotify?.Player);
+        
+        // Wait for SDK to load if it's not ready yet
+        if (!window.Spotify || !window.Spotify.Player) {
+            console.log('Web Playback SDK: SDK not loaded yet, waiting...');
+            
+            // Set up a timeout to wait for SDK
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds max wait
+            const checkSDK = () => {
+                attempts++;
+                console.log(`Web Playback SDK: SDK check attempt ${attempts}/${maxAttempts}`);
+                
+                if (window.Spotify && window.Spotify.Player) {
+                    console.log('Web Playback SDK: SDK loaded successfully after waiting');
+                    this.initializePlayerAfterSDKLoad();
+                } else if (attempts >= maxAttempts) {
+                    console.error('Web Playback SDK: SDK failed to load within timeout');
+                    this.showError('Spotify Web Playback SDK failed to load. Please check your internet connection and refresh the page.');
+                    this.updateInitializationProgress(0);
+                } else {
+                    setTimeout(checkSDK, 100);
+                }
+            };
+            
+            setTimeout(checkSDK, 100);
+            return;
+        }
+
+        // SDK is already loaded
+        this.initializePlayerAfterSDKLoad();
+    }
+
+    initializePlayerAfterSDKLoad() {
+        console.log('Web Playback SDK: Proceeding with Premium check...');
+        
+        // First check if user has Premium
+        console.log('Web Playback SDK: Checking user Premium status...');
+        fetch('/api/user-profile')
+            .then(async (response) => {
+                if (!response.ok) {
+                    console.warn('Could not check user profile, status=', response.status);
+                    throw new Error('Could not verify Premium status');
+                }
+                return response.json();
+            })
+            .then(profile => {
+                console.log('Web Playback SDK: User profile:', profile);
+                
+                if (!profile.has_premium) {
+                    console.warn('Web Playback SDK: User does not have Spotify Premium');
+                    this.showError('Web Playback SDK requires Spotify Premium. Please upgrade your account to use the web player controls.');
+                    this.updateInitializationProgress(0);
+                    return;
+                }
+
+                console.log('Web Playback SDK: User has Premium, proceeding with player initialization');
+                this.initializePlayerWithToken();
+            })
+            .catch(error => {
+                console.error('Web Playback SDK: Error checking Premium status:', error);
+                this.showError('Could not verify Spotify Premium status. Web player may not work without Premium.');
+                // Continue anyway - the SDK will give a clearer error
+                this.initializePlayerWithToken();
+            });
+    }
+
+    initializePlayerWithToken() {
+        // Update progress - Premium check passed
+        this.updateInitializationProgress(2);
 
         try {
-            // Get access token (handle 401/403 explicitly so we can prompt re-login)
-            fetch('/api/access-token')
-                .then(async (response) => {
-                    if (!response.ok) {
-                        console.warn('No access token available for player, status=', response.status);
-                        // If token missing or invalid scopes, show error instead of redirecting
-                        if (response.status === 401 || response.status === 403) {
-                            console.log('Access token not available - authentication may have failed');
-                            this.showError('Access token not available. Please try logging in again.');
-                            // Don't redirect to avoid login loop
-                            // window.location.href = '/login';
+            // Check if SDK is loaded
+            if (!window.Spotify || !window.Spotify.Player) {
+                console.error('Web Playback SDK: Spotify SDK not loaded properly');
+                console.error('Web Playback SDK: window.Spotify:', window.Spotify);
+                this.showError('Spotify Web Playback SDK not loaded. Please refresh the page.');
+                this.updateInitializationProgress(0);
+                return;
+            }
+
+            console.log('Web Playback SDK: SDK loaded successfully, creating player...');
+            console.log('Web Playback SDK: Creating player with fresh token callback...');
+
+            this.player = new Spotify.Player({
+                name: 'Spotify Fan Web Player',
+                getOAuthToken: async (cb) => {
+                    try {
+                        console.log('Web Playback SDK: getOAuthToken called, fetching fresh token...');
+                        const r = await fetch('/api/access-token', { credentials: 'include' });
+                        if (!r.ok) {
+                            throw new Error(`Failed to get access token: ${r.status}`);
                         }
-                        throw new Error('No access token available');
+                        const { access_token } = await r.json();
+                        console.log('Web Playback SDK: Fresh token obtained, providing to SDK');
+                        cb(access_token);
+                    } catch (err) {
+                        console.error('Web Playback SDK: Failed to get OAuth token for player:', err);
+                        // Show user-friendly error
+                        this.showError('Failed to authenticate player. Please try logging in again.');
                     }
-                    return await response.json();
-                })
-                .then(data => {
-                    if (!data.access_token) {
-                        console.warn('No access token available, player will not initialize');
-                        return;
-                    }
+                },
+                volume: 0.5
+            });
 
-                    // Update progress - token received
-                    this.updateInitializationProgress(2);
+            console.log('Web Playback SDK: Player object created successfully');
 
-                    // Create player
-                    this.player = new Spotify.Player({
-                        name: 'Spotify Fan Web Player',
-                        getOAuthToken: cb => { cb(data.access_token); },
-                        volume: 0.5
-                    });
+            // Set up player event listeners
+            this.player.addListener('ready', ({ device_id }) => {
+                console.log('Web Playback SDK: Ready with Device ID', device_id);
+                this.deviceId = device_id;
+                // Update progress - player ready
+                this.updateInitializationProgress(4);
+            });
 
-                    // Set up player event listeners
-                    this.player.addListener('ready', ({ device_id }) => {
-                        console.log('Ready with Device ID', device_id);
-                        this.deviceId = device_id;
-                        // Update progress - player ready
-                        this.updateInitializationProgress(3);
-                        // Removed automatic transfer - player will show but not take control
-                        // this.transferPlaybackToWebPlayer();
-                    });
+            this.player.addListener('not_ready', ({ device_id }) => {
+                console.log('Web Playback SDK: Device ID has gone offline', device_id);
+                this.playerState = null;
+                this.updatePlayerUI(null);
+                this.updateInitializationProgress(0);
+            });
 
-                    this.player.addListener('not_ready', ({ device_id }) => {
-                        console.log('Device ID has gone offline', device_id);
-                        this.playerState = null;
-                        this.updatePlayerUI(null);
-                        this.updateInitializationProgress(0); // Reset on disconnect
-                    });
+            this.player.addListener('player_state_changed', (state) => {
+                if (state) {
+                    console.log('Web Playback SDK: Player state changed');
+                    this.playerState = state;
+                    this.updatePlayerUI(state);
+                } else {
+                    this.playerState = null;
+                    this.updatePlayerUI(null);
+                }
+            });
 
-                    this.player.addListener('player_state_changed', (state) => {
-                        if (state) {
-                            console.log('Player state changed:', state);
-                            this.playerState = state;
-                            this.updatePlayerUI(state);
-                        } else {
-                            this.playerState = null;
-                            this.updatePlayerUI(null);
-                        }
-                    });
+            this.player.addListener('initialization_error', ({ message }) => {
+                console.error('Web Playback SDK: Failed to initialize:', message);
+                this.showError(`Failed to initialize Spotify player: ${message}`);
+                this.updateInitializationProgress(0);
+            });
 
-                    this.player.addListener('initialization_error', ({ message }) => {
-                        console.error('Failed to initialize:', message);
-                        this.showError('Failed to initialize Spotify player. Please check your connection.');
-                        this.updateInitializationProgress(0);
-                    });
+            this.player.addListener('authentication_error', ({ message }) => {
+                console.error('Web Playback SDK: Failed to authenticate:', message);
+                this.showError(`Web Playback SDK authentication failed: ${message}`);
+                this.updateInitializationProgress(0);
+            });
 
-                    this.player.addListener('authentication_error', ({ message }) => {
-                        console.error('Failed to authenticate:', message);
-                        this.showError('Authentication failed. Please log in again.');
-                        this.updateInitializationProgress(0);
-                        // Don't auto-redirect to avoid login loop
-                        // setTimeout(() => { window.location.href = '/login'; }, 1200);
-                    });
+            this.player.addListener('account_error', ({ message }) => {
+                console.error('Web Playback SDK: Account error:', message);
+                this.showError(`Spotify account error: ${message}. Web Playback SDK requires Spotify Premium.`);
+                this.updateInitializationProgress(0);
+            });
 
-                    this.player.addListener('account_error', ({ message }) => {
-                        console.error('Failed to validate Spotify account:', message);
-                        this.showError('Spotify Premium required for Web Playback SDK.');
-                        this.updateInitializationProgress(0);
-                    });
+            // Update progress - connecting
+            this.updateInitializationProgress(3);
 
-                    this.player.connect();
-                })
-                .catch(error => {
-                    console.error('Error getting access token:', error);
-                    this.showError('Failed to get access token for player');
+            this.player.connect().then(success => {
+                console.log('Web Playback SDK: Player connect result:', success);
+                if (success) {
+                    console.log('Web Playback SDK: Player connected successfully');
+                } else {
+                    console.error('Web Playback SDK: Player failed to connect');
+                    this.showError('Web Playback SDK failed to connect. Please ensure you have Spotify Premium and try again.');
                     this.updateInitializationProgress(0);
-                });
+                }
+            }).catch(error => {
+                console.error('Web Playback SDK: Error connecting player:', error);
+                this.showError('Error connecting Web Playback SDK player: ' + error.message);
+                this.updateInitializationProgress(0);
+            });
 
         } catch (error) {
             console.error('Error creating Spotify player:', error);
@@ -1570,7 +1685,13 @@ class SpotifyFanApp {
 
     updateInitializationProgress(step) {
         const dots = document.querySelectorAll('.progress-dots .dot');
-        if (!dots.length) return;
+        if (!dots.length) {
+            // If dots don't exist, try to re-render the currently playing view to show updated state
+            if (this.currentView === 'currently-playing') {
+                this.loadCurrentlyPlayingView();
+            }
+            return;
+        }
 
         // Reset all dots
         dots.forEach(dot => dot.classList.remove('active'));
@@ -1580,18 +1701,49 @@ class SpotifyFanApp {
             dots[i].classList.add('active');
         }
 
+        // Update progress message
+        const progressContainer = document.querySelector('.initialization-progress');
+        const messageElement = progressContainer?.querySelector('p');
+        if (messageElement) {
+            const messages = [
+                'Initializing...', // step 0
+                'Checking Premium status...', // step 1
+                'Getting access token...', // step 2
+                'Connecting to Spotify...', // step 3
+                'Ready!' // step 4
+            ];
+            messageElement.textContent = messages[step] || messages[0];
+        }
+
         // If step is 0, hide progress entirely (error state)
         if (step === 0) {
-            const progressContainer = document.querySelector('.initialization-progress');
             if (progressContainer) {
                 progressContainer.style.display = 'none';
             }
+        } else if (progressContainer) {
+            progressContainer.style.display = 'block';
         }
     }
 }
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Add global error handler for debugging
+    window.addEventListener('error', (event) => {
+        console.error('Global JavaScript error:', {
+            message: event.message,
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno,
+            error: event.error
+        });
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+    });
+    
+    console.log('DOM loaded, initializing Spotify Fan App...');
     window.app = new SpotifyFanApp();
 });
 

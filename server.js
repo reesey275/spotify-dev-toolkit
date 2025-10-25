@@ -43,6 +43,67 @@ function generateState() {
   return crypto.randomBytes(16).toString('hex');
 }
 
+// Token management helpers
+function saveTokens(req, { access_token, refresh_token, expires_in }) {
+  const early = 60_000; // refresh 60s early
+  req.session.tokens = {
+    access_token,
+    refresh_token: refresh_token ?? req.session.tokens?.refresh_token, // rotate if present
+    expires_at: Date.now() + (expires_in * 1000) - early,
+  };
+  logToken('save', req);
+}
+
+function isFresh(req) {
+  const t = req.session?.tokens;
+  return !!t && typeof t.expires_at === "number" && (Date.now() + 30_000) < t.expires_at;
+}
+
+async function refreshAccessToken(req) {
+  const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = process.env;
+  const rt = req.session?.tokens?.refresh_token;
+  if (!rt) {
+    const e = new Error("No refresh token");
+    e.status = 401;
+    throw e;
+  }
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token: rt,
+  }).toString();
+
+  const { data } = await axios.post(
+    "https://accounts.spotify.com/api/token",
+    body,
+    {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      auth: { username: SPOTIFY_CLIENT_ID, password: SPOTIFY_CLIENT_SECRET },
+    }
+  );
+
+  // Spotify may omit a new refresh_token; keep the old one
+  saveTokens(req, {
+    access_token: data.access_token,
+    refresh_token: data.refresh_token || rt,
+    expires_in: data.expires_in,
+  });
+  logToken('refresh', req);
+  return req.session.tokens.access_token;
+}
+
+// Logging setup
+const pino = require("pino");
+const logger = pino(pino.destination("server.log"));
+
+function logToken(evt, req) {
+  const t = req.session?.tokens;
+  logger.info({
+    evt,
+    has_rt: !!t?.refresh_token,
+    exp_in_s: t ? Math.round((t.expires_at - Date.now())/1000) : null,
+  }, "token_event");
+}
+
 // Input validation schemas
 const paginationSchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
@@ -93,6 +154,8 @@ app.use(helmet({
       frameSrc: ["'none'"],
     },
   } : false, // Disable CSP for development
+  crossOriginOpenerPolicy: process.env.NODE_ENV === 'production' ? { policy: "same-origin" } : false, // Disable COOP for development
+  crossOriginResourcePolicy: process.env.NODE_ENV === 'production' ? { policy: "same-origin" } : false, // Disable CORP for development
   referrerPolicy: { policy: "strict-origin-when-cross-origin" },
   permissionsPolicy: {
     features: {
@@ -109,7 +172,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: ["http://127.0.0.1:5500", "http://127.0.0.1:5173"], // Allow common dev ports
+  origin: [`http://127.0.0.1:${port}`, "http://127.0.0.1:5173"], // Allow current port and common dev ports
   credentials: true
 }));
 
@@ -357,7 +420,7 @@ app.get("/login", authLimiter, (req, res) => {
   req.session.oauthState = state;
   
   // Include playback-related scopes required by the Web Playback SDK
-  const scope = 'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private streaming user-read-playback-state user-read-currently-playing user-modify-playback-state';
+  const scope = 'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private streaming user-read-playback-state user-read-currently-playing user-modify-playback-state user-read-private user-read-email';
   const authURL = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -425,15 +488,18 @@ app.get("/callback", authLimiter, async (req, res) => {
     );
     
     // Store tokens securely in session (not in memory)
-    req.session.accessToken = response.data.access_token;
-    req.session.refreshToken = response.data.refresh_token; // Store refresh token
-    req.session.tokenExpiry = Date.now() + (response.data.expires_in * 1000) - 60000;
+    saveTokens(req, {
+      access_token: response.data.access_token,
+      refresh_token: response.data.refresh_token,
+      expires_in: response.data.expires_in
+    });
     
     console.log('Token exchange successful, session after:', {
-      hasAccessToken: !!req.session.accessToken,
-      hasRefreshToken: !!req.session.refreshToken,
-      hasTokenExpiry: !!req.session.tokenExpiry,
-      tokenExpiry: new Date(req.session.tokenExpiry).toISOString(),
+      hasTokens: !!req.session.tokens,
+      hasAccessToken: !!req.session.tokens?.access_token,
+      hasRefreshToken: !!req.session.tokens?.refresh_token,
+      hasExpiry: !!req.session.tokens?.expires_at,
+      expiresAt: req.session.tokens?.expires_at ? new Date(req.session.tokens.expires_at).toISOString() : null,
       sessionID: req.session.id
     });
     
@@ -749,44 +815,104 @@ app.get("/api/access-token", apiLimiter, async (req, res) => {
     console.log('🔑 Getting access token for Web Playback SDK...');
     console.log('Session in /api/access-token:', {
       sessionID: req.session.id,
-      hasAccessToken: !!req.session.accessToken,
-      hasRefreshToken: !!req.session.refreshToken,
-      hasTokenExpiry: !!req.session.tokenExpiry,
-      tokenExpiry: req.session.tokenExpiry ? new Date(req.session.tokenExpiry).toISOString() : null,
+      hasTokens: !!req.session.tokens,
+      hasAccessToken: !!req.session.tokens?.access_token,
+      hasRefreshToken: !!req.session.tokens?.refresh_token,
+      hasExpiry: !!req.session.tokens?.expires_at,
+      expiresAt: req.session.tokens?.expires_at ? new Date(req.session.tokens.expires_at).toISOString() : null,
       currentTime: new Date().toISOString()
     });
     
-    // Get the user's access token from session
-    const accessToken = req.session?.accessToken;
+    let token = req.session?.tokens?.access_token;
+    if (!isFresh(req)) token = await refreshAccessToken(req);
     
-    if (!accessToken) {
-      console.log('❌ No access token in session');
+    if (!token) {
+      console.log('❌ No access token available');
       return res.status(401).json({ error: "No access token available" });
     }
     
-    // Check if token is expired
-    if (req.session.tokenExpiry && Date.now() > req.session.tokenExpiry) {
-      console.log('Token expired, attempting refresh...');
-      try {
-        await refreshUserToken(req);
-        console.log('✅ Token refresh successful');
-        res.json({ access_token: req.session.accessToken });
-      } catch (refreshError) {
-        console.error('❌ Token refresh failed:', refreshError.message);
-        // Clear invalid session data
-        delete req.session.accessToken;
-        delete req.session.refreshToken;
-        delete req.session.tokenExpiry;
-        return res.status(401).json({ error: "Authentication expired - please re-authenticate" });
-      }
-    } else {
-      console.log('✅ Token is valid, returning it');
-      res.json({ access_token: accessToken });
+    console.log('✅ Token is valid, returning it');
+    
+    // Check if token has required scopes for Web Playback SDK
+    const requiredScopes = ['streaming', 'user-read-email', 'user-read-private', 'user-read-playback-state', 'user-modify-playback-state'];
+    console.log('🔍 Checking token scopes for Web Playback SDK...');
+    
+    try {
+      // Try to make a test API call that requires the scopes
+      const testResponse = await spotifyRequest('/me/player/devices', req);
+      console.log('✅ Token has sufficient scopes for Web Playback SDK (devices endpoint accessible)');
+      res.json({ access_token: token });
+    } catch (scopeError) {
+      console.error('❌ Token missing required scopes for Web Playback SDK:', scopeError.message);
+      console.error('Required scopes:', requiredScopes.join(', '));
+      console.error('🔄 User needs to re-authenticate to grant new scopes');
+      
+      // Clear the session to force re-authentication
+      delete req.session.tokens;
+      
+      return res.status(403).json({ 
+        error: "Insufficient token scopes", 
+        message: "Web Playback SDK requires additional permissions. Please log in again to grant the necessary scopes.",
+        needsReauth: true,
+        requiredScopes: requiredScopes
+      });
     }
     
   } catch (error) {
     console.error("Error getting access token:", error.message);
     res.status(500).json({ error: "Failed to get access token" });
+  }
+});
+
+// API route to check user profile and Premium status
+app.get("/api/user-profile", apiLimiter, async (req, res) => {
+  try {
+    console.log('👤 Getting user profile for Premium check...');
+    
+    // Get user profile from Spotify
+    const userProfile = await spotifyRequest('/me', req);
+    
+    console.log('User profile:', {
+      id: userProfile.id,
+      display_name: userProfile.display_name,
+      product: userProfile.product,
+      country: userProfile.country
+    });
+    
+    res.json({
+      id: userProfile.id,
+      display_name: userProfile.display_name,
+      product: userProfile.product, // 'premium', 'free', etc.
+      country: userProfile.country,
+      has_premium: userProfile.product === 'premium'
+    });
+    
+  } catch (error) {
+    console.error("Error getting user profile:", error.message);
+    res.status(500).json({ error: "Failed to get user profile" });
+  }
+});
+
+// API route to get available playback devices
+app.get("/api/devices", apiLimiter, async (req, res) => {
+  try {
+    console.log('📱 Getting available playback devices...');
+    
+    // Get available devices from Spotify
+    const devices = await spotifyRequest('/me/player/devices', req);
+    
+    console.log('Available devices:', devices.devices?.map(d => ({
+      id: d.id,
+      name: d.name,
+      type: d.type,
+      is_active: d.is_active
+    })));
+    
+    res.json(devices);
+    
+  } catch (error) {
+    console.error("Error getting devices:", error.message);
+    res.status(500).json({ error: "Failed to get devices" });
   }
 });
 

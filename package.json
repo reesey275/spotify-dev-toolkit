@@ -6,13 +6,17 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon",
+    "predev": "node bin/validate-workflow.js",
     "dev:server": "nodemon server.js",
-    "dev:screen": "screen -dmS spotify-dev bash -c 'cd /home/chad/spotify && npm run dev'",
-    "dev:screen:attach": "screen -r spotify-dev",
-    "dev:screen:stop": "screen -S spotify-dev -X quit 2>/dev/null || true",
+    "dev:screen": "node bin/validate-workflow.js screen && screen -dmS spotify-dev bash -c 'cd /home/chad/spotify && npm run dev'",
+    "dev:screen:attach": "echo '⚠️  WARNING: This will block your terminal!' && sleep 2 && screen -r spotify-dev",
+    "dev:screen:stop": "screen -ls | grep spotify-dev | awk '{print $1}' | xargs -I {} screen -S {} -X quit 2>/dev/null || true",
     "dev:screen:status": "screen -ls | grep spotify-dev || echo 'No spotify-dev screen session found'",
     "kill-port": "lsof -ti:5500 | xargs kill -9 2>/dev/null || true",
-    "clean-start": "npm run kill-port && npm run dev",
+    "clean-start": "npm run kill-port && npm run dev:screen",
+    "workflow:status": "./bin/workflow-status.sh",
+    "workflow:check": "node bin/validate-workflow.js",
+    "workflow:fix": "npm run dev:screen:stop && npm run dev:screen",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -26,6 +30,7 @@
     "express-rate-limit": "^8.1.0",
     "express-session": "^1.18.2",
     "helmet": "^8.1.0",
+    "pino": "^10.1.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
