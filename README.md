@@ -376,10 +376,10 @@ This project includes a complete Docker setup for production deployment with WSL
 
 #### Quick Docker Setup
 
-1. **WSL2 Environment Setup**:
+1. **Environment Setup**:
    ```bash
-   # Run the WSL2 setup script
-   ./setup-wsl.sh
+   # Run the Docker setup script (works on Ubuntu/WSL2)
+   ./setup-docker.sh
    ```
 
 2. **Configure Environment**:
@@ -500,8 +500,8 @@ docker ps
 
 **Permission issues**:
 ```bash
-# Re-run WSL2 setup
-./setup-wsl.sh
+# Re-run Docker setup
+./setup-docker.sh
 
 # Check file ownership
 ls -la *.db
