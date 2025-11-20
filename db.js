@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Initialize database
-const dbDir = process.env.DOCKER_CONTAINER ? '/app/data' : path.join(__dirname, 'data');
+const dbDir = path.join(__dirname, 'data');
 const dbPath = path.join(dbDir, 'spotify_cache.db');
 
 // Ensure directory exists

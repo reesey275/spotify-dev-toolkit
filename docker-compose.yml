@@ -22,7 +22,7 @@ services:
     # read_only: true
     tmpfs:
       - /tmp
-    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    # user: "${APP_UID:-1000}:${APP_GID:-1000}"
     security_opt:
       - no-new-privileges:true
     cap_drop:
