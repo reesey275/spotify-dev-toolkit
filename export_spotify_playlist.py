@@ -32,6 +32,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Optional Logfire instrumentation: configured via `logfire` CLI
+# CLI: `uv run logfire auth` and `uv run logfire projects use spotify`
+LOGFIRE = None
+try:
+    import logfire
+    # This will use the write token stored in ~/.logfire/default.toml when set via CLI
+    logfire.configure()
+    LOGFIRE = logfire
+    LOGFIRE.info('export_spotify_playlist.started')
+except Exception as _e:
+    # Fail gracefully if logfire isn't available/configured
+    LOGFIRE = None
+
 
 API_BASE = "https://api.spotify.com/v1"
 
@@ -349,6 +362,8 @@ def main():
         playlist = sp.user_playlist_create(
             username, args.create_playlist, public=args.public, description=args.description)
         print(f"Created playlist: {playlist['name']} (ID: {playlist['id']})")
+        if LOGFIRE:
+            LOGFIRE.info('playlist.created', id=playlist.get('id'), name=playlist.get('name'))
         return
 
     if args.list:
@@ -385,7 +400,11 @@ def main():
             fieldnames = list(rows[0].keys()) if rows else ["title", "artists", "album",
                                                             "duration_ms", "duration_mm_ss", "added_at", "spotify_url", "spotify_uri"]
             generate_html(playlist['name'], fieldnames, rows, output_html)
+            if LOGFIRE:
+                LOGFIRE.info('landing.playlist_page_generated', id=pid, output=output_html, tracks=len(rows))
         generate_landing_page(top_albums, created_date_playlists, playlists)
+        if LOGFIRE:
+            LOGFIRE.info('landing.generated', output='index.html', playlists=len(playlists))
         print("[✓] Generated landing page index.html and all playlist pages")
         return
 
@@ -415,11 +434,15 @@ def main():
                                                     "duration_ms", "duration_mm_ss", "added_at", "spotify_url", "spotify_uri"]
     if args.format == "html":
         generate_html(playlist_name, fieldnames, rows, output)
+        if LOGFIRE:
+            LOGFIRE.info('playlist.exported', id=playlist_id, format='html', output=output, tracks=len(rows))
     else:
         with open(output, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(rows)
+        if LOGFIRE:
+            LOGFIRE.info('playlist.exported', id=playlist_id, format='csv', output=output, tracks=len(rows))
 
     print(f"[✓] Wrote {len(rows)} tracks to {output}")
 
@@ -428,4 +451,13 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
+        if LOGFIRE:
+            LOGFIRE.info('export_spotify_playlist.interrupted')
         sys.exit(130)
+    except Exception as e:
+        if LOGFIRE:
+            try:
+                LOGFIRE.error('export_spotify_playlist.error', error=str(e))
+            except Exception:
+                pass
+        raise
