@@ -28,18 +28,61 @@ class SpotifyFanApp {
         this.player = null;
         this.deviceId = null;
         this.playerState = null;
+        this.sdkBlockedByCSP = false; // Track if SDK is blocked by CSP
         
         this.init();
     }
 
     init() {
         console.log('🚀 Initializing SpotifyFanApp...');
+        this.setupCSPDetection();
         this.setupEventListeners();
         this.setupHashRouting();
         this.checkForAuthSuccess(); // Check for authentication success parameter
         this.checkAuthStatus();
         this.loadInitialData();
         // Removed initializeSpotifyPlayer() from here - will be called after auth check
+    }
+
+    setupCSPDetection() {
+        // Listen for CSP violations that might affect the Spotify SDK
+        document.addEventListener('securitypolicyviolation', (event) => {
+            console.warn('🚨 CSP Violation detected:', {
+                violatedDirective: event.violatedDirective,
+                blockedURI: event.blockedURI,
+                sourceFile: event.sourceFile,
+                lineNumber: event.lineNumber
+            });
+            
+            // Check if this is related to Spotify SDK iframe creation
+            if (event.blockedURI && event.blockedURI.includes('sdk.scdn.co') && 
+                event.violatedDirective && event.violatedDirective.includes('frame-src')) {
+                console.warn('🚨 Spotify SDK blocked by CSP frame-src restriction');
+                this.sdkBlockedByCSP = true;
+                this.handleSDKBlockedByCSP();
+            }
+        });
+        
+        // Also check for SDK loading failures
+        window.addEventListener('error', (event) => {
+            if (event.target && event.target.src && event.target.src.includes('sdk.scdn.co')) {
+                console.warn('🚨 Spotify SDK script failed to load:', event);
+                this.sdkBlockedByCSP = true;
+                this.handleSDKBlockedByCSP();
+            }
+        });
+    }
+
+    handleSDKBlockedByCSP() {
+        console.log('🔒 Handling Spotify SDK blocked by CSP');
+        
+        // Show a notification to the user
+        this.showDataSourceMessage('warning', 'Web player controls unavailable due to security restrictions. Use Spotify app/web player instead.');
+        
+        // Update any player-related UI to show fallback state
+        if (this.currentView === 'currently-playing') {
+            this.loadCurrentlyPlayingView();
+        }
     }
 
     checkForAuthSuccess() {
@@ -740,7 +783,12 @@ class SpotifyFanApp {
         ` : `
                 <!-- Player Not Initialized Message -->
                 <div class="player-inactive-message">
-                    ${!this.isAuthenticated ? `
+                    ${this.sdkBlockedByCSP ? `
+                        <div class="csp-warning">
+                            <p>🔒 Web player controls blocked by security policy.</p>
+                            <p class="muted">Use the Spotify app or web player for full controls.</p>
+                        </div>
+                    ` : !this.isAuthenticated ? `
                         <p>🔐 Login required for web player controls.</p>
                         <button class="btn btn-primary" onclick="app.login()">Login with Spotify</button>
                     ` : `
@@ -1358,6 +1406,10 @@ class SpotifyFanApp {
             indicator.style.backgroundColor = '#ff6b6b';
             indicator.style.color = 'white';
             indicator.innerHTML = '⚠️ ' + message;
+        } else if (source === 'warning') {
+            indicator.style.backgroundColor = '#ff9800';
+            indicator.style.color = 'white';
+            indicator.innerHTML = '🔒 ' + message;
         } else if (source === 'fallback') {
             indicator.style.backgroundColor = '#ffa726';
             indicator.style.color = 'white';
@@ -1369,7 +1421,7 @@ class SpotifyFanApp {
         }
         
         // Auto-hide after 5 seconds for non-demo messages
-        if (source !== 'demo') {
+        if (source !== 'demo' && source !== 'warning') {
             setTimeout(() => {
                 if (indicator) indicator.remove();
             }, 5000);
@@ -1453,6 +1505,12 @@ class SpotifyFanApp {
 
     // Spotify Web Playback SDK Methods
     async initializeSpotifyPlayer() {
+        // Check if SDK is blocked by CSP first
+        if (this.sdkBlockedByCSP) {
+            console.log('🎵 Skipping Web Playback SDK initialization - blocked by CSP');
+            return;
+        }
+        
         // SDK callback is already defined globally, just create player if SDK is loaded
         if (window.Spotify) {
             this.createSpotifyPlayer();
@@ -1460,6 +1518,12 @@ class SpotifyFanApp {
     }
 
     createSpotifyPlayer() {
+        // Check if SDK is blocked by CSP
+        if (this.sdkBlockedByCSP) {
+            console.log('🎵 Skipping Web Playback SDK creation - blocked by CSP');
+            return;
+        }
+        
         // Only initialize player if user is authenticated
         if (!this.isAuthenticated) {
             console.log('Player not initialized - user not authenticated');
