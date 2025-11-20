@@ -81,6 +81,39 @@ npm run dev:screen:stop
 # ❌ NEVER use: npm run dev (blocks terminal, prevents concurrent operations)
 ```
 
+## MCP Servers (Local Model Context Protocol)
+
+This project can integrate with local MCP servers (e.g., Logfire MCP, Playwright MCP).
+We provide a safe template and local instructions in `.logfire/`.
+
+Quick setup:
+
+1. Copy the template and add your tokens locally (do NOT commit):
+
+```bash
+cp .logfire/mcp_servers.toml.template .logfire/mcp_servers.toml
+# Edit .logfire/mcp_servers.toml and set LOGFIRE_READ_TOKEN or other env values
+```
+
+2. Authenticate with Logfire and set the project (one-time):
+
+```bash
+logfire auth
+uv run logfire projects use <your-project-name>
+```
+
+3. Start the MCP server locally (using `uvx`):
+
+```bash
+# Example: start logfire-mcp with read token in env
+LOGFIRE_READ_TOKEN=your_read_token uvx logfire-mcp@latest
+```
+
+Notes:
+- Keep `.logfire/logfire_credentials.json` and `.logfire/mcp_servers.toml` out of git.
+- Use environment variables or CI secrets when configuring MCP servers in automated workflows.
+
+
 **Why screen sessions?**
 - Server runs continuously during development
 - Multiple terminals can operate concurrently

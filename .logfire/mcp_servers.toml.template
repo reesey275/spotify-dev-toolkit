@@ -1,0 +1,17 @@
+# MCP servers template for local development
+# Copy this file to `.logfire/mcp_servers.toml` and replace the placeholders.
+
+[mcp_servers.logfire]
+# type: local | docker | remote
+type = "local"
+# Use `uvx` to launch the local logfire MCP server, or provide a docker run command
+command = "uvx"
+args = ["logfire-mcp@latest"]
+# Set your read token via environment variable, or insert it here (not recommended)
+env = { "LOGFIRE_READ_TOKEN" = "<REPLACE_WITH_READ_TOKEN>" }
+
+# Example for Docker-based launch (uncomment and adjust):
+# [mcp_servers.github]
+# type = "docker"
+# command = "docker"
+# args = ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=${input:token}", "ghcr.io/github/github-mcp-server:0.21.0"]
