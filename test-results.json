@@ -1,0 +1,2687 @@
+{
+  "config": {
+    "configFile": "/home/chad/spotify/playwright.config.js",
+    "rootDir": "/home/chad/spotify/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 6
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/chad/spotify/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/chad/spotify/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/chad/spotify/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/chad/spotify/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/chad/spotify/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/home/chad/spotify/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 6,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "api.spec.js",
+      "file": "api.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "API Endpoints",
+          "file": "api.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /healthz - health check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 36,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.686Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-3acec2a5c9be945e8ae5",
+              "file": "api.spec.js",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlists - featured playlists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 560,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.716Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-8cafe24095eb09ae8014",
+              "file": "api.spec.js",
+              "line": 18,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlists with sorting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 641,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.715Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-fe71aed6092a5e22c67a",
+              "file": "api.spec.js",
+              "line": 43,
+              "column": 7
+            },
+            {
+              "title": "GET /api/user/:userId/playlists - user playlists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 943,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.690Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-8907cc497f84f42489b6",
+              "file": "api.spec.js",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlist/:id - individual playlist",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 960,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:86:29",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 29,
+                          "line": 86
+                        },
+                        "snippet": "  84 |       }\n  85 |\n> 86 |       expect(response.ok()).toBeTruthy();\n     |                             ^\n  87 |\n  88 |       const data = await response.json();\n  89 |       expect(data).toHaveProperty('playlist');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 29,
+                            "line": 86
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  84 |       }\n  85 |\n> 86 |       expect(response.ok()).toBeTruthy();\n     |                             ^\n  87 |\n  88 |       const data = await response.json();\n  89 |       expect(data).toHaveProperty('playlist');\n    at /home/chad/spotify/tests/api.spec.js:86:29"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.714Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 29,
+                        "line": 86
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-1a3aa48d57e73466952e",
+              "file": "api.spec.js",
+              "line": 70,
+              "column": 7
+            },
+            {
+              "title": "GET /api/search - search functionality",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "failed",
+                      "duration": 622,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:118:18",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 18,
+                          "line": 118
+                        },
+                        "snippet": "  116 |     const data = await response.json();\n  117 |     expect(data).toHaveProperty('playlists');\n> 118 |     expect(data).toHaveProperty('tracks');\n      |                  ^\n  119 |     expect(data).toHaveProperty('albums');\n  120 |     expect(data).toHaveProperty('artists');\n  121 |   });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 18,
+                            "line": 118
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m\n\n  116 |     const data = await response.json();\n  117 |     expect(data).toHaveProperty('playlists');\n> 118 |     expect(data).toHaveProperty('tracks');\n      |                  ^\n  119 |     expect(data).toHaveProperty('albums');\n  120 |     expect(data).toHaveProperty('artists');\n  121 |   });\n    at /home/chad/spotify/tests/api.spec.js:118:18"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.717Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 18,
+                        "line": 118
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-5a694d98a9d9521e32cd",
+              "file": "api.spec.js",
+              "line": 111,
+              "column": 7
+            },
+            {
+              "title": "Rate limiting works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1000,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:134:41",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 41,
+                          "line": 134
+                        },
+                        "snippet": "  132 |     // Some requests should be rate limited (429 status)\n  133 |     const rateLimitedResponses = responses.filter(r => r.status() === 429);\n> 134 |     expect(rateLimitedResponses.length).toBeGreaterThan(0);\n      |                                         ^\n  135 |\n  136 |     // Check rate limit headers\n  137 |     const lastResponse = responses[responses.length - 1];"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 41,
+                            "line": 134
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  132 |     // Some requests should be rate limited (429 status)\n  133 |     const rateLimitedResponses = responses.filter(r => r.status() === 429);\n> 134 |     expect(rateLimitedResponses.length).toBeGreaterThan(0);\n      |                                         ^\n  135 |\n  136 |     // Check rate limit headers\n  137 |     const lastResponse = responses[responses.length - 1];\n    at /home/chad/spotify/tests/api.spec.js:134:41"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:19.746Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 41,
+                        "line": 134
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-d3365000b7d4e266f01b",
+              "file": "api.spec.js",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "Invalid playlist ID returns 400",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 9,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:147:31",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 31,
+                          "line": 147
+                        },
+                        "snippet": "  145 |     const response = await request.get('/api/playlist/invalid-id');\n  146 |\n> 147 |     expect(response.status()).toBe(400);\n      |                               ^\n  148 |\n  149 |     const data = await response.json();\n  150 |     expect(data).toHaveProperty('error');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 31,
+                            "line": 147
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  145 |     const response = await request.get('/api/playlist/invalid-id');\n  146 |\n> 147 |     expect(response.status()).toBe(400);\n      |                               ^\n  148 |\n  149 |     const data = await response.json();\n  150 |     expect(data).toHaveProperty('error');\n    at /home/chad/spotify/tests/api.spec.js:147:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.297Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 31,
+                        "line": 147
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-77504a61d8f8ea752fed",
+              "file": "api.spec.js",
+              "line": 144,
+              "column": 7
+            },
+            {
+              "title": "Non-existent endpoint returns 404",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 26,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.864Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-2d4103514007f2cf5f98",
+              "file": "api.spec.js",
+              "line": 153,
+              "column": 7
+            },
+            {
+              "title": "CORS preflight request works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 5,
+                      "status": "failed",
+                      "duration": 24,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:172:27",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 27,
+                          "line": 172
+                        },
+                        "snippet": "  170 |     });\n  171 |\n> 172 |     expect(response.ok()).toBeTruthy();\n      |                           ^\n  173 |\n  174 |     const headers = response.headers();\n  175 |     expect(headers['access-control-allow-origin']).toBeTruthy();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 27,
+                            "line": 172
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  170 |     });\n  171 |\n> 172 |     expect(response.ok()).toBeTruthy();\n      |                           ^\n  173 |\n  174 |     const headers = response.headers();\n  175 |     expect(headers['access-control-allow-origin']).toBeTruthy();\n    at /home/chad/spotify/tests/api.spec.js:172:27"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.917Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 27,
+                        "line": 172
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-c3f7c89db8f854cf1314",
+              "file": "api.spec.js",
+              "line": 162,
+              "column": 7
+            },
+            {
+              "title": "GET /healthz - health check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 36,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.668Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-6cbf245a9f03d26fde6e",
+              "file": "api.spec.js",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlists - featured playlists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 398,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:22.140Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-ffbcb13f6707f4b69fb4",
+              "file": "api.spec.js",
+              "line": 18,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlists with sorting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 515,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:22.213Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-16a58fe12a311a179d25",
+              "file": "api.spec.js",
+              "line": 43,
+              "column": 7
+            },
+            {
+              "title": "GET /api/user/:userId/playlists - user playlists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 619,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.731Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-ff67a9b84e01affc01ac",
+              "file": "api.spec.js",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlist/:id - individual playlist",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 8090,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:86:29",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 29,
+                          "line": 86
+                        },
+                        "snippet": "  84 |       }\n  85 |\n> 86 |       expect(response.ok()).toBeTruthy();\n     |                             ^\n  87 |\n  88 |       const data = await response.json();\n  89 |       expect(data).toHaveProperty('playlist');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 29,
+                            "line": 86
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  84 |       }\n  85 |\n> 86 |       expect(response.ok()).toBeTruthy();\n     |                             ^\n  87 |\n  88 |       const data = await response.json();\n  89 |       expect(data).toHaveProperty('playlist');\n    at /home/chad/spotify/tests/api.spec.js:86:29"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:22.364Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 29,
+                        "line": 86
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-312f01e26db0a6689ee1",
+              "file": "api.spec.js",
+              "line": 70,
+              "column": 7
+            },
+            {
+              "title": "GET /api/search - search functionality",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 566,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:118:18",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 18,
+                          "line": 118
+                        },
+                        "snippet": "  116 |     const data = await response.json();\n  117 |     expect(data).toHaveProperty('playlists');\n> 118 |     expect(data).toHaveProperty('tracks');\n      |                  ^\n  119 |     expect(data).toHaveProperty('albums');\n  120 |     expect(data).toHaveProperty('artists');\n  121 |   });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 18,
+                            "line": 118
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m\n\n  116 |     const data = await response.json();\n  117 |     expect(data).toHaveProperty('playlists');\n> 118 |     expect(data).toHaveProperty('tracks');\n      |                  ^\n  119 |     expect(data).toHaveProperty('albums');\n  120 |     expect(data).toHaveProperty('artists');\n  121 |   });\n    at /home/chad/spotify/tests/api.spec.js:118:18"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:22.561Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 18,
+                        "line": 118
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-44b90e17725a459131a9",
+              "file": "api.spec.js",
+              "line": 111,
+              "column": 7
+            },
+            {
+              "title": "Rate limiting works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 5,
+                      "status": "failed",
+                      "duration": 8141,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:134:41",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 41,
+                          "line": 134
+                        },
+                        "snippet": "  132 |     // Some requests should be rate limited (429 status)\n  133 |     const rateLimitedResponses = responses.filter(r => r.status() === 429);\n> 134 |     expect(rateLimitedResponses.length).toBeGreaterThan(0);\n      |                                         ^\n  135 |\n  136 |     // Check rate limit headers\n  137 |     const lastResponse = responses[responses.length - 1];"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 41,
+                            "line": 134
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  132 |     // Some requests should be rate limited (429 status)\n  133 |     const rateLimitedResponses = responses.filter(r => r.status() === 429);\n> 134 |     expect(rateLimitedResponses.length).toBeGreaterThan(0);\n      |                                         ^\n  135 |\n  136 |     // Check rate limit headers\n  137 |     const lastResponse = responses[responses.length - 1];\n    at /home/chad/spotify/tests/api.spec.js:134:41"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:22.748Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 41,
+                        "line": 134
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-a0c5608ba0b9ba3b6cb2",
+              "file": "api.spec.js",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "Invalid playlist ID returns 400",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 21,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:147:31",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 31,
+                          "line": 147
+                        },
+                        "snippet": "  145 |     const response = await request.get('/api/playlist/invalid-id');\n  146 |\n> 147 |     expect(response.status()).toBe(400);\n      |                               ^\n  148 |\n  149 |     const data = await response.json();\n  150 |     expect(data).toHaveProperty('error');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 31,
+                            "line": 147
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  145 |     const response = await request.get('/api/playlist/invalid-id');\n  146 |\n> 147 |     expect(response.status()).toBe(400);\n      |                               ^\n  148 |\n  149 |     const data = await response.json();\n  150 |     expect(data).toHaveProperty('error');\n    at /home/chad/spotify/tests/api.spec.js:147:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:23.598Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 31,
+                        "line": 147
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-862e52ef181b7d955141",
+              "file": "api.spec.js",
+              "line": 144,
+              "column": 7
+            },
+            {
+              "title": "Non-existent endpoint returns 404",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 22,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:23.897Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-6b8092f43ecaa345d8fb",
+              "file": "api.spec.js",
+              "line": 153,
+              "column": 7
+            },
+            {
+              "title": "CORS preflight request works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 22,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:172:27",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 27,
+                          "line": 172
+                        },
+                        "snippet": "  170 |     });\n  171 |\n> 172 |     expect(response.ok()).toBeTruthy();\n      |                           ^\n  173 |\n  174 |     const headers = response.headers();\n  175 |     expect(headers['access-control-allow-origin']).toBeTruthy();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 27,
+                            "line": 172
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  170 |     });\n  171 |\n> 172 |     expect(response.ok()).toBeTruthy();\n      |                           ^\n  173 |\n  174 |     const headers = response.headers();\n  175 |     expect(headers['access-control-allow-origin']).toBeTruthy();\n    at /home/chad/spotify/tests/api.spec.js:172:27"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:24.061Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 27,
+                        "line": 172
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-4e4a3f78d16f655411ee",
+              "file": "api.spec.js",
+              "line": 162,
+              "column": 7
+            },
+            {
+              "title": "GET /healthz - health check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 21,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 33,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:29.961Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-0e6cf14a1e8a281e113e",
+              "file": "api.spec.js",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlists - featured playlists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 22,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 377,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:30.417Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-3db3ff72f8c259492792",
+              "file": "api.spec.js",
+              "line": 18,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlists with sorting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 21,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 555,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:30.021Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-5e6c314bde0e0eb40d5a",
+              "file": "api.spec.js",
+              "line": 43,
+              "column": 7
+            },
+            {
+              "title": "GET /api/user/:userId/playlists - user playlists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 23,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 625,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:30.779Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-1243bee3f67558cdc687",
+              "file": "api.spec.js",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "GET /api/playlist/:id - individual playlist",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 21,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 719,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:86:29",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 29,
+                          "line": 86
+                        },
+                        "snippet": "  84 |       }\n  85 |\n> 86 |       expect(response.ok()).toBeTruthy();\n     |                             ^\n  87 |\n  88 |       const data = await response.json();\n  89 |       expect(data).toHaveProperty('playlist');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 29,
+                            "line": 86
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  84 |       }\n  85 |\n> 86 |       expect(response.ok()).toBeTruthy();\n     |                             ^\n  87 |\n  88 |       const data = await response.json();\n  89 |       expect(data).toHaveProperty('playlist');\n    at /home/chad/spotify/tests/api.spec.js:86:29"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:30.591Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 29,
+                        "line": 86
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-1dde1449ade7890f12f9",
+              "file": "api.spec.js",
+              "line": 70,
+              "column": 7
+            },
+            {
+              "title": "GET /api/search - search functionality",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 22,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 365,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:118:18",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 18,
+                          "line": 118
+                        },
+                        "snippet": "  116 |     const data = await response.json();\n  117 |     expect(data).toHaveProperty('playlists');\n> 118 |     expect(data).toHaveProperty('tracks');\n      |                  ^\n  119 |     expect(data).toHaveProperty('albums');\n  120 |     expect(data).toHaveProperty('artists');\n  121 |   });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 18,
+                            "line": 118
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\nExpected path: \u001b[32m\"tracks\"\u001b[39m\nReceived path: \u001b[31m[]\u001b[39m\n\nReceived value: \u001b[31m{\"playlists\": {\"href\": \"https://api.spotify.com/v1/search?offset=0&limit=3&query=rock&type=playlist\", \"items\": [null, null, null], \"limit\": 3, \"next\": \"https://api.spotify.com/v1/search?offset=3&limit=3&query=rock&type=playlist\", \"offset\": 0, \"previous\": null, \"total\": 102}}\u001b[39m\n\n  116 |     const data = await response.json();\n  117 |     expect(data).toHaveProperty('playlists');\n> 118 |     expect(data).toHaveProperty('tracks');\n      |                  ^\n  119 |     expect(data).toHaveProperty('albums');\n  120 |     expect(data).toHaveProperty('artists');\n  121 |   });\n    at /home/chad/spotify/tests/api.spec.js:118:18"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:30.819Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 18,
+                        "line": 118
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-bd9963856ff7c7588a4c",
+              "file": "api.spec.js",
+              "line": 111,
+              "column": 7
+            },
+            {
+              "title": "Rate limiting works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 25,
+                      "parallelIndex": 5,
+                      "status": "failed",
+                      "duration": 561,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:134:41",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 41,
+                          "line": 134
+                        },
+                        "snippet": "  132 |     // Some requests should be rate limited (429 status)\n  133 |     const rateLimitedResponses = responses.filter(r => r.status() === 429);\n> 134 |     expect(rateLimitedResponses.length).toBeGreaterThan(0);\n      |                                         ^\n  135 |\n  136 |     // Check rate limit headers\n  137 |     const lastResponse = responses[responses.length - 1];"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 41,
+                            "line": 134
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  132 |     // Some requests should be rate limited (429 status)\n  133 |     const rateLimitedResponses = responses.filter(r => r.status() === 429);\n> 134 |     expect(rateLimitedResponses.length).toBeGreaterThan(0);\n      |                                         ^\n  135 |\n  136 |     // Check rate limit headers\n  137 |     const lastResponse = responses[responses.length - 1];\n    at /home/chad/spotify/tests/api.spec.js:134:41"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.799Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 41,
+                        "line": 134
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-3d98cbbe5a98e680df71",
+              "file": "api.spec.js",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "Invalid playlist ID returns 400",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 27,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 29,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:147:31",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 31,
+                          "line": 147
+                        },
+                        "snippet": "  145 |     const response = await request.get('/api/playlist/invalid-id');\n  146 |\n> 147 |     expect(response.status()).toBe(400);\n      |                               ^\n  148 |\n  149 |     const data = await response.json();\n  150 |     expect(data).toHaveProperty('error');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 31,
+                            "line": 147
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  145 |     const response = await request.get('/api/playlist/invalid-id');\n  146 |\n> 147 |     expect(response.status()).toBe(400);\n      |                               ^\n  148 |\n  149 |     const data = await response.json();\n  150 |     expect(data).toHaveProperty('error');\n    at /home/chad/spotify/tests/api.spec.js:147:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:32.192Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 31,
+                        "line": 147
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-3a1e37149da22d6a6334",
+              "file": "api.spec.js",
+              "line": 144,
+              "column": 7
+            },
+            {
+              "title": "Non-existent endpoint returns 404",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 24,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 26,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.697Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-f054bcf4bf597a8c60c3",
+              "file": "api.spec.js",
+              "line": 153,
+              "column": 7
+            },
+            {
+              "title": "CORS preflight request works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 26,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 26,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/chad/spotify/tests/api.spec.js:172:27",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/api.spec.js",
+                          "column": 27,
+                          "line": 172
+                        },
+                        "snippet": "  170 |     });\n  171 |\n> 172 |     expect(response.ok()).toBeTruthy();\n      |                           ^\n  173 |\n  174 |     const headers = response.headers();\n  175 |     expect(headers['access-control-allow-origin']).toBeTruthy();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/api.spec.js",
+                            "column": 27,
+                            "line": 172
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  170 |     });\n  171 |\n> 172 |     expect(response.ok()).toBeTruthy();\n      |                           ^\n  173 |\n  174 |     const headers = response.headers();\n  175 |     expect(headers['access-control-allow-origin']).toBeTruthy();\n    at /home/chad/spotify/tests/api.spec.js:172:27"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.832Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/api.spec.js",
+                        "column": 27,
+                        "line": 172
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8747e39b871de0524be5-87a03f9317709deac5e3",
+              "file": "api.spec.js",
+              "line": 162,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "website.spec.js",
+      "file": "website.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Spotify Fan Website",
+          "file": "website.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "homepage loads correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 5625,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n\n    at /home/chad/spotify/tests/website.spec.js:13:56",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 56,
+                          "line": 13
+                        },
+                        "snippet": "  11 |     // Check for main content elements\n  12 |     await expect(page.locator('h1')).toBeVisible();\n> 13 |     await expect(page.locator('#playlists-container')).toBeVisible();\n     |                                                        ^\n  14 |\n  15 |     // Take a screenshot for troubleshooting\n  16 |     await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 56,
+                            "line": 13
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n\n\n  11 |     // Check for main content elements\n  12 |     await expect(page.locator('h1')).toBeVisible();\n> 13 |     await expect(page.locator('#playlists-container')).toBeVisible();\n     |                                                        ^\n  14 |\n  15 |     // Take a screenshot for troubleshooting\n  16 |     await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });\n    at /home/chad/spotify/tests/website.spec.js:13:56"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.384Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/chad/spotify/test-results/website-Spotify-Fan-Website-homepage-loads-correctly-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 56,
+                        "line": 13
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-2731d84346a2f9c81884",
+              "file": "website.spec.js",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "API health endpoint returns valid JSON",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 16,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.656Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-8eabd394d805be7bb96b",
+              "file": "website.spec.js",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "API playlists endpoint returns valid data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 372,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.687Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-9c7355c3501f9a51c989",
+              "file": "website.spec.js",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "login button is present and clickable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 2124,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.248Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-133c0139212927e35f41",
+              "file": "website.spec.js",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "featured playlists load and display correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10546,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\u001b[2m    21 × locator resolved to 20 elements. Proceeding with the first one: <div class=\"playlist-card\" data-playlist-id=\"0NfjMqrzcGKVsbYZmhf4Md\">…</div>\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\u001b[2m    21 × locator resolved to 20 elements. Proceeding with the first one: <div class=\"playlist-card\" data-playlist-id=\"0NfjMqrzcGKVsbYZmhf4Md\">…</div>\u001b[22m\n\n    at /home/chad/spotify/tests/website.spec.js:67:16",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 16,
+                          "line": 67
+                        },
+                        "snippet": "  65 |\n  66 |     // Wait for playlists to load\n> 67 |     await page.waitForSelector('.playlist-card, [data-testid=\"playlist-item\"]', { timeout: 10000 });\n     |                ^\n  68 |\n  69 |     // Check that we have playlist items\n  70 |     const playlistItems = page.locator('.playlist-card, [data-testid=\"playlist-item\"]');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 16,
+                            "line": 67
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\u001b[2m    21 × locator resolved to 20 elements. Proceeding with the first one: <div class=\"playlist-card\" data-playlist-id=\"0NfjMqrzcGKVsbYZmhf4Md\">…</div>\u001b[22m\n\n\n  65 |\n  66 |     // Wait for playlists to load\n> 67 |     await page.waitForSelector('.playlist-card, [data-testid=\"playlist-item\"]', { timeout: 10000 });\n     |                ^\n  68 |\n  69 |     // Check that we have playlist items\n  70 |     const playlistItems = page.locator('.playlist-card, [data-testid=\"playlist-item\"]');\n    at /home/chad/spotify/tests/website.spec.js:67:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.310Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/chad/spotify/test-results/website-Spotify-Fan-Websit-976d3--load-and-display-correctly-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 16,
+                        "line": 67
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-8a02307e5f44ed38f5cf",
+              "file": "website.spec.js",
+              "line": 63,
+              "column": 7
+            },
+            {
+              "title": "search functionality works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 576,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Search input not found, skipping search test\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:20.916Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-fe6807cc700375696a38",
+              "file": "website.spec.js",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "mobile responsiveness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 51,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.509Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-fe7f0b7cc3487486e3c2",
+              "file": "website.spec.js",
+              "line": 106,
+              "column": 7
+            },
+            {
+              "title": "error handling - invalid API endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 11,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.069Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-57d9eb887954392a9cf8",
+              "file": "website.spec.js",
+              "line": 118,
+              "column": 7
+            },
+            {
+              "title": "CORS headers are properly set",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 12,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n    at /home/chad/spotify/tests/website.spec.js:136:56",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 56,
+                          "line": 136
+                        },
+                        "snippet": "  134 |     // Check CORS headers\n  135 |     const corsHeaders = response.headers();\n> 136 |     expect(corsHeaders['access-control-allow-origin']).toBeTruthy();\n      |                                                        ^\n  137 |     expect(corsHeaders['access-control-allow-credentials']).toBe('true');\n  138 |   });\n  139 | });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 56,
+                            "line": 136
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  134 |     // Check CORS headers\n  135 |     const corsHeaders = response.headers();\n> 136 |     expect(corsHeaders['access-control-allow-origin']).toBeTruthy();\n      |                                                        ^\n  137 |     expect(corsHeaders['access-control-allow-credentials']).toBe('true');\n  138 |   });\n  139 | });\n    at /home/chad/spotify/tests/website.spec.js:136:56"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:21.091Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 56,
+                        "line": 136
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-2186f1a443b7b751a188",
+              "file": "website.spec.js",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "homepage loads correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 6355,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n\n    at /home/chad/spotify/tests/website.spec.js:13:56",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 56,
+                          "line": 13
+                        },
+                        "snippet": "  11 |     // Check for main content elements\n  12 |     await expect(page.locator('h1')).toBeVisible();\n> 13 |     await expect(page.locator('#playlists-container')).toBeVisible();\n     |                                                        ^\n  14 |\n  15 |     // Take a screenshot for troubleshooting\n  16 |     await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 56,
+                            "line": 13
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n\n\n  11 |     // Check for main content elements\n  12 |     await expect(page.locator('h1')).toBeVisible();\n> 13 |     await expect(page.locator('#playlists-container')).toBeVisible();\n     |                                                        ^\n  14 |\n  15 |     // Take a screenshot for troubleshooting\n  16 |     await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });\n    at /home/chad/spotify/tests/website.spec.js:13:56"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:23.940Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/chad/spotify/test-results/website-Spotify-Fan-Website-homepage-loads-correctly-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 56,
+                        "line": 13
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-d6c41d0e22316cc1db5b",
+              "file": "website.spec.js",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "API health endpoint returns valid JSON",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 25,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:24.541Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-adf854735cdbd7b7541c",
+              "file": "website.spec.js",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "API playlists endpoint returns valid data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5533,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:24.586Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-7589a6924140ca63cbe3",
+              "file": "website.spec.js",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "login button is present and clickable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 18,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 4007,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:26.669Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-ab40d843c40c3bde9bd3",
+              "file": "website.spec.js",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "featured playlists load and display correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 11561,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\u001b[2m    22 × locator resolved to 20 elements. Proceeding with the first one: <div class=\"playlist-card\" data-playlist-id=\"0NfjMqrzcGKVsbYZmhf4Md\">…</div>\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\u001b[2m    22 × locator resolved to 20 elements. Proceeding with the first one: <div class=\"playlist-card\" data-playlist-id=\"0NfjMqrzcGKVsbYZmhf4Md\">…</div>\u001b[22m\n\n    at /home/chad/spotify/tests/website.spec.js:67:16",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 16,
+                          "line": 67
+                        },
+                        "snippet": "  65 |\n  66 |     // Wait for playlists to load\n> 67 |     await page.waitForSelector('.playlist-card, [data-testid=\"playlist-item\"]', { timeout: 10000 });\n     |                ^\n  68 |\n  69 |     // Check that we have playlist items\n  70 |     const playlistItems = page.locator('.playlist-card, [data-testid=\"playlist-item\"]');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 16,
+                            "line": 67
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\u001b[2m    22 × locator resolved to 20 elements. Proceeding with the first one: <div class=\"playlist-card\" data-playlist-id=\"0NfjMqrzcGKVsbYZmhf4Md\">…</div>\u001b[22m\n\n\n  65 |\n  66 |     // Wait for playlists to load\n> 67 |     await page.waitForSelector('.playlist-card, [data-testid=\"playlist-item\"]', { timeout: 10000 });\n     |                ^\n  68 |\n  69 |     // Check that we have playlist items\n  70 |     const playlistItems = page.locator('.playlist-card, [data-testid=\"playlist-item\"]');\n    at /home/chad/spotify/tests/website.spec.js:67:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:30.131Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/chad/spotify/test-results/website-Spotify-Fan-Websit-976d3--load-and-display-correctly-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 16,
+                        "line": 67
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-a5b5b0abc6237c9476b4",
+              "file": "website.spec.js",
+              "line": 63,
+              "column": 7
+            },
+            {
+              "title": "search functionality works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 19,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1523,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Search input not found, skipping search test\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.057Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-3762dfd72f34048e501d",
+              "file": "website.spec.js",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "mobile responsiveness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 20,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 719,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:29.690Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-41d187e65b1cc7cbede0",
+              "file": "website.spec.js",
+              "line": 106,
+              "column": 7
+            },
+            {
+              "title": "error handling - invalid API endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 18,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 17,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.005Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-c32c78500c0acd299d16",
+              "file": "website.spec.js",
+              "line": 118,
+              "column": 7
+            },
+            {
+              "title": "CORS headers are properly set",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 18,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 15,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n    at /home/chad/spotify/tests/website.spec.js:136:56",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 56,
+                          "line": 136
+                        },
+                        "snippet": "  134 |     // Check CORS headers\n  135 |     const corsHeaders = response.headers();\n> 136 |     expect(corsHeaders['access-control-allow-origin']).toBeTruthy();\n      |                                                        ^\n  137 |     expect(corsHeaders['access-control-allow-credentials']).toBe('true');\n  138 |   });\n  139 | });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 56,
+                            "line": 136
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  134 |     // Check CORS headers\n  135 |     const corsHeaders = response.headers();\n> 136 |     expect(corsHeaders['access-control-allow-origin']).toBeTruthy();\n      |                                                        ^\n  137 |     expect(corsHeaders['access-control-allow-credentials']).toBe('true');\n  138 |   });\n  139 | });\n    at /home/chad/spotify/tests/website.spec.js:136:56"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.031Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 56,
+                        "line": 136
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-2afcbde401ff9ad62cdc",
+              "file": "website.spec.js",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "homepage loads correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 23,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 5637,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n\n    at /home/chad/spotify/tests/website.spec.js:13:56",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 56,
+                          "line": 13
+                        },
+                        "snippet": "  11 |     // Check for main content elements\n  12 |     await expect(page.locator('h1')).toBeVisible();\n> 13 |     await expect(page.locator('#playlists-container')).toBeVisible();\n     |                                                        ^\n  14 |\n  15 |     // Take a screenshot for troubleshooting\n  16 |     await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 56,
+                            "line": 13
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#playlists-container')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#playlists-container')\u001b[22m\n\n\n  11 |     // Check for main content elements\n  12 |     await expect(page.locator('h1')).toBeVisible();\n> 13 |     await expect(page.locator('#playlists-container')).toBeVisible();\n     |                                                        ^\n  14 |\n  15 |     // Take a screenshot for troubleshooting\n  16 |     await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });\n    at /home/chad/spotify/tests/website.spec.js:13:56"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.429Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/chad/spotify/test-results/website-Spotify-Fan-Website-homepage-loads-correctly-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 56,
+                        "line": 13
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-6d0aa333b1a0673c4a3e",
+              "file": "website.spec.js",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "API health endpoint returns valid JSON",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 24,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 15,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.746Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-9c5a6bb015c4689b4060",
+              "file": "website.spec.js",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "API playlists endpoint returns valid data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 24,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 412,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:31.775Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-bfa76e39e23281af8796",
+              "file": "website.spec.js",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "login button is present and clickable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 28,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 1977,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:32.437Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-5a34fd2f94eafd4719c4",
+              "file": "website.spec.js",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "featured playlists load and display correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 24,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 10600,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\n    at /home/chad/spotify/tests/website.spec.js:67:16",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 16,
+                          "line": 67
+                        },
+                        "snippet": "  65 |\n  66 |     // Wait for playlists to load\n> 67 |     await page.waitForSelector('.playlist-card, [data-testid=\"playlist-item\"]', { timeout: 10000 });\n     |                ^\n  68 |\n  69 |     // Check that we have playlist items\n  70 |     const playlistItems = page.locator('.playlist-card, [data-testid=\"playlist-item\"]');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 16,
+                            "line": 67
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.playlist-card, [data-testid=\"playlist-item\"]') to be visible\u001b[22m\n\n\n  65 |\n  66 |     // Wait for playlists to load\n> 67 |     await page.waitForSelector('.playlist-card, [data-testid=\"playlist-item\"]', { timeout: 10000 });\n     |                ^\n  68 |\n  69 |     // Check that we have playlist items\n  70 |     const playlistItems = page.locator('.playlist-card, [data-testid=\"playlist-item\"]');\n    at /home/chad/spotify/tests/website.spec.js:67:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:32.196Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/chad/spotify/test-results/website-Spotify-Fan-Websit-976d3--load-and-display-correctly-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 16,
+                        "line": 67
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-cebb050cb33371e54e3f",
+              "file": "website.spec.js",
+              "line": 63,
+              "column": 7
+            },
+            {
+              "title": "search functionality works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 29,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2921,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:32.821Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-481f8b279c268e28e1a4",
+              "file": "website.spec.js",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "mobile responsiveness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 30,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 195,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:32.940Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-75b34447015c6f2e3323",
+              "file": "website.spec.js",
+              "line": 106,
+              "column": 7
+            },
+            {
+              "title": "error handling - invalid API endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 30,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 22,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:33.245Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-e7b16ca108c222af7d4a",
+              "file": "website.spec.js",
+              "line": 118,
+              "column": 7
+            },
+            {
+              "title": "CORS headers are properly set",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 30,
+                      "parallelIndex": 5,
+                      "status": "failed",
+                      "duration": 12,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n    at /home/chad/spotify/tests/website.spec.js:136:56",
+                        "location": {
+                          "file": "/home/chad/spotify/tests/website.spec.js",
+                          "column": 56,
+                          "line": 136
+                        },
+                        "snippet": "  134 |     // Check CORS headers\n  135 |     const corsHeaders = response.headers();\n> 136 |     expect(corsHeaders['access-control-allow-origin']).toBeTruthy();\n      |                                                        ^\n  137 |     expect(corsHeaders['access-control-allow-credentials']).toBe('true');\n  138 |   });\n  139 | });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/chad/spotify/tests/website.spec.js",
+                            "column": 56,
+                            "line": 136
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  134 |     // Check CORS headers\n  135 |     const corsHeaders = response.headers();\n> 136 |     expect(corsHeaders['access-control-allow-origin']).toBeTruthy();\n      |                                                        ^\n  137 |     expect(corsHeaders['access-control-allow-credentials']).toBe('true');\n  138 |   });\n  139 | });\n    at /home/chad/spotify/tests/website.spec.js:136:56"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-25T23:47:33.278Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/chad/spotify/tests/website.spec.js",
+                        "column": 56,
+                        "line": 136
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0f40305e0cf42b28aebd-c97a7134c332dd1fda14",
+              "file": "website.spec.js",
+              "line": 127,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-25T23:47:19.146Z",
+    "duration": 25557.270999999997,
+    "expected": 33,
+    "skipped": 0,
+    "unexpected": 24,
+    "flaky": 0
+  }
+}
