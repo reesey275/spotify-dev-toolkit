@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pre-push hook to prevent pushing commits that are not GPG-signed.
+# This checks commits that are not present on any remote (commits being pushed).
+
+commits=$(git rev-list --not --remotes=origin || true)
+
+if [ -z "$commits" ]; then
+  exit 0
+fi
+
+for c in $commits; do
+  gstat=$(git log -1 --pretty=%G? "$c" 2>/dev/null || true)
+  # %G? codes: G=good, U=good but untrusted, R=good (?), B=bad, N=no signature
+  if [ "$gstat" != "G" ] && [ "$gstat" != "U" ]; then
+    echo "Push rejected: commit $c is not GPG-signed (status: $gstat)."
+    echo "Amend and sign with: git commit --amend -S --no-edit && git push"
+    echo "Or use the helper: ./bin/commit-signed.sh"
+    exit 1
+  fi
+done
+
+exit 0

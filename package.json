@@ -42,6 +42,8 @@
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.9.1",
-    "nodemon": "^3.1.10"
+    "axios-cookiejar-support": "^6.0.5",
+    "nodemon": "^3.1.10",
+    "tough-cookie": "^6.0.0"
   }
 }

@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-gpg-signed-push
+        name: Check GPG-signed commits on push
+        entry: hooks/check-signed-push.sh
+        language: script
+        stages: [pre-push]
+        # Ensure this runs even when no files changed (empty commits)
+        always_run: true

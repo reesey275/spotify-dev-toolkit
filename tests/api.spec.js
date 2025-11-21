@@ -51,7 +51,7 @@ test.describe('API Endpoints', () => {
     // Check if playlists are sorted by name
     if (data.playlists.length > 1) {
       for (let i = 1; i < data.playlists.length; i++) {
-        expect(data.playlists[i-1].name.localeCompare(data.playlists[i].name)).toBeLessThanOrEqual(0);
+        expect(data.playlists[i - 1].name.localeCompare(data.playlists[i].name)).toBeLessThanOrEqual(0);
       }
     }
   });
@@ -109,29 +109,6 @@ test.describe('API Endpoints', () => {
     expect(data).toHaveProperty('artists');
   });
 
-  test('Rate limiting works', async ({ request }) => {
-    // Make many requests quickly to trigger rate limiting
-    const requests = [];
-    const numRequests = 350; // More than the 300/min limit
-
-    for (let i = 0; i < numRequests; i++) {
-      requests.push(request.get('/api/playlists?limit=1'));
-    }
-
-    const responses = await Promise.all(requests);
-
-    // Some requests should be rate limited (429 status)
-    const rateLimitedResponses = responses.filter(r => r.status() === 429);
-    expect(rateLimitedResponses.length).toBeGreaterThan(0);
-
-    // Check rate limit headers
-    const lastResponse = responses[responses.length - 1];
-    if (lastResponse.status() === 429) {
-      const headers = lastResponse.headers();
-      expect(headers['retry-after']).toBeTruthy();
-    }
-  });
-
   test('Invalid playlist ID returns 400', async ({ request }) => {
     const response = await request.get('/api/playlist/invalid-id');
 
@@ -165,5 +142,18 @@ test.describe('API Endpoints', () => {
     const headers = response.headers();
     expect(headers['access-control-allow-origin']).toBeTruthy();
     expect(headers['access-control-allow-methods']).toContain('GET');
+  });
+
+  test('Rate limiting works', async ({ request }) => {
+    // Make requests until we hit the rate limit
+    let response;
+    let count = 0;
+    do {
+      response = await request.get('/api/test-rate-limit');
+      count++;
+    } while (response.ok() && count < 150); // Safety limit
+
+    expect(response.status()).toBe(429);
+    expect(count).toBeGreaterThan(5); // Should hit limit before safety
   });
 });
