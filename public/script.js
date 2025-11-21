@@ -11,7 +11,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 class SpotifyFanApp {
     constructor() {
-        this.currentView = this.getViewFromUrl() || 'my-playlists'; // Get view from URL hash or default
+        this.currentView = this.getViewFromUrl() || 'my-playlists'; // Default to my-playlists to match tests
         this.currentPlaylist = null;
         this.playlists = [];
         this.myPlaylists = []; // Add this to store user's playlists
@@ -23,13 +23,13 @@ class SpotifyFanApp {
         this.currentUser = null;
         this.currentlyPlayingInterval = null; // For updating currently playing progress
         this.lastCurrentlyPlayingData = null; // Track last polling result to avoid unnecessary updates
-        
+
         // Spotify Web Playback SDK
         this.player = null;
         this.deviceId = null;
         this.playerState = null;
         this.sdkBlockedByCSP = false; // Track if SDK is blocked by CSP
-        
+
         this.init();
     }
 
@@ -53,16 +53,16 @@ class SpotifyFanApp {
                 sourceFile: event.sourceFile,
                 lineNumber: event.lineNumber
             });
-            
+
             // Check if this is related to Spotify SDK iframe creation
-            if (event.blockedURI && event.blockedURI.includes('sdk.scdn.co') && 
+            if (event.blockedURI && event.blockedURI.includes('sdk.scdn.co') &&
                 event.violatedDirective && event.violatedDirective.includes('frame-src')) {
                 console.warn('🚨 Spotify SDK blocked by CSP frame-src restriction');
                 this.sdkBlockedByCSP = true;
                 this.handleSDKBlockedByCSP();
             }
         });
-        
+
         // Also check for SDK loading failures
         window.addEventListener('error', (event) => {
             if (event.target && event.target.src && event.target.src.includes('sdk.scdn.co')) {
@@ -75,10 +75,10 @@ class SpotifyFanApp {
 
     handleSDKBlockedByCSP() {
         console.log('🔒 Handling Spotify SDK blocked by CSP');
-        
+
         // Show a notification to the user
         this.showDataSourceMessage('warning', 'Web player controls unavailable due to security restrictions. Use Spotify app/web player instead.');
-        
+
         // Update any player-related UI to show fallback state
         if (this.currentView === 'currently-playing') {
             this.loadCurrentlyPlayingView();
@@ -92,16 +92,16 @@ class SpotifyFanApp {
             // Clear the parameter from URL
             const newUrl = window.location.pathname + window.location.hash;
             window.history.replaceState({}, document.title, newUrl);
-            
+
             // Mark as authenticated
             this.isAuthenticated = true;
-            
+
             // Show success message
             this.showAuthSuccess();
-            
+
             // Initialize player after successful auth
             this.initializeSpotifyPlayer();
-            
+
             // Switch to my-playlists view since user just authenticated
             this.switchView('my-playlists');
         }
@@ -126,7 +126,7 @@ class SpotifyFanApp {
             animation: slideDown 0.3s ease-out;
         `;
         successDiv.innerHTML = '✅ Successfully logged in with Spotify!';
-        
+
         // Add animation CSS
         const style = document.createElement('style');
         style.textContent = `
@@ -136,9 +136,9 @@ class SpotifyFanApp {
             }
         `;
         document.head.appendChild(style);
-        
+
         document.body.appendChild(successDiv);
-        
+
         // Auto-hide after 3 seconds
         setTimeout(() => {
             if (successDiv.parentNode) {
@@ -164,7 +164,7 @@ class SpotifyFanApp {
             const newView = this.getViewFromUrl();
             if (newView && newView !== this.currentView) {
                 console.log(`🔄 Hash changed to: ${newView}`);
-                
+
                 // Check authentication for protected views on hash change
                 const protectedViews = ['my-playlists', 'currently-playing'];
                 if (protectedViews.includes(newView)) {
@@ -189,13 +189,15 @@ class SpotifyFanApp {
     }
 
     setupEventListeners() {
-                // Navigation event listeners
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // Navigation event listeners (use event delegation for reliability across browsers)
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest && e.target.closest('.nav-btn');
+            if (btn) {
+                e.preventDefault();
                 const view = btn.dataset.view;
-                console.log(`🖱️ Frontend: Nav button clicked for view "${view}"`);
+                console.log(`🖱️ Frontend: Nav button clicked for view "${view}" (delegated)`);
                 this.switchView(view);
-            });
+            }
         });
 
         // Home logo click listener
@@ -280,7 +282,7 @@ class SpotifyFanApp {
                 this.currentUser = data.username;
                 this.updateAuthUI();
                 console.log('✅ User authentication status checked:', this.isAuthenticated ? `authenticated as ${this.currentUser}` : 'not authenticated');
-                
+
                 // Initialize Web Playback SDK if authenticated
                 if (this.isAuthenticated) {
                     this.initializeSpotifyPlayer();
@@ -393,7 +395,7 @@ class SpotifyFanApp {
         this.showLoading(true);
         try {
             console.log(`🚀 Frontend: loadInitialData called for view "${this.currentView}"`);
-            
+
             // Load data based on the current view
             // Prefer to show featured content first so anonymous users can browse
             // without being forced to authenticate. Load user playlists in the
@@ -414,9 +416,9 @@ class SpotifyFanApp {
                 // For other views, let switchView handle the data loading but
                 // still fetch user playlists in background for navigation
                 await this.loadFeaturedPlaylists();
-                this.loadMyPlaylists().catch(() => {});
+                this.loadMyPlaylists().catch(() => { });
             }
-            
+
             this.showLoading(false);
             console.log('✅ Frontend: Initial data loaded successfully');
         } catch (error) {
@@ -431,16 +433,16 @@ class SpotifyFanApp {
         try {
             const response = await fetch(`/api/playlists?sort=${sort}&limit=20`);
             if (!response.ok) throw new Error('Failed to fetch featured playlists');
-            
+
             const data = await response.json();
             this.playlists = data.playlists;
-            
+
             // Handle different data sources
             if (data.source && data.message) {
                 console.log(`📡 Frontend: Received ${data.source} data - ${data.message}`);
                 this.showDataSourceMessage(data.source, data.message);
             }
-            
+
             return this.playlists;
         } catch (error) {
             console.error('Error loading featured playlists:', error);
@@ -452,7 +454,7 @@ class SpotifyFanApp {
         try {
             const response = await fetch(`/api/user/${userId}/playlists?sort=${sort}&limit=50`);
             if (!response.ok) throw new Error('Failed to fetch user playlists');
-            
+
             const data = await response.json();
             return data.playlists;
         } catch (error) {
@@ -466,7 +468,7 @@ class SpotifyFanApp {
             console.log('🔍 Frontend: Loading my playlists...');
             const response = await fetch(`/api/my-playlists?sort=${sort}&limit=50`);
             console.log('📡 Frontend: API response status:', response.status, response.ok);
-            
+
             if (response.status === 401) {
                 // User not authenticated
                 console.log('❌ User not authenticated for my-playlists');
@@ -476,27 +478,27 @@ class SpotifyFanApp {
                 this.myPlaylists = [];
                 return this.myPlaylists;
             }
-            
+
             if (!response.ok) throw new Error('Failed to fetch your playlists');
-            
+
             const data = await response.json();
             console.log('📊 Frontend: Received data:', data);
             console.log('📋 Frontend: Number of playlists:', data.playlists?.length);
             this.myPlaylists = data.playlists;
             this.currentUser = data.username;
-            
+
             // Only set authenticated if this is actually OAuth data, not fallback
             if (data.authenticated) {
                 this.isAuthenticated = true;
                 console.log('✅ User is authenticated with OAuth');
-                
+
                 // Initialize Web Playback SDK if authenticated
                 this.initializeSpotifyPlayer();
             } else {
                 this.isAuthenticated = false;
                 console.log('ℹ️ Showing fallback playlists (not authenticated)');
             }
-            
+
             this.updateAuthUI();
             return this.myPlaylists;
         } catch (error) {
@@ -517,7 +519,7 @@ class SpotifyFanApp {
         try {
             const response = await fetch(`/api/user/${userId}`);
             if (!response.ok) throw new Error('Failed to fetch user info');
-            
+
             const data = await response.json();
             return data;
         } catch (error) {
@@ -542,12 +544,12 @@ class SpotifyFanApp {
                 }
                 throw new Error('Failed to fetch playlist details');
             }
-            
+
             const data = await response.json();
             this.currentPlaylist = data.playlist;
             this.currentTracks = data.tracks;
             this.currentOffset = offset;
-            
+
             this.renderPlaylistView(data);
             this.showLoading(false);
         } catch (error) {
@@ -564,16 +566,16 @@ class SpotifyFanApp {
         try {
             const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=playlist&limit=20`);
             if (!response.ok) throw new Error('Search failed');
-            
+
             const data = await response.json();
             console.log('🔍 Search API response:', data);
-            
+
             const playlists = data.playlists?.items || [];
             console.log('🎵 Search results:', playlists.length, 'playlists found');
             if (playlists.length > 0) {
                 console.log('📋 First playlist structure:', playlists[0]);
             }
-            
+
             this.renderSearchResults(playlists);
             this.showLoading(false);
         } catch (error) {
@@ -606,12 +608,12 @@ class SpotifyFanApp {
     switchView(viewName) {
         console.log(`🔄 Frontend: switchView called with "${viewName}"`);
         console.trace('📍 Call stack for switchView');
-        
+
         // Update URL hash (but don't trigger hashchange event if it's already correct)
         if (window.location.hash.slice(1) !== viewName) {
             this.updateUrl(viewName);
         }
-        
+
         // Update navigation
         document.querySelectorAll('.nav-btn').forEach(btn => {
             if (btn.dataset.view === viewName) {
@@ -633,6 +635,21 @@ class SpotifyFanApp {
             this.currentView = viewName;
         }
 
+        // Ensure critical elements in the target view are explicitly visible
+        if (viewName === 'home') {
+            const grid = document.getElementById('playlists-grid');
+            if (grid) {
+                grid.classList.remove('hidden');
+                grid.style.visibility = 'visible';
+                grid.style.minHeight = grid.style.minHeight || '80px';
+            }
+            const sort = document.getElementById('sort-select');
+            if (sort) {
+                sort.classList.remove('hidden');
+                sort.style.visibility = 'visible';
+            }
+        }
+
         // Check authentication for protected views
         const protectedViews = ['my-playlists', 'currently-playing'];
         if (protectedViews.includes(viewName)) {
@@ -649,7 +666,7 @@ class SpotifyFanApp {
             // Load data for specific views
             this.handleViewSpecificData(viewName);
         }
-        
+
         // Handle currently playing interval
         this.handleCurrentlyPlayingInterval(viewName);
     }
@@ -660,7 +677,7 @@ class SpotifyFanApp {
             clearInterval(this.currentlyPlayingInterval);
             this.currentlyPlayingInterval = null;
         }
-        
+
         // Start new interval if currently playing view is active
         if (viewName === 'currently-playing') {
             // Increase interval to 15 seconds to be more API-friendly
@@ -706,24 +723,24 @@ class SpotifyFanApp {
 
     async loadCurrentlyPlayingView() {
         console.log('🎵 Loading currently playing view...');
-        
+
         try {
             this.showLoading();
-            
+
             const response = await fetch('/api/currently-playing');
             const data = await response.json();
-            
+
             this.showLoading(false);
-            
+
             if (response.status === 401) {
                 // User not authenticated
                 this.showNoTrackPlaying(true); // Pass true to show auth message
                 return;
             }
-            
+
             // Check if the data has actually changed to avoid unnecessary re-renders
             const hasDataChanged = this.hasCurrentlyPlayingDataChanged(data);
-            
+
             if (data.is_playing && data.item) {
                 // Only re-render if data has changed or we don't have previous data
                 if (hasDataChanged || !this.lastCurrentlyPlayingData) {
@@ -737,7 +754,7 @@ class SpotifyFanApp {
                 }
                 this.lastCurrentlyPlayingData = data; // Update cached data
             }
-            
+
         } catch (error) {
             console.error('Error loading currently playing:', error);
             this.showLoading(false);
@@ -846,25 +863,25 @@ class SpotifyFanApp {
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const volumeSlider = document.getElementById('volume-slider');
-        
+
         if (playPauseBtn) {
             playPauseBtn.addEventListener('click', () => {
                 this.togglePlayPause();
             });
         }
-        
+
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
                 this.previousTrack();
             });
         }
-        
+
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
                 this.nextTrack();
             });
         }
-        
+
         if (volumeSlider) {
             volumeSlider.addEventListener('input', (e) => {
                 this.setVolume(parseFloat(e.target.value));
@@ -875,21 +892,21 @@ class SpotifyFanApp {
     hasCurrentlyPlayingDataChanged(newData) {
         const oldData = this.lastCurrentlyPlayingData;
         if (!oldData) return true; // First time loading
-        
+
         // Check if playing state changed
         if (oldData.is_playing !== newData.is_playing) return true;
-        
+
         // If not playing, no need to check further
         if (!newData.is_playing) return false;
-        
+
         // Check if track changed
         if (!oldData.item || !newData.item) return true;
         if (oldData.item.id !== newData.item.id) return true;
-        
+
         // Check if progress changed significantly (more than 2 seconds difference)
         const progressDiff = Math.abs((oldData.progress_ms || 0) - (newData.progress_ms || 0));
         if (progressDiff > 2000) return true;
-        
+
         // No significant changes
         return false;
     }
@@ -897,10 +914,10 @@ class SpotifyFanApp {
     showNoTrackPlaying(needsAuth = false) {
         const container = document.getElementById('currently-playing-content');
         const noTrackDiv = document.getElementById('no-track-playing');
-        
+
         container.classList.add('hidden');
         noTrackDiv.classList.remove('hidden');
-        
+
         if (needsAuth) {
             noTrackDiv.innerHTML = `
                 <div class="no-track-icon">🔐</div>
@@ -919,7 +936,7 @@ class SpotifyFanApp {
 
     async transferPlaybackToWebPlayer() {
         if (!this.deviceId) return;
-        
+
         try {
             await fetch('/api/transfer-playback', {
                 method: 'PUT',
@@ -938,10 +955,10 @@ class SpotifyFanApp {
 
     updatePlayerUI() {
         if (!this.playerState) return;
-        
+
         const track = this.playerState.track_window.current_track;
         const isPlaying = !this.playerState.paused;
-        
+
         // Update currently playing display if on that view
         if (this.currentView === 'currently-playing') {
             this.renderCurrentlyPlaying({
@@ -966,7 +983,7 @@ class SpotifyFanApp {
         // Show error in currently playing view
         const container = document.getElementById('currently-playing-content');
         const noTrackDiv = document.getElementById('no-track-playing');
-        
+
         container.classList.add('hidden');
         noTrackDiv.classList.remove('hidden');
         noTrackDiv.innerHTML = `
@@ -1064,7 +1081,7 @@ class SpotifyFanApp {
 
     async sortPlaylists(sortBy) {
         if (!sortBy) return;
-        
+
         this.showLoading(true);
         try {
             await this.loadFeaturedPlaylists(sortBy);
@@ -1077,7 +1094,7 @@ class SpotifyFanApp {
 
     async sortMyPlaylists(sortBy) {
         if (!sortBy) return;
-        
+
         this.showLoading(true);
         try {
             // If user is not authenticated, sort the featured playlists instead
@@ -1098,7 +1115,7 @@ class SpotifyFanApp {
 
     async sortTracks(sortBy) {
         if (!sortBy || !this.currentPlaylist) return;
-        
+
         console.log('🔄 Sorting tracks by:', sortBy);
         await this.loadPlaylistDetails(this.currentPlaylist.id, sortBy, 0);
     }
@@ -1112,13 +1129,13 @@ class SpotifyFanApp {
         if (!container) return;
 
         // Filter out null/undefined playlists and those missing required fields
-        const validPlaylists = playlists.filter(playlist => 
-            playlist && 
-            playlist.id && 
-            playlist.name && 
+        const validPlaylists = playlists.filter(playlist =>
+            playlist &&
+            playlist.id &&
+            playlist.name &&
             typeof playlist === 'object'
         );
-        
+
         console.log(`🎨 Rendering ${validPlaylists.length} valid playlists out of ${playlists.length} total`);
 
         if (validPlaylists.length === 0) {
@@ -1147,10 +1164,10 @@ class SpotifyFanApp {
 
         userInfoContainer.innerHTML = `
             <div class="user-avatar">
-                ${imageUrl ? 
-                    `<img src="${imageUrl}" alt="${userInfo.display_name}" onerror="this.parentElement.innerHTML='👤'">` : 
-                    '👤'
-                }
+                ${imageUrl ?
+                `<img src="${imageUrl}" alt="${userInfo.display_name}" onerror="this.parentElement.innerHTML='👤'">` :
+                '👤'
+            }
             </div>
             <div class="user-details">
                 <h3>${this.escapeHtml(userInfo.display_name || userInfo.id)}</h3>
@@ -1199,10 +1216,10 @@ class SpotifyFanApp {
             }
             return;
         }
-        
+
         // Show playlists (either authenticated or fallback)
-    this.renderPlaylistsInContainer(this.myPlaylists || [], 'my-playlists-grid');
-        
+        this.renderPlaylistsInContainer(this.myPlaylists || [], 'my-playlists-grid');
+
         // Show a message if these are fallback playlists
         if (!this.isAuthenticated && this.myPlaylists && this.myPlaylists.length > 0) {
             this.showDataSourceMessage('fallback', `Showing playlists for ${this.currentUser} (demo mode - login for your playlists)`);
@@ -1215,7 +1232,7 @@ class SpotifyFanApp {
         const imageUrl = Array.isArray(images) && images.length > 0 ? images[0]?.url : null;
         const trackCount = playlist.tracks?.total || playlist.track_count || 0;
         const owner = playlist.owner?.display_name || 'Unknown';
-        const createdDate = playlist.created_date ? 
+        const createdDate = playlist.created_date ?
             new Date(playlist.created_date).toLocaleDateString() : '';
 
         console.log('🎨 Creating card for playlist:', playlist.name, 'Images:', images, 'ImageUrl:', imageUrl);
@@ -1223,10 +1240,10 @@ class SpotifyFanApp {
         return `
             <div class="playlist-card" data-playlist-id="${playlist.id}">
                 <div class="playlist-image">
-                    ${imageUrl ? 
-                        `<img src="${imageUrl}" alt="${this.escapeHtml(playlist.name)}" onerror="this.parentElement.innerHTML='🎵'">` : 
-                        '🎵'
-                    }
+                    ${imageUrl ?
+                `<img src="${imageUrl}" alt="${this.escapeHtml(playlist.name)}" onerror="this.parentElement.innerHTML='🎵'">` :
+                '🎵'
+            }
                 </div>
                 <div class="playlist-name" title="${this.escapeHtml(playlist.name)}">${this.escapeHtml(playlist.name)}</div>
                 <div class="playlist-details">${trackCount} tracks</div>
@@ -1243,23 +1260,23 @@ class SpotifyFanApp {
 
     renderPlaylistView(data) {
         const { playlist, tracks, pagination } = data;
-        
+
         // Render playlist header
         const playlistHeader = document.getElementById('playlist-header');
         const imageUrl = playlist.image;
-        
+
         playlistHeader.innerHTML = `
             <div class="playlist-cover">
-                ${imageUrl ? 
-                    `<img src="${imageUrl}" alt="${playlist.name}" onerror="this.parentElement.innerHTML='🎵'">` : 
-                    '🎵'
-                }
+                ${imageUrl ?
+                `<img src="${imageUrl}" alt="${playlist.name}" onerror="this.parentElement.innerHTML='🎵'">` :
+                '🎵'
+            }
             </div>
             <div class="playlist-info">
                 <h1 class="playlist-title">${this.escapeHtml(playlist.name)}</h1>
-                ${playlist.description ? 
-                    `<p class="playlist-description">${this.escapeHtml(playlist.description)}</p>` : ''
-                }
+                ${playlist.description ?
+                `<p class="playlist-description">${this.escapeHtml(playlist.description)}</p>` : ''
+            }
                 <div class="playlist-meta">
                     <strong>${playlist.total_tracks}</strong> tracks • 
                     by <strong>${this.escapeHtml(playlist.owner)}</strong>
@@ -1274,14 +1291,14 @@ class SpotifyFanApp {
 
         // Render tracks
         this.renderTracks(tracks);
-        
+
         // Render pagination if needed
         this.renderPagination(pagination);
     }
 
     renderTracks(tracks) {
         const tracksList = document.getElementById('tracks-list');
-        
+
         if (tracks.length === 0) {
             tracksList.innerHTML = '<p class="no-results">No tracks found in this playlist.</p>';
             return;
@@ -1301,19 +1318,19 @@ class SpotifyFanApp {
     }
 
     createTrackItem(track) {
-        const addedDate = track.added_at ? 
+        const addedDate = track.added_at ?
             new Date(track.added_at).toLocaleDateString() : '';
-        const artists = Array.isArray(track.artists) ? 
+        const artists = Array.isArray(track.artists) ?
             track.artists.join(', ') : track.artists;
 
         return `
             <div class="track-item" data-spotify-url="${track.external_urls?.spotify}">
                 <div class="track-number">${track.track_number}</div>
                 <div class="track-image">
-                    ${track.image ? 
-                        `<img src="${track.image}" alt="${track.name}" onerror="this.parentElement.innerHTML='🎵'">` : 
-                        '🎵'
-                    }
+                    ${track.image ?
+                `<img src="${track.image}" alt="${track.name}" onerror="this.parentElement.innerHTML='🎵'">` :
+                '🎵'
+            }
                 </div>
                 <div class="track-info">
                     <div class="track-name" title="${this.escapeHtml(track.name)}">${this.escapeHtml(track.name)}</div>
@@ -1328,14 +1345,14 @@ class SpotifyFanApp {
 
     renderPagination(pagination) {
         const paginationContainer = document.getElementById('pagination');
-        
+
         if (pagination.total <= pagination.limit) {
             paginationContainer.classList.add('hidden');
             return;
         }
 
         paginationContainer.classList.remove('hidden');
-        
+
         const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
         const totalPages = Math.ceil(pagination.total / pagination.limit);
 
@@ -1352,17 +1369,17 @@ class SpotifyFanApp {
 
     async loadPage(offset) {
         if (!this.currentPlaylist) return;
-        
+
         const sortSelect = document.getElementById('track-sort-select');
         const currentSort = sortSelect.value;
-        
+
         await this.loadPlaylistDetails(this.currentPlaylist.id, currentSort, offset);
     }
 
     showLoading(show) {
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
-        
+
         if (show) {
             loading.classList.remove('hidden');
             error.classList.add('hidden');
@@ -1375,12 +1392,12 @@ class SpotifyFanApp {
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
         const errorMessage = document.getElementById('error-message');
-        
+
         loading.classList.add('hidden');
         error.classList.remove('hidden');
         errorMessage.textContent = message;
     }
-    
+
     showDataSourceMessage(source, message) {
         // Find or create a data source indicator
         let indicator = document.getElementById('data-source-indicator');
@@ -1400,7 +1417,7 @@ class SpotifyFanApp {
             `;
             document.body.appendChild(indicator);
         }
-        
+
         // Style based on data source
         if (source === 'demo') {
             indicator.style.backgroundColor = '#ff6b6b';
@@ -1419,7 +1436,7 @@ class SpotifyFanApp {
             indicator.style.color = 'white';
             indicator.innerHTML = '✅ ' + message;
         }
-        
+
         // Auto-hide after 5 seconds for non-demo messages
         if (source !== 'demo' && source !== 'warning') {
             setTimeout(() => {
@@ -1443,49 +1460,49 @@ class SpotifyFanApp {
 
         try {
             console.log('📄 Exporting playlist to text file:', this.currentPlaylist.name);
-            
+
             // Get all tracks for the playlist (not just the current page)
             const response = await fetch(`/api/playlist/${this.currentPlaylist.id}?limit=500&offset=0`);
             if (!response.ok) throw new Error('Failed to fetch all tracks');
-            
+
             const data = await response.json();
             const tracks = data.tracks || [];
-            
+
             // Create text content
             let textContent = `Playlist: ${this.currentPlaylist.name}\n`;
             textContent += `Owner: ${this.currentPlaylist.owner}\n`;
             textContent += `Total Tracks: ${tracks.length}\n`;
             textContent += `Exported: ${new Date().toLocaleString()}\n`;
             textContent += `\n${'='.repeat(80)}\n\n`;
-            
+
             // Add header
             textContent += `${'Track'.padEnd(5)} | ${'Song Title'.padEnd(40)} | ${'Artist'.padEnd(30)} | ${'Album'.padEnd(30)} | ${'Duration'.padEnd(8)} | ${'Added Date'.padEnd(20)}\n`;
             textContent += `${'-'.repeat(5)}-+-${'-'.repeat(40)}-+-${'-'.repeat(30)}-+-${'-'.repeat(30)}-+-${'-'.repeat(8)}-+-${'-'.repeat(20)}\n`;
-            
+
             // Add tracks
             tracks.forEach((track, index) => {
                 const trackNum = String(index + 1).padEnd(5);
                 const songTitle = (track.name || 'Unknown').substring(0, 40).padEnd(40);
                 const artist = (track.artists?.[0] || 'Unknown Artist').substring(0, 30).padEnd(30);
                 const album = (track.album || 'Unknown Album').substring(0, 30).padEnd(30);
-                
+
                 // Convert duration from ms to mm:ss
-                const duration = track.duration_ms ? 
-                    `${Math.floor(track.duration_ms / 60000)}:${String(Math.floor((track.duration_ms % 60000) / 1000)).padStart(2, '0')}`.padEnd(8) : 
+                const duration = track.duration_ms ?
+                    `${Math.floor(track.duration_ms / 60000)}:${String(Math.floor((track.duration_ms % 60000) / 1000)).padStart(2, '0')}`.padEnd(8) :
                     'Unknown '.padEnd(8);
-                
+
                 // Format added date
-                const addedDate = track.added_at ? 
-                    new Date(track.added_at).toLocaleDateString().padEnd(20) : 
+                const addedDate = track.added_at ?
+                    new Date(track.added_at).toLocaleDateString().padEnd(20) :
                     'Unknown'.padEnd(20);
-                
+
                 textContent += `${trackNum} | ${songTitle} | ${artist} | ${album} | ${duration} | ${addedDate}\n`;
             });
-            
+
             // Create and download file
             const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            
+
             const a = document.createElement('a');
             a.href = url;
             a.download = `${this.currentPlaylist.name.replace(/[^a-z0-9]/gi, '_')}_playlist.txt`;
@@ -1493,10 +1510,10 @@ class SpotifyFanApp {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
+
             console.log(`✅ Playlist exported: ${a.download}`);
             console.log('✅ Playlist export completed successfully');
-            
+
         } catch (error) {
             console.error('❌ Error exporting playlist:', error);
             this.showError('Failed to export playlist. Please try again.');
@@ -1510,7 +1527,7 @@ class SpotifyFanApp {
             console.log('🎵 Skipping Web Playback SDK initialization - blocked by CSP');
             return;
         }
-        
+
         // SDK callback is already defined globally, just create player if SDK is loaded
         if (window.Spotify) {
             this.createSpotifyPlayer();
@@ -1523,7 +1540,7 @@ class SpotifyFanApp {
             console.log('🎵 Skipping Web Playback SDK creation - blocked by CSP');
             return;
         }
-        
+
         // Only initialize player if user is authenticated
         if (!this.isAuthenticated) {
             console.log('Player not initialized - user not authenticated');
@@ -1534,18 +1551,18 @@ class SpotifyFanApp {
         console.log('Web Playback SDK: Checking SDK availability at method start...');
         console.log('window.Spotify exists:', !!window.Spotify);
         console.log('window.Spotify.Player exists:', !!window.Spotify?.Player);
-        
+
         // Wait for SDK to load if it's not ready yet
         if (!window.Spotify || !window.Spotify.Player) {
             console.log('Web Playback SDK: SDK not loaded yet, waiting...');
-            
+
             // Set up a timeout to wait for SDK
             let attempts = 0;
             const maxAttempts = 50; // 5 seconds max wait
             const checkSDK = () => {
                 attempts++;
                 console.log(`Web Playback SDK: SDK check attempt ${attempts}/${maxAttempts}`);
-                
+
                 if (window.Spotify && window.Spotify.Player) {
                     console.log('Web Playback SDK: SDK loaded successfully after waiting');
                     this.initializePlayerAfterSDKLoad();
@@ -1557,7 +1574,7 @@ class SpotifyFanApp {
                     setTimeout(checkSDK, 100);
                 }
             };
-            
+
             setTimeout(checkSDK, 100);
             return;
         }
@@ -1568,7 +1585,7 @@ class SpotifyFanApp {
 
     initializePlayerAfterSDKLoad() {
         console.log('Web Playback SDK: Proceeding with Premium check...');
-        
+
         // First check if user has Premium
         console.log('Web Playback SDK: Checking user Premium status...');
         fetch('/api/user-profile')
@@ -1581,7 +1598,7 @@ class SpotifyFanApp {
             })
             .then(profile => {
                 console.log('Web Playback SDK: User profile:', profile);
-                
+
                 if (!profile.has_premium) {
                     console.warn('Web Playback SDK: User does not have Spotify Premium');
                     this.showError('Web Playback SDK requires Spotify Premium. Please upgrade your account to use the web player controls.');
@@ -1770,7 +1787,7 @@ class SpotifyFanApp {
 
     async togglePlayPause() {
         if (!this.player) return;
-        
+
         try {
             const state = await this.player.getCurrentState();
             if (state && !state.paused) {
@@ -1786,7 +1803,7 @@ class SpotifyFanApp {
 
     async nextTrack() {
         if (!this.player) return;
-        
+
         try {
             await this.player.nextTrack();
         } catch (error) {
@@ -1797,7 +1814,7 @@ class SpotifyFanApp {
 
     async previousTrack() {
         if (!this.player) return;
-        
+
         try {
             await this.player.previousTrack();
         } catch (error) {
@@ -1808,7 +1825,7 @@ class SpotifyFanApp {
 
     async setVolume(volume) {
         if (!this.player) return;
-        
+
         try {
             await this.player.setVolume(volume);
         } catch (error) {
@@ -1860,17 +1877,17 @@ class SpotifyFanApp {
 
     showPlaylistAccessError(playlistId) {
         this.showLoading(false);
-        
+
         // Switch to playlist view and show access error
         this.switchView('playlist');
-        
+
         const playlistHeader = document.getElementById('playlist-header');
         const tracksList = document.getElementById('tracks-list');
         const pagination = document.getElementById('pagination');
-        
+
         // Hide pagination
         pagination.classList.add('hidden');
-        
+
         // Show error message in playlist header
         playlistHeader.innerHTML = `
             <div class="playlist-access-error">
@@ -1896,14 +1913,14 @@ class SpotifyFanApp {
                 </div>
             </div>
         `;
-        
+
         // Clear tracks list
         tracksList.innerHTML = '';
     }
 }
 
-// Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize the app as soon as DOM is ready (immediately if already parsed)
+function bootstrapSpotifyFanApp() {
     // Add global error handler for debugging
     window.addEventListener('error', (event) => {
         console.error('Global JavaScript error:', {
@@ -1914,14 +1931,21 @@ document.addEventListener('DOMContentLoaded', () => {
             error: event.error
         });
     });
-    
+
     window.addEventListener('unhandledrejection', (event) => {
         console.error('Unhandled promise rejection:', event.reason);
     });
-    
-    console.log('DOM loaded, initializing Spotify Fan App...');
+
+    console.log('Bootstrapping Spotify Fan App...');
     window.app = new SpotifyFanApp();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapSpotifyFanApp);
+} else {
+    // DOM already parsed; initialize immediately to ensure event listeners exist for early interactions
+    bootstrapSpotifyFanApp();
+}
 
 // Service Worker registration disabled for development to prevent caching issues
 // Uncomment this block when ready for production

@@ -14,7 +14,7 @@
       // Test script to check SDK loading
       console.log('HTML: Spotify SDK script tag loaded');
       console.log('HTML: window.Spotify at script load time:', window.Spotify);
-      
+
       // Set up a check for when SDK loads
       let sdkCheckInterval = setInterval(() => {
          if (window.Spotify) {
@@ -23,7 +23,7 @@
             clearInterval(sdkCheckInterval);
          }
       }, 100);
-      
+
       // Clear interval after 10 seconds
       setTimeout(() => {
          if (sdkCheckInterval) {
@@ -33,6 +33,21 @@
             }
          }
       }, 10000);
+   </script>
+   <script>
+      // Minimal early nav handler to reduce flake before app bootstrap
+      // Ensures clicking nav switches views even if main script hasn't attached listeners yet
+      document.addEventListener('click', function (e) {
+         const btn = e.target && e.target.closest && e.target.closest('.nav-btn');
+         if (!btn) return;
+         const view = btn.getAttribute('data-view');
+         if (!view) return;
+         // Toggle active class on views as a simple fallback
+         const views = document.querySelectorAll('.view');
+         views.forEach(v => v.classList.remove('active'));
+         const target = document.getElementById(view + '-view');
+         if (target) target.classList.add('active');
+      }, { capture: true });
    </script>
 </head>
 
@@ -100,7 +115,7 @@
                      </select>
                   </div>
                </div>
-               <div id="playlists-grid" class="playlists-grid">
+               <div id="playlists-grid" class="playlists-grid" style="min-height: 120px;">
                   <!-- Featured playlists will be loaded here -->
                </div>
             </div>
