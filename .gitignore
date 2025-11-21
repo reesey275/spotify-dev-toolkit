@@ -18,7 +18,7 @@ pids
 coverage/
 
 # Logs
-logs
+logs/
 *.log
 
 # Database files
