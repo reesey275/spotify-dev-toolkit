@@ -1,0 +1,78 @@
+extends: cli_agent.profile.yml
+
+# Doc Maintainer Profile
+# Extends base CLI agent with documentation-specific guardrails
+
+governance:
+  allowed_commands:
+    - git
+    - gh
+    - find
+    - grep
+    - head
+    - tail
+    - wc
+    - diff
+    - cat
+
+  forbidden_commands:
+    - rm
+    - mv
+    - cp
+    - chmod
+    - chown
+    - sudo
+    - npm
+    - node
+    - python
+    - pip
+    - docker
+    - kubectl
+
+  allowed_paths:
+    - docs/**
+    - .codex/services/**
+    - .codex/agent_*.md
+    - .codex/runtime/*.md
+    - .codex/runtime/*.yml
+    - README.md
+    - CONTRIBUTING.md
+    - docs/README.md
+
+  forbidden_paths:
+    - .env*
+    - **/secrets/**
+    - .git/**
+    - node_modules/**
+    - .venv/**
+    - __pycache__/**
+    - .pytest_cache/**
+    - test-results/**
+    - playwright-report/**
+    - .github/workflows/**
+    - server.js
+    - public/**
+    - api/**
+    - utils/**
+    - bin/**
+    - config/**
+    - tests/**
+    - export_spotify_playlist.py
+    - package.json
+    - requirements.txt
+
+  require_approval_for:
+    - .codex/services/SERVICE_CARD_*.md
+    - docs/AGENT_USAGE_*.md
+    - README.md
+
+tools:
+  - name: filesystem
+    description: Read/write documentation files
+    allowed_operations: ["read", "write", "list"]
+    allowed_paths: ["docs/**", ".codex/services/**", ".codex/agent_*.md", ".codex/runtime/*.md", ".codex/runtime/*.yml", "README.md", "CONTRIBUTING.md"]
+
+  - name: shell
+    description: Execute safe commands for documentation maintenance
+    allowed_commands: ["git", "gh", "find", "grep", "head", "tail", "wc", "diff", "cat"]
+    forbidden_commands: ["rm", "mv", "cp", "chmod", "chown", "sudo", "npm", "node", "python", "pip", "docker", "kubectl"]
