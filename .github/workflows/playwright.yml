@@ -17,6 +17,11 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install
+    - name: Start server
+      run: |
+        npm start &
+        sleep 5
+        curl -f http://127.0.0.1:5500/healthz || (echo "Server failed to start" && exit 1)
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.4.0
