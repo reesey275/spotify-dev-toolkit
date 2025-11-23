@@ -1,0 +1,48 @@
+# .codex/runtime/spotify_curator.profile.yml
+profile_id: spotify_curator
+description: >
+  Read-only Spotify Curator Agent for the spotify-dev-toolkit service.
+  Uses the collections API and collections.yml to recommend playlists
+  and describe moods/collections.
+
+entry_agent: .codex/agent_spotify_curator.md
+
+env:
+  # Set this in your Codex runtime or shell:
+  # SPOTIFY_TOOLKIT_BASE_URL=http://127.0.0.1:5500  (dev)
+  SPOTIFY_TOOLKIT_BASE_URL: "${SPOTIFY_TOOLKIT_BASE_URL}"
+
+tools:
+  - name: http_spotify_toolkit
+    type: http
+    config:
+      base_url: "${SPOTIFY_TOOLKIT_BASE_URL}"
+      # Explicitly read-only
+      allowed_methods: ["GET"]
+      allowed_paths:
+        - "/healthz"
+        - "/api/collections"
+        - "/api/collections/.+"   # /api/collections/:category/:id...
+
+  - name: fs_spotify_toolkit
+    type: filesystem
+    config:
+      root: "."
+      allowed_paths:
+        - "config/collections.yml"
+        - "README.md"
+        - "docs/deployment.md"
+        - ".codex/agent_spotify_curator.md"
+
+governance:
+  # No source edits, no config writes – this is a read-only advisory agent
+  allow_source_edits: false
+  allow_config_edits: false
+  allow_shell: false
+  allow_network_outside_base_url: false
+
+defaults:
+  # So the agent doesn't try to be clever with tools you didn't define
+  preferred_tools:
+    - "http_spotify_toolkit"
+    - "fs_spotify_toolkit"
