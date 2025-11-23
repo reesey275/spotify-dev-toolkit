@@ -47,7 +47,7 @@ jobs:
 
     - name: Start development server
       run: |
-        npm run dev &
+        npm start &
         sleep 10
         curl -f http://127.0.0.1:5500/healthz || exit 1
 
