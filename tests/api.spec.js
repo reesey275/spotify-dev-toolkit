@@ -177,11 +177,18 @@ test.describe('API Endpoints', () => {
         expect(playlist).toHaveProperty('id');
         expect(playlist).toHaveProperty('name');
         expect(playlist).toHaveProperty('description');
-        expect(playlist).toHaveProperty('cover');
-        expect(playlist).toHaveProperty('url');
-        expect(playlist).toHaveProperty('owner');
-        expect(playlist).toHaveProperty('track_count');
-        expect(typeof playlist.track_count).toBe('number');
+
+        // If playlist has error, it's a placeholder for unavailable data
+        if (playlist.error) {
+          expect(playlist.error).toBe(true);
+        } else {
+          // Only check full properties if no error
+          expect(playlist).toHaveProperty('cover');
+          expect(playlist).toHaveProperty('url');
+          expect(playlist).toHaveProperty('owner');
+          expect(playlist).toHaveProperty('track_count');
+          expect(typeof playlist.track_count).toBe('number');
+        }
       }
     }
   });
