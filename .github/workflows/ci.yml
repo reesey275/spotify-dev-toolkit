@@ -41,7 +41,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Install Playwright browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install
 
     - name: Run linting
       run: npm run lint || echo "No lint script found"
