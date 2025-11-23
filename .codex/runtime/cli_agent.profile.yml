@@ -1,0 +1,81 @@
+# .codex/runtime/cli_agent.profile.yml
+profile_id: cli_agent
+description: >
+  Base profile for CLI-enabled agents with GitHub and repository automation capabilities.
+  Provides tools for git operations, GitHub CLI, file editing, and HTTP requests.
+  Uses cli_agent.system.md as the system prompt for act-first behavior.
+
+entry_agent: .codex/runtime/cli_agent.system.md
+
+env:
+  # Set in Codex runtime or shell
+  GITHUB_TOKEN: "${GITHUB_TOKEN}"  # For gh CLI and API access
+
+tools:
+  - name: shell_tool
+    type: shell
+    config:
+      allowed_commands:
+        - "git"
+        - "gh"
+        - "npm"
+        - "node"
+        - "python"
+        - "pip"
+        - "curl"
+        - "jq"
+        # Add other safe CLI tools as needed
+
+  - name: filesystem_tool
+    type: filesystem
+    config:
+      root: "."
+      allowed_paths:
+        - "**/*.md"      # Docs
+        - "**/*.yml"     # Configs
+        - "**/*.yaml"
+        - "**/*.json"
+        - "**/*.js"      # Scripts
+        - "**/*.py"
+        - "**/*.sh"
+        - ".github/**"   # CI workflows
+        - "docs/**"      # Documentation
+      forbidden_paths:
+        - ".env*"
+        - "**/secrets/**"
+        - ".git/hooks/**"  # Avoid modifying hooks directly
+
+  - name: http_tool
+    type: http
+    config:
+      base_url: "https://api.github.com"
+      allowed_methods: ["GET", "POST", "PATCH", "PUT"]
+      allowed_paths:
+        - "/repos/**"    # Repository operations
+        - "/user/**"     # User info
+        - "/orgs/**"     # Organization data
+
+governance:
+  # Explicit approval boundaries
+  allow_source_edits: false      # No editing production code
+  allow_config_edits: true       # Allow config/docs edits
+  allow_shell: true              # Allow shell commands
+  allow_network_outside_base_url: false  # Only GitHub API
+
+  # Additional guardrails
+  require_confirmation_for:
+    - "merge to main"
+    - "delete remote branch"
+    - "modify .github/workflows/**"
+    - "modify .codex/**"
+    - "modify SECURITY/**"
+
+defaults:
+  # Preferred tools for common tasks
+  preferred_tools:
+    - "shell_tool"      # For git/gh operations
+    - "filesystem_tool" # For file edits
+    - "http_tool"       # For GitHub API queries
+
+# Inherit this profile for specific agents (e.g., CI guard, repo maintainer)
+# by adding their specific entry_agent and overriding tools/config as needed

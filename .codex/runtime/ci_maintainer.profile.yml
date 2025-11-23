@@ -1,0 +1,22 @@
+# .codex/runtime/ci_maintainer.profile.yml
+profile_id: ci_maintainer
+description: >
+  CI maintenance agent for spotify-dev-toolkit, built on cli_agent base profile.
+  Uses git, gh, filesystem, and GitHub API to diagnose and fix CI issues.
+
+entry_agent: .codex/agent_ci_maintainer.md
+
+# Reuse tools/governance from cli_agent profile
+extends: .codex/runtime/cli_agent.profile.yml
+
+# Optional: CI-specific governance tweaks
+governance:
+  protected_paths:
+    - ".github/workflows/**"
+    - ".codex/**"
+  require_approval_for_changes:
+    - ".github/workflows/**"
+  allow_source_edits: true
+  allow_config_edits: true
+  allow_shell: true
+  allow_network_outside_base_url: false
