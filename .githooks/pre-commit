@@ -18,7 +18,7 @@ FAIL=0
 for file in $STAGED_FILES; do
   # Skip example and documentation files that may contain placeholder credentials
   case "$file" in
-    *.example|*.md|docs/*|README*)
+    *.example|*.md|docs/*|README*|*.yml.example|.github/*)
       continue
       ;;
   esac

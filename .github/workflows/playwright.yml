@@ -19,6 +19,10 @@ jobs:
       run: npx playwright install
     - name: Start server
       run: |
+        export SPOTIFY_CLIENT_ID=dummy_client_id
+        export SPOTIFY_CLIENT_SECRET=dummy_client_secret
+        export SPOTIFY_REDIRECT_URI=http://127.0.0.1:5500/callback
+        export NODE_ENV=test
         npm start &
         sleep 5
         curl -f http://127.0.0.1:5500/healthz || (echo "Server failed to start" && exit 1)
