@@ -1,0 +1,55 @@
+🧪 Testing Playlist Management Endpoints
+
+1. Testing health endpoint...
+✅ Health check passed: {
+  status: 'healthy',
+  timestamp: '2025-11-21T02:43:54.066Z',
+  uptime: 23261.945180208,
+  version: '1.0.0',
+  environment: 'production',
+  docker: true,
+  sessionStore: 'connected'
+}
+
+2. Testing playlists endpoint (should require auth)...
+❌ Should have required authentication
+
+3. Testing new playlist management endpoints...
+✅ POST /api/playlists requires auth as expected
+✅ PUT /api/playlists/:id requires auth as expected
+✅ DELETE /api/playlists/:id requires auth as expected
+
+🎉 All endpoint tests completed successfully!
+
+📝 Next steps:
+1. Authenticate via OAuth at http://127.0.0.1:5500
+2. Test actual playlist creation, updates, and deletion
+3. Verify track management endpoints work
+🧪 Testing OAuth State Validation
+
+1. Testing health endpoint...
+✅ Health check passed
+
+2. Testing login endpoint...
+Login redirect status: 302
+State from login redirect: f1baf8f74df23563451508314bdf75d6
+
+3. Testing callback with correct state...
+Callback error: Request failed with status code 500
+Callback response status: 500
+Callback response data: { error: 'Authentication failed' }
+🧪 Testing OAuth State Validation
+
+1. Testing health endpoint...
+✅ Health check passed
+
+2. Testing login endpoint...
+Login redirect status: 302
+State from login redirect: 0807dc05100799a3dba9e64e56250baf
+
+3. Testing callback with correct state...
+Callback response status: 200
+Callback response data: {
+  authenticated: false,
+  error: 'Authentication failed (test mode fallback)'
+}

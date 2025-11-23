@@ -993,3 +993,209 @@ body {
    border: none;
    box-shadow: 0 2px 6px rgba(29, 185, 84, 0.3);
 }
+
+/* Collections Styles */
+.collections-section {
+   margin-top: 2rem;
+}
+
+.collections-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+   gap: 2rem;
+   margin-bottom: 2rem;
+}
+
+.collection-card {
+   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   border-radius: 16px;
+   padding: 1.5rem;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   backdrop-filter: blur(10px);
+   overflow: hidden;
+}
+
+.collection-card:hover {
+   transform: translateY(-5px);
+   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+   border-color: rgba(29, 185, 84, 0.3);
+   box-shadow: 0 8px 32px rgba(29, 185, 84, 0.1);
+}
+
+.collection-header {
+   display: flex;
+   align-items: center;
+   gap: 1rem;
+   margin-bottom: 1.5rem;
+}
+
+.collection-icon {
+   width: 60px;
+   height: 60px;
+   background: linear-gradient(135deg, #1db954, #1ed760);
+   border-radius: 12px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 1.5rem;
+   flex-shrink: 0;
+}
+
+.collection-info {
+   flex: 1;
+   min-width: 0;
+}
+
+.collection-name {
+   font-size: 1.3rem;
+   font-weight: 600;
+   margin-bottom: 0.5rem;
+   color: #ffffff;
+}
+
+.collection-description {
+   color: #b3b3b3;
+   font-size: 0.9rem;
+   line-height: 1.4;
+}
+
+.collection-playlists {
+   margin-top: 1rem;
+}
+
+.playlist-preview {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+   gap: 0.75rem;
+   margin-bottom: 1rem;
+}
+
+.mini-playlist-card {
+   background: rgba(255, 255, 255, 0.05);
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   border-radius: 8px;
+   padding: 0.75rem;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   display: flex;
+   align-items: center;
+   gap: 0.75rem;
+}
+
+.mini-playlist-card:hover {
+   background: rgba(255, 255, 255, 0.1);
+   transform: translateY(-2px);
+}
+
+.mini-playlist-image {
+   width: 40px;
+   height: 40px;
+   background: linear-gradient(135deg, #1db954, #1ed760);
+   border-radius: 6px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 1rem;
+   overflow: hidden;
+   flex-shrink: 0;
+}
+
+.mini-playlist-image img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   border-radius: 6px;
+}
+
+.mini-playlist-info {
+   flex: 1;
+   min-width: 0;
+}
+
+.mini-playlist-name {
+   font-size: 0.85rem;
+   font-weight: 500;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   margin-bottom: 0.25rem;
+   color: #ffffff;
+}
+
+.mini-playlist-details {
+   font-size: 0.75rem;
+   color: #b3b3b3;
+}
+
+.collection-more {
+   text-align: center;
+   color: #1db954;
+   font-size: 0.85rem;
+   font-weight: 500;
+   padding: 0.5rem;
+   background: rgba(29, 185, 84, 0.1);
+   border-radius: 6px;
+   margin-top: 0.5rem;
+}
+
+.no-playlists {
+   grid-column: 1 / -1;
+   text-align: center;
+   color: #b3b3b3;
+   font-size: 0.9rem;
+   padding: 1rem;
+   background: rgba(255, 255, 255, 0.05);
+   border-radius: 8px;
+   margin-top: 0.5rem;
+}
+
+/* Responsive adjustments for collections */
+@media (max-width: 768px) {
+   .collections-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+   }
+
+   .collection-card {
+      padding: 1rem;
+   }
+
+   .collection-header {
+      gap: 0.75rem;
+   }
+
+   .collection-icon {
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+   }
+
+   .collection-name {
+      font-size: 1.1rem;
+   }
+
+   .playlist-preview {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 0.5rem;
+   }
+
+   .mini-playlist-card {
+      padding: 0.5rem;
+      gap: 0.5rem;
+   }
+
+   .mini-playlist-image {
+      width: 35px;
+      height: 35px;
+   }
+
+   .mini-playlist-name {
+      font-size: 0.8rem;
+   }
+
+   .mini-playlist-details {
+      font-size: 0.7rem;
+   }
+}

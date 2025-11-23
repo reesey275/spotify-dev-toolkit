@@ -58,6 +58,7 @@ A modern, interactive web application for exploring and managing Spotify playlis
 ## ✨ Features
 
 - **Dynamic Playlist Views**: Switch between Featured, Top 10, Recent, User Search, and Playlist Search views
+- **Collections & Moods**: Browse curated playlist collections by mood, genre, and activity with dynamic tagging and visual themes
 - **User Discovery**: Search for any Spotify user's public playlists by username
 - **Smart Sorting**: Sort playlists by name, date created, or track count
 - **Track Management**: View detailed track information with sortable columns
@@ -66,6 +67,61 @@ A modern, interactive web application for exploring and managing Spotify playlis
 - **User Profiles**: View user information including follower counts and profile pictures
 - **Pagination**: Navigate through large playlists efficiently
 - **Interactive Elements**: Click tracks to open in Spotify
+
+## 🏗️ Architecture Overview
+
+The Spotify Fan WebApp is a full-stack application built with modern web technologies, designed for exploring and managing Spotify playlists through an intuitive interface.
+
+### System Components
+
+#### 🎯 Backend (Node.js/Express)
+- **Server**: Express.js application with RESTful API endpoints
+- **Authentication**: OAuth 2.0 with PKCE flow for Spotify integration
+- **Session Management**: SQLite-based sessions with secure cookie handling
+- **API Integration**: Spotify Web API client with rate limiting and token refresh
+- **Data Caching**: In-memory caching for playlist metadata and API responses
+- **Configuration**: YAML-based collections system for dynamic playlist groupings
+
+#### 🎨 Frontend (Vanilla JavaScript SPA)
+- **Framework**: Pure JavaScript single-page application (no frameworks)
+- **Routing**: Hash-based view switching with DOM manipulation
+- **State Management**: In-memory application state with event-driven updates
+- **UI Components**: Responsive grid layouts with CSS Grid and Flexbox
+- **Data Fetching**: Native Fetch API with async/await patterns
+- **Error Handling**: User-friendly error states with retry mechanisms
+
+#### 🐍 Export Tool (Python CLI)
+- **Library**: Spotipy for Spotify API integration
+- **Formats**: CSV, HTML, and plain text export options
+- **Authentication**: OAuth flow for playlist access
+- **Data Processing**: Pandas for data manipulation and formatting
+
+### Data Flow
+
+1. **User Authentication**: OAuth PKCE flow redirects to Spotify for authorization
+2. **Token Management**: Access tokens cached and automatically refreshed
+3. **API Requests**: Frontend fetches data from Express endpoints
+4. **Spotify Proxy**: Backend proxies requests to Spotify Web API with authentication
+5. **Data Processing**: Collections configured in YAML, playlists enriched with metadata
+6. **Response Caching**: Playlist data cached to reduce API calls and improve performance
+7. **UI Rendering**: JavaScript dynamically updates DOM with fetched data
+
+### Key Design Patterns
+
+- **Separation of Concerns**: Clear boundaries between server, client, and export tool
+- **Stateless API**: RESTful endpoints with consistent response formats
+- **Progressive Enhancement**: Core functionality works without JavaScript
+- **Mobile-First**: Responsive design with touch-friendly interactions
+- **Error Resilience**: Graceful degradation with fallback content
+- **Security First**: Environment-based secrets, input validation, and CORS protection
+
+### Development Workflow
+
+- **Process Isolation**: Screen-based session management prevents terminal blocking
+- **Hot Reloading**: Nodemon for automatic server restarts during development
+- **Testing**: Playwright for end-to-end API and UI testing across browsers
+- **CI/CD**: GitHub Actions with automated testing and health checks
+- **Containerization**: Docker setup with multi-stage builds and security hardening
 
 ## 🚀 Getting Started
 
@@ -152,6 +208,8 @@ spotify-dev-toolkit/
 │   ├── test-output-playlist.html
 │   ├── test-output-playlist.txt
 │   └── test-output-mood-shifters.txt
+├── config/                  # Configuration files
+│   └── collections.yml     # Collections and playlist groupings
 ├── public/                  # Static frontend files
 │   ├── index.html          # Main HTML file
 │   ├── styles.css          # CSS styles
@@ -183,12 +241,83 @@ These are included for demonstration purposes and can be regenerated using the w
 - `GET /api/playlist/:id` - Get playlist details and tracks
 - `GET /api/search` - Search for playlists
 - `GET /api/featured` - Get featured playlists
+- `GET /api/collections` - Get all playlist collections (moods, genres, activities)
+- `GET /api/collections/:type/:id` - Get specific collection details with pagination
 
 ### Query Parameters
 
 - `sort`: Sort by `name`, `date`, or `tracks`
 - `limit`: Number of results to return
 - `offset`: Pagination offset
+
+## 🎵 Collections System
+
+The application includes a dynamic collections system for organizing playlists by mood, genre, and activity. Collections are configured in `config/collections.yml` and served via the `/api/collections` endpoints.
+
+### Collections Configuration
+
+Collections are defined in YAML format with the following structure:
+
+```yaml
+collections:
+  moods:
+    chill:
+      name: "Chill Vibes"
+      description: "Relaxing tracks for downtime"
+      tags: ["chill", "relax", "ambient", "lo-fi"]
+      color: "#4CAF50"
+      icon: "🌿"
+      playlist_ids:
+        - "spotify_playlist_id_1"
+        - "spotify_playlist_id_2"
+
+  genres:
+    indie:
+      name: "Indie Gems"
+      description: "Discover independent artists"
+      tags: ["indie", "alternative", "folk"]
+      color: "#9C27B0"
+      icon: "🎸"
+      playlist_ids:
+        - "spotify_playlist_id_3"
+
+  activities:
+    workout:
+      name: "Workout Mix"
+      description: "High-energy tracks for exercise"
+      tags: ["workout", "running", "gym"]
+      color: "#FF9800"
+      icon: "💪"
+      playlist_ids:
+        - "spotify_playlist_id_4"
+```
+
+### Frontend Integration
+
+Collections are displayed in the web interface with:
+- Visual cards showing icon, name, description, and tags
+- Color-coded themes for each collection
+- Clickable cards that load detailed playlist views
+- Pagination support for large collections
+
+### API Usage
+
+```javascript
+// Get all collections
+fetch('/api/collections')
+  .then(res => res.json())
+  .then(data => {
+    // data.collections: array of collection objects
+  });
+
+// Get specific collection with pagination
+fetch('/api/collections/moods/chill?limit=10&offset=0')
+  .then(res => res.json())
+  .then(data => {
+    // data.collection: collection details
+    // data.pagination: pagination info
+  });
+```
 
 ## 🎨 UI Features
 
@@ -363,6 +492,26 @@ pip install -r requirements.txt
 ```
 
 ## 🚀 Deployment
+
+### Production Hardening Status ✅
+
+**Security hardening completed as of v0.1.0:**
+
+- ✅ **CORS Configuration**: Fixed to allow local origins for testing while maintaining security
+- ✅ **Environment Variables**: Proper .env handling with .gitignore protection
+- ✅ **CI/CD Security**: GitHub Actions uses encrypted secrets for Spotify credentials
+- ✅ **Helmet Security Headers**: CSP, HSTS, and other headers configured with environment toggles
+- ✅ **Rate Limiting**: Per-endpoint rate limits with configurable skip for testing
+- ✅ **Session Security**: Secure session management with httpOnly cookies
+- ✅ **Input Validation**: Zod schemas for all API inputs
+- ✅ **Error Handling**: Production-safe error responses without sensitive data leaks
+- ✅ **OAuth PKCE**: Secure authentication flow with state validation
+- ✅ **Token Management**: Automatic refresh with fallback handling
+
+**Remaining recommendations:**
+- 🔄 **Credential Rotation**: Consider rotating Spotify client secret periodically
+- 📚 **Deployment Documentation**: See `docs/deployment.md` for production setup
+- 🔧 **Environment Toggles**: NODE_ENV checks implemented for logging and caching
 
 ### Production Deployment (Docker)
 

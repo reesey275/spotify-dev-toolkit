@@ -144,13 +144,102 @@ test.describe('API Endpoints', () => {
     expect(headers['access-control-allow-methods']).toContain('GET');
   });
 
+  test('GET /api/collections - collections endpoint', async ({ request }) => {
+    const response = await request.get('/api/collections');
+
+    expect(response.ok()).toBeTruthy();
+    expect(response.status()).toBe(200);
+
+    const data = await response.json();
+    expect(data).toHaveProperty('collections');
+    expect(data).toHaveProperty('total');
+    expect(data).toHaveProperty('source');
+    expect(data).toHaveProperty('timestamp');
+    expect(Array.isArray(data.collections)).toBeTruthy();
+    expect(data.total).toBeGreaterThan(0);
+
+    // Check collection structure
+    if (data.collections.length > 0) {
+      const collection = data.collections[0];
+      expect(collection).toHaveProperty('id');
+      expect(collection).toHaveProperty('name');
+      expect(collection).toHaveProperty('description');
+      expect(collection).toHaveProperty('category');
+      expect(collection).toHaveProperty('tags');
+      expect(collection).toHaveProperty('color');
+      expect(collection).toHaveProperty('icon');
+      expect(collection).toHaveProperty('playlists');
+      expect(Array.isArray(collection.playlists)).toBeTruthy();
+
+      // Check playlist structure
+      if (collection.playlists.length > 0) {
+        const playlist = collection.playlists[0];
+        expect(playlist).toHaveProperty('id');
+        expect(playlist).toHaveProperty('name');
+        expect(playlist).toHaveProperty('description');
+        expect(playlist).toHaveProperty('cover');
+        expect(playlist).toHaveProperty('url');
+        expect(playlist).toHaveProperty('owner');
+        expect(playlist).toHaveProperty('track_count');
+        expect(typeof playlist.track_count).toBe('number');
+      }
+    }
+  });
+
+  test('GET /api/collections/:type/:id - specific collection', async ({ request }) => {
+    // Test with a known collection (chill from moods)
+    const response = await request.get('/api/collections/moods/chill');
+
+    expect(response.ok()).toBeTruthy();
+    expect(response.status()).toBe(200);
+
+    const data = await response.json();
+    expect(data).toHaveProperty('collection');
+    expect(data).toHaveProperty('pagination');
+    expect(data).toHaveProperty('source');
+    expect(data).toHaveProperty('timestamp');
+
+    // Check collection structure
+    const collection = data.collection;
+    expect(collection).toHaveProperty('id', 'chill');
+    expect(collection).toHaveProperty('name');
+    expect(collection).toHaveProperty('description');
+    expect(collection).toHaveProperty('category', 'moods');
+    expect(collection).toHaveProperty('tags');
+    expect(collection).toHaveProperty('color');
+    expect(collection).toHaveProperty('icon');
+    expect(collection).toHaveProperty('playlists');
+    expect(Array.isArray(collection.playlists)).toBeTruthy();
+  });
+
+  test('GET /api/collections/:type/:id with pagination', async ({ request }) => {
+    const response = await request.get('/api/collections/moods/chill?limit=2&offset=0');
+
+    expect(response.ok()).toBeTruthy();
+
+    const data = await response.json();
+    expect(data.collection.playlists.length).toBeLessThanOrEqual(2);
+
+    const pagination = data.pagination;
+    expect(pagination).toHaveProperty('offset', 0);
+    expect(pagination).toHaveProperty('limit', 2);
+    expect(pagination).toHaveProperty('total');
+    expect(pagination).toHaveProperty('hasNext');
+    expect(pagination).toHaveProperty('hasPrevious');
+  });
+
   test('Rate limiting works', async ({ request }) => {
+    // Use unique test ID to ensure rate limit bucket isolation
+    const testId = Math.random().toString(36).substring(7);
+
     // Make requests until we hit the rate limit
     let response;
     let count = 0;
     do {
-      response = await request.get('/api/test-rate-limit');
+      response = await request.get(`/api/test-rate-limit?test=${testId}`);
       count++;
+      // Add delay to avoid hitting rate limit too quickly
+      await new Promise(r => setTimeout(r, 100));
     } while (response.ok() && count < 150); // Safety limit
 
     expect(response.status()).toBe(429);

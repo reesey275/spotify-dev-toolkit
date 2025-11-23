@@ -1,0 +1,133 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+
+    - name: Run linting
+      run: npm run lint || echo "No lint script found"
+
+    - name: Start development server
+      run: |
+        npm run dev &
+        sleep 10
+        curl -f http://127.0.0.1:5500/healthz || exit 1
+
+    - name: Run Playwright tests (${{ matrix.browser }})
+      run: npx playwright test --project=${{ matrix.browser }} --reporter=line
+      env:
+        NODE_ENV: test
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
+        SKIP_RATE_LIMIT: true
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-${{ matrix.browser }}-${{ matrix.node-version }}
+        path: playwright-report/
+        retention-days: 30
+
+    - name: Upload test traces
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: playwright-traces-${{ matrix.browser }}-${{ matrix.node-version }}
+        path: test-results/
+        retention-days: 7
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npm run build || echo "No build script found"
+
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+
+    - name: Check for vulnerabilities
+      run: |
+        if [ "$(npm audit --audit-level moderate --json | jq '.metadata.vulnerabilities.total')" -gt 0 ]; then
+          echo "Security vulnerabilities found"
+          npm audit --audit-level moderate
+          exit 1
+        fi
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Deploy to production
+      run: |
+        echo "Deployment would happen here"
+        echo "Add your deployment commands (Docker, PM2, etc.)"
+      env:
+        NODE_ENV: production

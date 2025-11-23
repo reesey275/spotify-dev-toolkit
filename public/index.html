@@ -37,16 +37,39 @@
    <script>
       // Minimal early nav handler to reduce flake before app bootstrap
       // Ensures clicking nav switches views even if main script hasn't attached listeners yet
+      // Also reapplies the active class on the next tick to avoid race conditions
+      // (observed in WebKit headless where the SPA's own listeners sometimes clear it).
       document.addEventListener('click', function (e) {
          const btn = e.target && e.target.closest && e.target.closest('.nav-btn');
          if (!btn) return;
          const view = btn.getAttribute('data-view');
          if (!view) return;
+         // Toggle active class on nav buttons
+         document.querySelectorAll('.nav-btn').forEach(nb => nb.classList.toggle('active', nb === btn));
+
+         // Update the URL hash so the SPA initialization picks up the requested view
+         // This ensures clicks that happen before the SPA bootstraps persist
+         // through initialization and are not overwritten by default view logic.
+         try {
+            window.location.hash = view;
+            // Mark that the user explicitly requested this view so SPA init won't overwrite it
+            window.__userRequestedView = view;
+         } catch (e) {
+            // Best-effort; if modifying the hash fails, fall back to DOM updates below
+         }
+
          // Toggle active class on views as a simple fallback
          const views = document.querySelectorAll('.view');
          views.forEach(v => v.classList.remove('active'));
          const target = document.getElementById(view + '-view');
          if (target) target.classList.add('active');
+
+         // Re-apply after a short delay to survive any SPA-initialization race
+         setTimeout(() => {
+            const t = document.getElementById(view + '-view');
+            if (t) t.classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(nb => nb.classList.toggle('active', nb === btn));
+         }, 50);
       }, { capture: true });
    </script>
 </head>
@@ -61,7 +84,8 @@
             </div>
             <nav class="nav">
                <button class="nav-btn" data-view="home">Featured</button>
-               <button class="nav-btn active" data-view="my-playlists">My Playlists</button>
+               <button class="nav-btn" data-view="collections">Collections</button>
+               <button class="nav-btn" data-view="my-playlists">My Playlists</button>
                <button class="nav-btn" data-view="top10">Top 10</button>
                <button class="nav-btn" data-view="user-search">User Search</button>
                <button class="nav-btn" data-view="search">Search Playlists</button>
@@ -121,6 +145,20 @@
             </div>
          </div>
 
+         <!-- Collections View -->
+         <div id="collections-view" class="view">
+            <div class="hero-section">
+               <h2>🎵 Music Collections</h2>
+               <p>Discover curated playlists organized by mood, genre, and activity</p>
+            </div>
+
+            <div class="collections-section">
+               <div id="collections-container" class="collections-grid">
+                  <!-- Collections will be loaded here -->
+               </div>
+            </div>
+         </div>
+
          <!-- Currently Playing View -->
          <div id="currently-playing-view" class="view">
             <div class="hero-section">
@@ -144,7 +182,7 @@
          </div>
 
          <!-- My Playlists View -->
-         <div id="my-playlists-view" class="view active">
+         <div id="my-playlists-view" class="view">
             <div class="hero-section">
                <h2>Your Personal Playlists</h2>
                <p>All your saved and created playlists in one place</p>

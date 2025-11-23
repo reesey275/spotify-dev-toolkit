@@ -11,7 +11,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 class SpotifyFanApp {
     constructor() {
-        this.currentView = this.getViewFromUrl() || 'my-playlists'; // Default to my-playlists to match tests
+        // Defer choosing the initial view until hash routing runs so
+        // we reliably honor an explicit location.hash or a user-requested view.
+        this.currentView = null;
         this.currentPlaylist = null;
         this.playlists = [];
         this.myPlaylists = []; // Add this to store user's playlists
@@ -182,10 +184,13 @@ class SpotifyFanApp {
             }
         });
 
-        // Set initial view based on URL hash
-        if (this.currentView !== 'my-playlists') {
-            this.switchView(this.currentView);
-        }
+        // Determine and set the initial view based on (in order):
+        // 1) explicit user intent (`window.__userRequestedView`),
+        // 2) URL hash, 3) fallback default 'my-playlists'. Always call
+        // `switchView` so the DOM active classes are updated reliably.
+        const hashView = this.getViewFromUrl();
+        const initialView = (window.__userRequestedView) || hashView || 'my-playlists';
+        this.switchView(initialView);
     }
 
     setupEventListeners() {
@@ -196,6 +201,8 @@ class SpotifyFanApp {
                 e.preventDefault();
                 const view = btn.dataset.view;
                 console.log(`🖱️ Frontend: Nav button clicked for view "${view}" (delegated)`);
+                // Mark user-intent so initialization or background tasks don't override it
+                try { window.__userRequestedView = view; } catch (err) { /* best-effort */ }
                 this.switchView(view);
             }
         });
@@ -609,6 +616,22 @@ class SpotifyFanApp {
         console.log(`🔄 Frontend: switchView called with "${viewName}"`);
         console.trace('📍 Call stack for switchView');
 
+        // If the URL explicitly indicates a different view, do not allow
+        // background logic to override it by forcing 'my-playlists'. This
+        // prevents race conditions where initial navigation (hash) is
+        // replaced by background loads.
+        const hashView = window.location.hash.slice(1);
+        if (viewName === 'my-playlists' && hashView && hashView !== 'my-playlists' && !window.__userRequestedView) {
+            console.log('🔒 Preserving URL hash view; not switching to my-playlists');
+            return;
+        }
+        // If the app or background logic attempts to force the default 'my-playlists'
+        // view but the user explicitly requested a different view, do not override.
+        if (viewName === 'my-playlists' && window.__userRequestedView && window.__userRequestedView !== 'my-playlists') {
+            console.log('🔒 Not switching to my-playlists because user requested', window.__userRequestedView);
+            return;
+        }
+
         // Update URL hash (but don't trigger hashchange event if it's already correct)
         if (window.location.hash.slice(1) !== viewName) {
             this.updateUrl(viewName);
@@ -700,6 +723,9 @@ class SpotifyFanApp {
                 break;
             case 'home':
                 await this.loadFeaturedView();
+                break;
+            case 'collections':
+                await this.loadCollectionsView();
                 break;
             case 'top10':
                 await this.loadTop10();
@@ -1077,6 +1103,85 @@ class SpotifyFanApp {
         } catch (error) {
             this.showError('Failed to load recent playlists.');
         }
+    }
+
+    async loadCollectionsView() {
+        console.log('🎵 Loading collections view...');
+        this.showLoading(true);
+        try {
+            const response = await fetch('/api/collections');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch collections: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('📊 Collections data:', data);
+            this.renderCollections(data.collections);
+            this.showLoading(false);
+        } catch (error) {
+            console.error('Error loading collections:', error);
+            this.showError('Failed to load collections. Please try again.');
+            this.showLoading(false);
+        }
+    }
+
+    renderCollections(collections) {
+        const container = document.getElementById('collections-container');
+        if (!container) return;
+
+        if (!collections || collections.length === 0) {
+            container.innerHTML = '<p class="no-results">No collections available.</p>';
+            return;
+        }
+
+        container.innerHTML = collections.map(collection => `
+            <div class="collection-card" data-collection-id="${collection.id}" data-collection-type="${collection.category}">
+                <div class="collection-header">
+                    <div class="collection-icon">${collection.icon || '🎵'}</div>
+                    <div class="collection-info">
+                        <h3 class="collection-name">${this.escapeHtml(collection.name)}</h3>
+                        <p class="collection-description">${this.escapeHtml(collection.description || '')}</p>
+                    </div>
+                </div>
+                <div class="collection-playlists">
+                    <div class="playlist-preview">
+                        ${collection.playlists && collection.playlists.length > 0 ?
+                collection.playlists.slice(0, 3).map(playlist => `
+                                <div class="mini-playlist-card" onclick="app.openPlaylist('${playlist.id}')">
+                                    <div class="mini-playlist-image">
+                                        ${playlist.cover ?
+                        `<img src="${playlist.cover}" alt="${this.escapeHtml(playlist.name)}" onerror="this.parentElement.innerHTML='🎵'">` :
+                        '🎵'
+                    }
+                                    </div>
+                                    <div class="mini-playlist-info">
+                                        <div class="mini-playlist-name">${this.escapeHtml(playlist.name)}</div>
+                                        <div class="mini-playlist-details">${playlist.track_count || 0} tracks</div>
+                                    </div>
+                                </div>
+                            `).join('') :
+                '<p class="no-playlists">No playlists in this collection</p>'
+            }
+                    </div>
+                    ${collection.playlists && collection.playlists.length > 3 ?
+                `<div class="collection-more">+${collection.playlists.length - 3} more playlists</div>` :
+                ''
+            }
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers for collection cards
+        container.querySelectorAll('.collection-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const collectionId = card.dataset.collectionId;
+                const collectionType = card.dataset.collectionType;
+                // For now, just open the first playlist in the collection
+                const collection = collections.find(c => c.id === collectionId && c.category === collectionType);
+                if (collection && collection.playlists && collection.playlists.length > 0) {
+                    this.openPlaylist(collection.playlists[0].id);
+                }
+            });
+        });
     }
 
     async sortPlaylists(sortBy) {

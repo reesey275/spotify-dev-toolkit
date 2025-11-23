@@ -42,7 +42,11 @@ try:
     LOGFIRE = logfire
     LOGFIRE.info('export_spotify_playlist.started')
 except Exception as _e:
-    # Fail gracefully if logfire isn't available/configured
+    # Broad except: `logfire` is an optional telemetry/instrumentation
+    # dependency. It may raise ImportError, configuration errors, or
+    # runtime exceptions depending on environment or user setup. We
+    # intentionally swallow these errors so the CLI remains usable when
+    # telemetry is unavailable or misconfigured.
     LOGFIRE = None
 
 
@@ -459,5 +463,9 @@ if __name__ == "__main__":
             try:
                 LOGFIRE.error('export_spotify_playlist.error', error=str(e))
             except Exception:
+                # Ignore any errors coming from the telemetry/logging
+                # library to avoid masking the original exception that
+                # we will re-raise below. Keeping this local `except`
+                # prevents auxiliary failures from hiding the root cause.
                 pass
         raise

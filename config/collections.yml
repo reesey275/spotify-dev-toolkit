@@ -1,0 +1,118 @@
+# Spotify Collections Configuration
+# Defines dynamic playlist groupings and tagging system
+# Used by /api/collections endpoint for fan-facing features
+
+collections:
+  # Mood-based collections
+  moods:
+    chill:
+      name: "Chill Vibes"
+      description: "Relaxing tracks for downtime"
+      tags: ["chill", "relax", "ambient", "lo-fi"]
+      color: "#4CAF50"
+      icon: "🌿"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+    energetic:
+      name: "High Energy"
+      description: "Upbeat tracks to boost your mood"
+      tags: ["energetic", "upbeat", "dance", "workout"]
+      color: "#FF5722"
+      icon: "⚡"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+    focus:
+      name: "Deep Focus"
+      description: "Instrumental and ambient music for concentration"
+      tags: ["focus", "instrumental", "classical", "ambient"]
+      color: "#2196F3"
+      icon: "🎯"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+  # Genre collections
+  genres:
+    indie:
+      name: "Indie Gems"
+      description: "Discover independent artists"
+      tags: ["indie", "alternative", "folk", "indie rock"]
+      color: "#9C27B0"
+      icon: "🎸"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+    electronic:
+      name: "Electronic Beats"
+      description: "Electronic and synth music"
+      tags: ["electronic", "synth", "house", "techno"]
+      color: "#00BCD4"
+      icon: "🎹"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+  # Activity collections
+  activities:
+    workout:
+      name: "Workout Mix"
+      description: "High-energy tracks for exercise"
+      tags: ["workout", "running", "gym", "fitness"]
+      color: "#FF9800"
+      icon: "💪"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+    commute:
+      name: "Commute Companion"
+      description: "Perfect tracks for your daily drive"
+      tags: ["commute", "driving", "road trip", "car"]
+      color: "#795548"
+      icon: "🚗"
+      playlist_ids:
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+        - "3cEYpjA9oz9GiPac4AsH4n"  # Working test playlist
+
+# Collection rules for auto-categorization
+rules:
+  # Auto-tag tracks based on audio features
+  audio_features:
+    danceability:
+      high: { min: 0.7, tags: ["dance", "energetic"] }
+      low: { max: 0.3, tags: ["chill", "ambient"] }
+
+    energy:
+      high: { min: 0.8, tags: ["energetic", "workout"] }
+      low: { max: 0.4, tags: ["chill", "relax"] }
+
+    valence:
+      high: { min: 0.7, tags: ["happy", "upbeat"] }
+      low: { max: 0.3, tags: ["sad", "melancholy"] }
+
+  # Auto-tag based on genres
+  genre_mappings:
+    "classical": ["focus", "instrumental"]
+    "ambient": ["chill", "focus"]
+    "lo-fi": ["chill", "study"]
+    "house": ["electronic", "dance"]
+    "techno": ["electronic", "energetic"]
+
+# Default collection settings
+defaults:
+  max_playlists_per_collection: 50
+  min_tracks_per_playlist: 10
+  cache_ttl_minutes: 60
+  enable_auto_tagging: true
