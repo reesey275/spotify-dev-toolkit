@@ -8,8 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  test-on-self-hosted:
     runs-on: [self-hosted, spotifydev]
+    continue-on-error: true
 
     strategy:
       matrix:
@@ -82,9 +83,91 @@ jobs:
         path: test-results/
         retention-days: 7
 
-  build:
+  test-on-hosted:
+    needs: test-on-self-hosted
+    if: needs.test-on-self-hosted.result == 'failure'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+        node-version: [20.x]
+
+    steps:
+    - name: Log fallback usage
+      run: |
+        echo "[OPLOG] CI Fallback - Test job falling back to hosted runner"
+        echo "Self-hosted runner (spotifydev) unavailable or failed"
+        echo "Using GitHub-hosted runner as backup"
+    - name: Checkout code
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup Python
+      uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4.2.1
+      with:
+        python-version: '3.9'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+
+    - name: Run linting
+      run: npm run lint || echo "No lint script found"
+
+    - name: Start development server
+      run: |
+        npm start &
+        sleep 10
+        curl -f http://127.0.0.1:5500/healthz || exit 1
+      env:
+        NODE_ENV: test
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
+        SKIP_RATE_LIMIT: true
+
+    - name: Run Playwright tests (${{ matrix.browser }})
+      run: npx playwright test --project=${{ matrix.browser }} --reporter=line
+      env:
+        NODE_ENV: test
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
+        SKIP_RATE_LIMIT: true
+
+    - name: Upload test results
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.4.0
+      if: always()
+      with:
+        name: playwright-report-hosted-${{ matrix.browser }}-${{ matrix.node-version }}
+        path: playwright-report/
+        retention-days: 30
+
+    - name: Upload test traces
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.4.0
+      if: failure()
+      with:
+        name: playwright-traces-hosted-${{ matrix.browser }}-${{ matrix.node-version }}
+        path: test-results/
+        retention-days: 7
+
+  build-on-self-hosted:
     runs-on: [self-hosted, spotifydev]
-    needs: test
+    needs: test-on-self-hosted
+    continue-on-error: true
 
     steps:
     - name: Checkout code
@@ -113,12 +196,80 @@ jobs:
           exit 1
         fi
 
-  deploy:
-    runs-on: [self-hosted, spotifydev]
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  build-on-hosted:
+    needs: [test-on-self-hosted, build-on-self-hosted]
+    if: needs.build-on-self-hosted.result == 'failure'
+    runs-on: ubuntu-latest
 
     steps:
+    - name: Log fallback usage
+      run: |
+        echo "[OPLOG] CI Fallback - Build job falling back to hosted runner"
+        echo "Self-hosted runner (spotifydev) unavailable or failed"
+        echo "Using GitHub-hosted runner as backup"
+    - name: Checkout code
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npm run build || echo "No build script found"
+
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+
+    - name: Check for vulnerabilities
+      run: |
+        if [ "$(npm audit --audit-level moderate --json | jq '.metadata.vulnerabilities.total')" -gt 0 ]; then
+          echo "Security vulnerabilities found"
+          npm audit --audit-level moderate
+          exit 1
+        fi
+
+  deploy-on-self-hosted:
+    runs-on: [self-hosted, spotifydev]
+    needs: build-on-self-hosted
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    continue-on-error: true
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Deploy to production
+      run: |
+        echo "Deployment would happen here"
+        echo "Add your deployment commands (Docker, PM2, etc.)"
+      env:
+        NODE_ENV: production
+
+  deploy-on-hosted:
+    needs: [build-on-self-hosted, deploy-on-self-hosted]
+    if: needs.deploy-on-self-hosted.result == 'failure' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Log fallback usage
+      run: |
+        echo "[OPLOG] CI Fallback - Deploy job falling back to hosted runner"
+        echo "Self-hosted runner (spotifydev) unavailable or failed"
+        echo "Using GitHub-hosted runner as backup"
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
 
