@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
@@ -101,6 +103,8 @@ jobs:
         echo "Using GitHub-hosted runner as backup"
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
@@ -172,6 +176,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
@@ -209,6 +215,8 @@ jobs:
         echo "Using GitHub-hosted runner as backup"
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
@@ -242,6 +250,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
@@ -272,6 +282,8 @@ jobs:
         echo "Using GitHub-hosted runner as backup"
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.1.0
