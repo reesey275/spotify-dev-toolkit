@@ -32,12 +32,17 @@ const requiredEnvVars = [
   "SPOTIFY_REDIRECT_URI"
 ];
 
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar]) {
-    console.error(`❌ Missing required environment variable: ${envVar}`);
-    console.error("Please check your .env file and ensure all required variables are set.");
-    process.exit(1);
+// Skip environment variable validation in test mode to allow CI testing
+if (process.env.NODE_ENV !== 'test') {
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+      console.error(`❌ Missing required environment variable: ${envVar}`);
+      console.error("Please check your .env file and ensure all required variables are set.");
+      process.exit(1);
+    }
   }
+} else {
+  console.log('🧪 Running in test mode - skipping Spotify credential validation');
 }
 
 // Custom SQLite Session Store
