@@ -43,6 +43,10 @@ if (process.env.NODE_ENV !== 'test') {
   }
 } else {
   console.log('🧪 Running in test mode - skipping Spotify credential validation');
+  // Set dummy values for test mode to prevent undefined errors
+  process.env.SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || 'dummy_client_id';
+  process.env.SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || 'dummy_client_secret';
+  process.env.SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:5500/callback';
 }
 
 // Custom SQLite Session Store
