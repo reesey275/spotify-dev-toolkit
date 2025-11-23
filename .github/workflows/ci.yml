@@ -50,6 +50,12 @@ jobs:
         npm start &
         sleep 10
         curl -f http://127.0.0.1:5500/healthz || exit 1
+      env:
+        NODE_ENV: test
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
+        SKIP_RATE_LIMIT: true
 
     - name: Run Playwright tests (${{ matrix.browser }})
       run: npx playwright test --project=${{ matrix.browser }} --reporter=line
