@@ -47,7 +47,12 @@ jobs:
           echo "== 2) .gitignore must ignore .env* but whitelist templates/examples =="
           test -f .gitignore || { echo "::error::.gitignore missing"; exit 1; }
 
-          grep -qE '^\s*\.env\*' .gitignore || { echo "::error::.gitignore must ignore .env*"; exit 1; }
+          if grep -qE '^\s*\.env\*' .gitignore || grep -qE '^\s*\.env\.' .gitignore; then
+            :
+          else
+            echo "::error::.gitignore must ignore .env* (or .env.*)"
+            exit 1
+          fi
           grep -qE '^\s*!\.env\.example' .gitignore || { echo "::error::.gitignore must whitelist .env.example"; exit 1; }
           # Accept either casing strategy, but require at least one whitelist:
           if ! grep -qE '^\s*!\.env\.TEMPLATE' .gitignore && ! grep -qE '^\s*!\.env\.template' .gitignore; then
