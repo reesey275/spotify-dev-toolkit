@@ -4,8 +4,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables: ignore all `.env*` files except the template
+# Environment variables: ignore all `.env*` files except template and example
 .env*
+!.env.TEMPLATE
 !.env.example
 
 # Runtime data
@@ -73,6 +74,3 @@ Desktop.ini
 .venv
 .venv_lnx
 .venv_win
-
-# Example env files are safe to commit
-.env.example
