@@ -312,6 +312,72 @@ git push origin your-feature-branch
    - Use "Rebase and merge" for clean linear history
    - Delete branch after merge
 
+## Automated Inline Review Reply Workflow
+
+### Purpose
+To ensure all PR review comments are addressed precisely and reproducibly, use the provided script to post inline replies directly to GitHub review threads via the GraphQL API.
+
+### Script: `scripts/reply_to_review_thread.sh`
+
+**Usage:**
+```bash
+./scripts/reply_to_review_thread.sh <PR_NUMBER> <THREAD_ID> <REPLY_BODY>
+```
+
+- `<PR_NUMBER>`: The pull request number (e.g., 32)
+- `<THREAD_ID>`: The review thread ID (e.g., PRRT_kwDOP_qztc5qCm0i)
+- `<REPLY_BODY>`: The reply text, or a path to a file containing the reply
+
+**Example:**
+```bash
+./scripts/reply_to_review_thread.sh 32 PRRT_kwDOP_qztc5qCm0i "Thank you, this is fixed."
+```
+
+
+**How it works:**
+- Uses the GitHub CLI (`gh`) and GraphQL API to post a reply directly to the specified review thread.
+- Supports multi-line replies via file input (file must be <32KB).
+- Requires `gh` to be authenticated and `jq` installed.
+- Validates that `gh` and `jq` are present before running.
+- Validates reply body file exists, is readable, and <32KB (or string is <32KB).
+- Robust error handling: clear exit codes for usage, prerequisites, file errors, and API errors.
+- `--dry-run` mode prints the mutation and variables without posting.
+
+
+**Workflow:**
+1. Fetch open review threads for your PR (see below).
+2. Identify the thread ID you want to reply to.
+3. Run the script with your reply (string or file <32KB).
+4. If testing, use `--dry-run` to validate before posting.
+5. On error, check output for missing prerequisites, file issues, or API errors.
+6. Verify the reply appears inline on GitHub.
+
+**Fetching Review Thread IDs:**
+You can list review threads for a PR using the following command:
+```bash
+gh api graphql -f query='query($owner:String!, $name:String!, $pr:Int!) { repository(owner:$owner, name:$name) { pullRequest(number:$pr) { reviewThreads(first:100) { nodes { id isResolved comments(first:1) { nodes { body author { login } } } } } } } }' -F owner=YOUR_GITHUB_USERNAME -F name=spotify-dev-toolkit -F pr=32 | jq
+```
+
+
+**Best Practices:**
+- Always reply inline to code review comments for traceability.
+- Use this script for all review thread replies to ensure consistency and auditability.
+- Document your reply content clearly for future reference.
+- Always check that `gh` and `jq` are installed and authenticated before use.
+- Prefer file input for long/multi-line replies, but keep under 32KB.
+- Use `--dry-run` to preview the mutation and variables before posting.
+
+
+See `scripts/pr_threads_guard.sh` for automated review thread checks.
+
+**Exit Codes:**
+
+- 0: Success
+- 1: Usage error (bad arguments)
+- 2: Prerequisite missing (`gh` or `jq`)
+- 3: File error (missing, unreadable, or too large)
+- 4: API error (GitHub API or CLI failure)
+
 ## Security
 
 ### Reporting Vulnerabilities
