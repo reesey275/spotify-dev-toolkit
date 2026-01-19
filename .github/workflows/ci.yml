@@ -58,7 +58,7 @@ jobs:
         SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
         SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
-        SKIP_RATE_LIMIT: true
+        # SKIP_RATE_LIMIT removed to enable rate limiting for tests
 
     - name: Run Playwright tests (${{ matrix.browser }})
       run: npx playwright test --project=${{ matrix.browser }} --reporter=line
@@ -67,7 +67,7 @@ jobs:
         SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
         SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
-        SKIP_RATE_LIMIT: true
+        # SKIP_RATE_LIMIT removed to enable rate limiting for tests
 
     - name: Upload test results
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.4.0
@@ -141,7 +141,7 @@ jobs:
         SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
         SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
-        SKIP_RATE_LIMIT: true
+        # SKIP_RATE_LIMIT removed to enable rate limiting for tests
 
     - name: Run Playwright tests (${{ matrix.browser }})
       run: npx playwright test --project=${{ matrix.browser }} --reporter=line
@@ -150,7 +150,7 @@ jobs:
         SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
         SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         SPOTIFY_REDIRECT_URI: http://127.0.0.1:5500/callback
-        SKIP_RATE_LIMIT: true
+        # SKIP_RATE_LIMIT removed to enable rate limiting for tests
 
     - name: Upload test results
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.4.0
