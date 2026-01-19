@@ -199,6 +199,38 @@ npm run dev  # This blocks terminal!
 npm run dev && curl -s http://127.0.0.1:5500/healthz  # Server gets killed
 ```
 
+### Automated Inline Review Reply Workflow
+**Purpose:** Ensure all PR review comments are addressed inline, reproducibly, and auditable by AI agents.
+
+**Script:** `scripts/reply_to_review_thread.sh`
+
+**Usage:**
+```bash
+./scripts/reply_to_review_thread.sh <PR_NUMBER> <THREAD_ID> <REPLY_BODY>
+```
+
+- `<PR_NUMBER>`: The pull request number (e.g., 32)
+- `<THREAD_ID>`: The review thread ID (e.g., PRRT_kwDOP_qztc5qCm0i)
+- `<REPLY_BODY>`: The reply text, or a path to a file containing the reply
+
+**Example:**
+```bash
+./scripts/reply_to_review_thread.sh 32 PRRT_kwDOP_qztc5qCm0i "Thank you, this is fixed."
+```
+
+**Workflow:**
+1. Fetch open review threads for your PR using the documented GraphQL query.
+2. Identify the thread ID to reply to.
+3. Run the script with your reply.
+4. Verify the reply appears inline on GitHub.
+
+**Best Practices:**
+- Always reply inline to code review comments for traceability.
+- Use this script for all review thread replies to ensure consistency and auditability.
+- Document your reply content clearly for future reference.
+
+See `docs/CONTRIBUTING.md` and `docs/AGENT_USAGE_review_reply.md` for full details.
+
 ### Terminal Session Management
 - **Background Processes**: Use screen for any long-running development processes
 - **Concurrent Operations**: Run health checks, tests, and API calls in separate terminals
