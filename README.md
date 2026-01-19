@@ -127,7 +127,7 @@ The Spotify Fan WebApp is a full-stack application built with modern web technol
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v20 or higher)
 - npm (v6 or higher)
 - Spotify Developer Account
 

@@ -535,7 +535,7 @@ app.use(cors(corsOptions));
 // Ensure preflight (OPTIONS) requests are handled for all routes
 // This explicitly responds to OPTIONS and attaches CORS headers using the same cors middleware
 // Preflight handler reusing configured cors options
-app.options('*', cors({
+app.options(/.*/, cors({
   ...corsOptions,
   optionsSuccessStatus: 204
 }));

@@ -15,7 +15,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 ### Prerequisites
 
-- **Node.js**: v18+ (for backend server)
+- **Node.js**: v20+ (for backend server)
 - **Python**: 3.12+ (for export CLI tool)
 - **Git**: With GPG signing configured
 - **Spotify Developer Account**: For API credentials
