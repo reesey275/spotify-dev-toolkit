@@ -13,7 +13,8 @@
 # Outdated unresolved threads indicate handoff to human review, not manual action.
 #
 # MODES:
-#   --check (default)   Standard: block on isResolved=false AND isOutdated=false
+#   STANDARD (default): Blocks on unresolved and not outdated threads (no --check flag implemented)
+#   --strict: Blocks on ANY unresolved thread (even if outdated)
 #   --strict            Strict: block on ANY isResolved=false (even if outdated)
 #
 # Usage:
@@ -29,6 +30,7 @@
 set -euo pipefail
 
 # Reserved for future use (script directory context)
+# SCRIPT_DIR is reserved for future use (e.g., locating script resources)
 # SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Temp file cleanup trap
@@ -77,7 +79,7 @@ EXAMPLES:
 
   # Strict check
   ./pr_threads_guard.sh 373 --strict
-  AGENT_CONTEXT=true ./scripts/pr_merge_guard.sh 373
+  # AGENT_CONTEXT context for merge guard is not implemented; remove reference to pr_merge_guard.sh
 USAGE
 }
 
