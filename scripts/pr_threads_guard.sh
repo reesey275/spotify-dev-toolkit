@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # pr_threads_guard.sh - Check review thread state for PR advancement (READ-ONLY)
 #
-# Runbook: docs/ops/PR_REVIEW_THREAD_RUNBOOK.md
+# Runbook: (see CONTRIBUTING.md for workflow details)
 #
 # THREAD STATE MODEL (STANDARD mode):
 #   BLOCKING:  (isResolved=false) AND (isOutdated=false) → Agent must fix code
@@ -28,7 +28,8 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Reserved for future use (script directory context)
+# SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Temp file cleanup trap
 cleanup_temp_files() {
@@ -267,7 +268,7 @@ display_threads() {
     local author
     author="$(echo "${thread}" | jq -r '.comments.nodes[0].author.login // "(unknown)"')"
     local body
-    body="$(echo "${thread}" | jq -r '.comments.nodes[0].body // "(no body)"' | head -c 200)"
+    body="$(echo "${thread}" | jq -r '.comments.nodes[0].body // "(no body)"' | head -c 200 || true)"
     local is_outdated
     is_outdated="$(echo "${thread}" | jq -r '.isOutdated')"
     local is_resolved
@@ -293,7 +294,7 @@ THREADS="$(fetch_all_threads)"
 PR_TITLE="$(cat /tmp/pr_title_$$ 2>/dev/null || echo "(unknown)")"
 rm -f /tmp/pr_title_$$
 
-TOTAL="$(echo "${THREADS}" | jq 'length')"
+
 
 # ─────────────────────────────────────────────────────────────
 # Three-bucket thread counts (state model)
