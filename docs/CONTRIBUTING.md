@@ -319,18 +319,24 @@ To ensure all PR review comments are addressed precisely and reproducibly, use t
 
 ### Script: `scripts/reply_to_review_thread.sh`
 
+
 **Usage:**
 ```bash
-./scripts/reply_to_review_thread.sh <PR_NUMBER> <THREAD_ID> <REPLY_BODY>
+./scripts/reply_to_review_thread.sh [--dry-run] <PR_NUMBER> <THREAD_ID> <REPLY_BODY>
 ```
 
 - `<PR_NUMBER>`: The pull request number (e.g., 32)
 - `<THREAD_ID>`: The review thread ID (e.g., PRRT_kwDOP_qztc5qCm0i)
 - `<REPLY_BODY>`: The reply text, or a path to a file containing the reply
+- `--dry-run`: (optional) Print the GraphQL mutation and variables without posting
 
-**Example:**
+**Examples:**
 ```bash
+# Post a reply
 ./scripts/reply_to_review_thread.sh 32 PRRT_kwDOP_qztc5qCm0i "Thank you, this is fixed."
+
+# Test before posting (dry run)
+./scripts/reply_to_review_thread.sh --dry-run 32 PRRT_kwDOP_qztc5qCm0i "Thank you, this is fixed."
 ```
 
 
@@ -368,7 +374,9 @@ gh api graphql -f query='query($owner:String!, $name:String!, $pr:Int!) { reposi
 - Use `--dry-run` to preview the mutation and variables before posting.
 
 
-See `scripts/pr_threads_guard.sh` for automated review thread checks.
+
+**Automated review thread checks:**
+The script `scripts/pr_threads_guard.sh` is included in this repository and can be used to check the state of all review threads for a PR. It helps ensure that all blocking threads are resolved before merging. If you do not see this script, ensure your branch is up to date.
 
 **Exit Codes:**
 
