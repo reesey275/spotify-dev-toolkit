@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 # reply_to_review_thread.sh
-# Usage: ./reply_to_review_thread.sh [--dry-run] <PR_NUMBER> <THREAD_ID> <REPLY_BODY>
+# Usage Example:
+#   ./reply_to_review_thread.sh 34 PRRT_kwDOP_qztc5qCm0i "Thank you, this is fixed."
+#   # Or with a file:
+#   ./reply_to_review_thread.sh 34 PRRT_kwDOP_qztc5qCm0i reply_body.txt
 # Posts an inline reply to a specific GitHub PR review thread using the GraphQL API.
 #
 # Requirements:
@@ -65,7 +68,7 @@ fi
 
 PR_NUMBER="$1"
 THREAD_ID="$2"
-REPLY_BODY_ARG="$3"
+REPLY_BODY_ARG="$3" # Only used for file or string input, not as a separate variable
 
 # Prerequisite checks
 if ! command -v gh >/dev/null 2>&1; then
