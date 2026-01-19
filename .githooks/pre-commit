@@ -1,56 +1,89 @@
 #!/usr/bin/env bash
-# Simple pre-commit hook to detect common secret patterns in staged files.
-# This is intentionally lightweight and repository-local; for stronger checks
-# integrate with `pre-commit` or `detect-secrets` in CI.
+#
+# pre-commit hook for spotify-dev-toolkit
+# Combines:
+#   1. Env-policy check (blocks real .env files)
+#   2. Secret scanning (detects hardcoded tokens)
+#
 
 set -euo pipefail
 
-echo "Running lightweight secret scan on staged files..."
+# ============================================================
+# PART 1: Block real .env files (allow only templates)
+# ============================================================
 
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | sed '/^$/d')
-if [ -z "$STAGED_FILES" ]; then
-  echo "No staged files to check."
-  exit 0
+ALLOWLIST_REGEX='\.env\.(example|TEMPLATE|template)$'
+DENY_REGEX='\.env(\.[^/]*)?$'
+
+STAGED_FILES="$(git diff --cached --name-only --diff-filter=ACM | sed '/^$/d')"
+[ -z "$STAGED_FILES" ] && exit 0
+
+FAIL=0
+BLOCKED_FILES=""
+
+while IFS= read -r file; do
+  filename=$(basename "$file")
+  
+  if [[ "$filename" =~ $DENY_REGEX ]]; then
+    if [[ ! "$filename" =~ $ALLOWLIST_REGEX ]]; then
+      echo "[env-policy] ❌ Forbidden env file staged: $file"
+      BLOCKED_FILES="${BLOCKED_FILES}  - $file\n"
+      FAIL=1
+    fi
+  fi
+done <<< "$STAGED_FILES"
+
+if [ "$FAIL" -eq 1 ]; then
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "❌ COMMIT BLOCKED: Real .env file(s) detected"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "$BLOCKED_FILES"
+  echo "Only .env.example, .env.TEMPLATE allowed."
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  exit 1
 fi
+
+# ============================================================
+# PART 2: Secret scanning (skip templates/docs)
+# ============================================================
 
 FAIL=0
 
 for file in $STAGED_FILES; do
-  # Skip example and documentation files that may contain placeholder credentials
+  # Skip templates, docs, configs (these are safe)
   case "$file" in
-    *.example|*.md|docs/*|README*|*.yml.example|.github/*)
+    .env.example|.env.TEMPLATE|.env.template|*.md|docs/*|README*|*.yml.example|.github/*)
       continue
       ;;
   esac
 
   # Only scan text files
   if file --brief --mime "$file" 2>/dev/null | grep -q text; then
-    # Look for common AWS key pattern
-    if git show :"$file" | grep -q 'AKIA[0-9A-Z]\{16\}'; then
-      echo "[secret-scan] Potential AWS access key in $file"
+    # AWS keys
+    if git show :"$file" 2>/dev/null | grep -q 'AKIA[0-9A-Z]\{16\}'; then
+      echo "[secret-scan] ⚠️  AWS access key in: $file"
       FAIL=1
     fi
-
-    # Skip private key check for now - causing regex issues
-    # Look for obvious Spotify client secret env var copies (exclude examples)
-    if git show :"$file" | grep -q 'SPOTIFY_CLIENT_SECRET[[:space:]]*=[[:space:]]*[A-Za-z0-9_-]\{10,\}'; then
-      echo "[secret-scan] Spotify client secret found in $file"
+    
+    # Spotify secrets (real values, not placeholders)
+    if git show :"$file" 2>/dev/null | grep -q 'SPOTIFY_CLIENT_SECRET[[:space:]]*=[[:space:]]*[A-Za-z0-9_-]\{10,\}'; then
+      echo "[secret-scan] ⚠️  Spotify client secret in: $file"
       FAIL=1
     fi
-
-    # Generic token patterns
-    if git show :"$file" | grep -q '\(api_key\|apiKey\|token\|secret\)[[:space:]]*[:=][[:space:]]*[A-Za-z0-9\-_=]\{20,\}'; then
-      echo "[secret-scan] Generic token-like pattern in $file"
+    
+    # Generic tokens
+    if git show :"$file" 2>/dev/null | grep -qE '(api_key|apiKey|token|secret)[[:space:]]*[:=][[:space:]]*[A-Za-z0-9\-_=]{20,}'; then
+      echo "[secret-scan] ⚠️  Token-like pattern in: $file"
       FAIL=1
     fi
   fi
 done
 
 if [ "$FAIL" -eq 1 ]; then
-  echo "\nSecret scan failed. Remove secrets from staged files or move them to environment variables/vault." >&2
-  echo "To enable local hooks run: git config core.hooksPath .githooks" >&2
+  echo ""
+  echo "Commit blocked. Review files for exposed secrets."
   exit 1
 fi
 
-echo "Secret scan passed."
 exit 0

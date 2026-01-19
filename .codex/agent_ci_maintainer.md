@@ -41,3 +41,40 @@ Your job is to:
 - Diagnose failing CI runs.
 - Propose and implement **minimal, safe** changes to restore green.
 - Create or update a PR with your changes, including a clear summary.
+
+## 🧠 Agent Responsibilities
+
+### 🔁 **Runner Behavior**
+
+* **Use**: Always dispatch workflows on `runs-on: [self-hosted, spotifydev]`
+* **Verify**: Confirm runner is `status: "online"`, `busy: false` before kicking jobs
+* **Failure Recovery**: If jobs queue or hang, check `svc.sh status`, logs, and dependencies
+
+### 🔐 **Action Hardening**
+
+* All `uses:` statements **must be SHA-pinned**, no exceptions:
+
+  ```yaml
+  uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+  ```
+
+### 🛠️ **Environment Control**
+
+* CI secrets must never leak; if dummy values are used:
+
+  * CI mode must gracefully degrade (mock responses, error placeholders)
+  * Tests requiring live credentials (e.g., user playlist) must be skipped or mocked
+* Ensure `.githooks/pre-commit` excludes `.github/` from secret scans
+
+### 📓 **OPLOG and CI Discipline**
+
+* Every CI change must include:
+
+  * GPG-signed commit
+  * Clear `ci:` prefix
+  * Documented justification via OPLOG/commit
+* Example:
+
+  ```bash
+  git commit -S -m "ci: skip Spotify user playlist test in CI with dummy creds"
+  ```

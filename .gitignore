@@ -74,3 +74,20 @@ Desktop.ini
 .venv
 .venv_lnx
 .venv_win
+
+# Example env files are safe to commit
+.env.example
+
+# Ignore extracted CLI artifacts and tarballs
+gh_*/
+gh_latest.*
+<<<<<<< Updated upstream
+=======
+
+# Example env files are safe to commit
+.env.example
+
+# Ignore extracted CLI artifacts and tarballs
+gh_*/
+gh_latest.*
+>>>>>>> Stashed changes
