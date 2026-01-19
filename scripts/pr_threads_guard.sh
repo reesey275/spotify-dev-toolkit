@@ -29,8 +29,8 @@
 
 set -euo pipefail
 
-# Reserved for future use (script directory context)
-# SCRIPT_DIR is reserved for future use (e.g., locating script resources)
+# SCRIPT_DIR is reserved for future use (e.g., locating script resources, supporting multi-script workflows, or context-aware operations).
+# Uncomment and use when script resource location is needed.
 # SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Temp file cleanup trap
